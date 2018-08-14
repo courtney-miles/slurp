@@ -11,6 +11,10 @@
             "email": "courtney@milesasylum.com"
         }
     ],
+    "require": {
+        "php": "7.1 - 7.2",
+        "symfony/validator": "^4.1.0"
+    },
     "require-dev": {
         "phpunit/phpunit": "^6",
         "php-coveralls/php-coveralls": "^2.1",
@@ -26,8 +30,5 @@
             "MilesAsylum\\Slurp\\Tests\\": "tests/",
             "MilesAsylum\\Slurp\\PHPUnit\\": "PHPUnit/"
         }
-    },
-    "require": {
-        "symfony/validator": "^4.1.0"
     }
 }
