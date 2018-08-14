@@ -12,7 +12,7 @@ before_script:
 - composer install --no-interaction --dev
 
 script:
-- php vendor/bin/phpunit --debug -c phpunit.xml.dist --coverage-clover build/logs/clover.xml
+- php vendor/bin/phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml
 
 after_success:
 - travis_retry php vendor/bin/php-coveralls

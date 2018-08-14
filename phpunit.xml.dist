@@ -4,6 +4,9 @@
         <ini name="display_errors" value="On" />
         <ini name="error_reporting" value="E_ALL" />
     </php>
+    <testsuite name="slurp_tests">
+        <directory>./tests/Slurp/</directory>
+    </testsuite>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./src/</directory>
