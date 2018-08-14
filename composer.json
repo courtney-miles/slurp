@@ -13,6 +13,21 @@
     ],
     "require-dev": {
         "phpunit/phpunit": "^6",
-        "php-coveralls/php-coveralls": "^2.1"
+        "php-coveralls/php-coveralls": "^2.1",
+        "mockery/mockery": "^1.1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MilesAsylum\\Slurp\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MilesAsylum\\Slurp\\Tests\\": "tests/",
+            "MilesAsylum\\Slurp\\PHPUnit\\": "PHPUnit/"
+        }
+    },
+    "require": {
+        "symfony/validator": "^4.1.0"
     }
 }
