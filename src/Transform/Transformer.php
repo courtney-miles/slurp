@@ -11,7 +11,7 @@ namespace MilesAsylum\Slurp\Transform;
 class Transformer
 {
     /**
-     * @var Transformation[][]
+     * @var Change[][]
      */
     protected $columnTranslators = [];
 
@@ -33,7 +33,7 @@ class Transformer
 
     /**
      * @param $columnName
-     * @param Transformation|Transformation[] $transformations
+     * @param Change|Change[] $transformations
      */
     public function addColumnTransformations($columnName, $transformations)
     {

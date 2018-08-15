@@ -8,7 +8,7 @@
 namespace MilesAsylum\Slurp\Tests\Slurp\Transform;
 
 use MilesAsylum\Slurp\Transform\AbstractTransformer;
-use MilesAsylum\Slurp\Transform\Transformation;
+use MilesAsylum\Slurp\Transform\Change;
 use MilesAsylum\Slurp\Transform\TransformerLoader;
 use PHPUnit\Framework\TestCase;
 
@@ -36,7 +36,7 @@ class TransformerLoaderTest extends TestCase
     }
 }
 
-class Scratch extends Transformation
+class Scratch extends Change
 {
     /**
      * @return string
@@ -49,7 +49,7 @@ class Scratch extends Transformation
 
 class ScratchTransformer extends AbstractTransformer
 {
-    public function transform($value, Transformation $transformation)
+    public function transform($value, Change $transformation)
     {
         // Meh.
     }

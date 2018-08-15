@@ -15,10 +15,10 @@ class TransformerLoader
     private $loadedTransformers = [];
 
     /**
-     * @param Transformation $transformation
+     * @param Change $transformation
      * @return TransformerInterface
      */
-    public function loadTransformer(Transformation $transformation)
+    public function loadTransformer(Change $transformation)
     {
         if (!isset($this->loadedTransformers[$transformation->transformedBy()])) {
             $transformedBy = $transformation->transformedBy();

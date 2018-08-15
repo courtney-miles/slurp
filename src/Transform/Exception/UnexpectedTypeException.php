@@ -7,7 +7,6 @@
 
 namespace MilesAsylum\Slurp\Transform\Exception;
 
-
 class UnexpectedTypeException extends \InvalidArgumentException implements ExceptionInterface
 {
     public function __construct($value, string $expectedType)

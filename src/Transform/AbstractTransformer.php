@@ -10,7 +10,12 @@ namespace MilesAsylum\Slurp\Transform;
 
 abstract class AbstractTransformer implements TransformerInterface
 {
-    public final function __construct()
+    final public function __construct()
     {
+    }
+
+    public function isString($value)
+    {
+        return is_scalar($value) || (\is_object($value) && method_exists($value, '__toString'));
     }
 }
