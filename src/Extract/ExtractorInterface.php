@@ -14,5 +14,5 @@ interface ExtractorInterface extends \Iterator
      * Get the defined columns for the source.
      * @return array
      */
-    public function getColumns();
+    public function getColumnNames();
 }
