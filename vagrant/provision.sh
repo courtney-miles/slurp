@@ -2,13 +2,13 @@
 set -o errexit
 set -o nounset
 
-apt-get update || true
-apt-get upgrade --yes
-apt-get install --yes php
-
 # This strategy from https://www.tecmint.com/install-different-php-versions-in-ubuntu/
 apt-get install --yes python-software-properties
 add-apt-repository --yes ppa:ondrej/php
+
+apt-get update || true
+apt-get upgrade --yes
+apt-get install --yes php
 
 #apt-get install --yes php5.6
 #apt-get install --yes php5.6-curl php5.6-xml

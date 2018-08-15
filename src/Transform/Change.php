@@ -8,7 +8,7 @@
 namespace MilesAsylum\Slurp\Transform;
 
 
-abstract class Transformation
+abstract class Change
 {
     /**
      * @return string

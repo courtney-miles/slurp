@@ -9,5 +9,5 @@ namespace MilesAsylum\Slurp\Transform;
 
 interface TransformerInterface
 {
-    public function transform($value, Transformation $transformation);
+    public function transform($value, Change $transformation);
 }

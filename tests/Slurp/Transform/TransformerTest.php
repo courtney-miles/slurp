@@ -7,7 +7,7 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Transform;
 
-use MilesAsylum\Slurp\Transform\Transformation;
+use MilesAsylum\Slurp\Transform\Change;
 use MilesAsylum\Slurp\Transform\Transformer;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
 use MilesAsylum\Slurp\Transform\TransformerLoader;
@@ -39,7 +39,7 @@ class TransformerTest extends TestCase
     {
         $row = ['foo', 'bar'];
 
-        $mockTransformation = \Mockery::mock(Transformation::class);
+        $mockTransformation = \Mockery::mock(Change::class);
         $mockTransformer = \Mockery::mock(TransformerInterface::class);
 
         $this->transformer->addColumnTransformations('col_a', $mockTransformation);
