@@ -10,9 +10,4 @@ namespace MilesAsylum\Slurp\Extract;
 
 interface ExtractorInterface extends \Iterator
 {
-    /**
-     * Get the defined columns for the source.
-     * @return array
-     */
-    public function getColumnNames();
 }

@@ -88,29 +88,33 @@ class SlurpTest extends TestCase
     public function testNumUpdateCalls()
     {
         $rows = [['foo', 'bar'], ['fee', 'baz']];
-        $this->stubExtractorContent($this->mockExtractor, [1, 2], $rows);
+        $this->stubExtractorContent($this->mockExtractor, $rows);
         $slurp = $this->createSlurp(
             $this->mockExtractor,
             $this->mockLoader,
             $this->mockValidator,
             $this->mockTransformer
         );
-        $this->mockLoader->shouldReceive('update')
-            ->with($slurp)->times(count($rows));
+
+        foreach ($rows as $row) {
+            $this->mockLoader->shouldReceive('loadRow')
+                ->with($row)
+                ->once();
+        }
 
         $slurp->load();
     }
 
     public function testGrabRowReturnNullAfterLoad()
     {
-        $this->stubExtractorContent($this->mockExtractor, [1, 2], [['foo', 'bar'], ['fee', 'baz']]);
+        $this->stubExtractorContent($this->mockExtractor, [['foo', 'bar'], ['fee', 'baz']]);
         $slurp = $this->createSlurp(
             $this->mockExtractor,
             $this->mockLoader,
             $this->mockValidator,
             $this->mockTransformer
         );
-        $this->mockLoader->shouldReceive('update')->byDefault();
+        $this->mockLoader->shouldReceive('loadRow')->byDefault();
 
         $slurp->load();
 
@@ -119,73 +123,24 @@ class SlurpTest extends TestCase
 
     public function testGrabRowKeyReturnNullAfterLoad()
     {
-        $this->stubExtractorContent($this->mockExtractor, [1, 2], [['foo', 'bar'], ['fee', 'baz']]);
+        $this->stubExtractorContent($this->mockExtractor, [['foo', 'bar'], ['fee', 'baz']]);
         $slurp = $this->createSlurp(
             $this->mockExtractor,
             $this->mockLoader,
             $this->mockValidator,
             $this->mockTransformer
         );
-        $this->mockLoader->shouldReceive('update')->byDefault();
+        $this->mockLoader->shouldReceive('loadRow')->byDefault();
         $slurp->load();
 
         $this->assertNull($slurp->grabRowKey());
     }
 
-    public function testGetRowsOnUpdate()
-    {
-        $rows = [['foo', 'bar'], ['fee', 'baz']];
-        $grabbedRows = [];
-
-        $this->stubExtractorContent($this->mockExtractor, [1, 2], $rows);
-        $slurp = $this->createSlurp(
-            $this->mockExtractor,
-            $this->mockLoader,
-            $this->mockValidator,
-            $this->mockTransformer
-        );
-        $this->mockLoader->shouldReceive('update')
-            ->withArgs(function (Slurp $slurp) use (&$grabbedRows) {
-                $grabbedRows[] = $slurp->grabRow();
-
-                return true;
-            });
-
-        $slurp->load();
-
-        $this->assertSame($rows, $grabbedRows);
-    }
-
-    public function testGetRowKeysOnUpdate()
-    {
-        $rows = [['foo', 'bar'], 'a' => ['fee', 'baz']];
-        $grabbedKeys = [];
-
-        $this->stubExtractorContent($this->mockExtractor, [1, 2], $rows);
-        $slurp = $this->createSlurp(
-            $this->mockExtractor,
-            $this->mockLoader,
-            $this->mockValidator,
-            $this->mockTransformer
-        );
-        $this->mockLoader->shouldReceive('update')
-            ->withArgs(function (Slurp $slurp) use (&$grabbedKeys) {
-                $grabbedKeys[] = $slurp->grabRowKey();
-
-                return true;
-            });
-
-        $slurp->load();
-
-        $this->assertSame(array_keys($rows), $grabbedKeys);
-    }
-
     public function testApplyTransformationsToRows()
     {
         $rows = [['foo', 'bar']];
-        $grabbedRows = [];
 
-        $this->stubExtractorContent($this->mockExtractor, ['eyh', 'bhe'], $rows);
+        $this->stubExtractorContent($this->mockExtractor, $rows);
         $slurp = $this->createSlurp(
             $this->mockExtractor,
             $this->mockLoader,
@@ -197,50 +152,11 @@ class SlurpTest extends TestCase
             ->with($rows[0])
             ->andReturn(['FOO', 'BAR']);
 
-        $this->mockLoader->shouldReceive('update')
-            ->withArgs(function (Slurp $etlClient) use (&$grabbedRows) {
-                $grabbedRows[] = $etlClient->grabRow();
-
-                return true;
-            });
-
-        $slurp->load();
-
-        $this->assertSame([['FOO', 'BAR']], $grabbedRows);
-    }
-
-    public function testValidateRows()
-    {
-        $rows = [['foo', 'bar']];
-        $mockViolationList = \Mockery::mock(ConstraintViolationListInterface::class);
-        $mockViolationList->shouldReceive('count')->andReturn(0);
-        /** @var ConstraintViolationListInterface[] $grabbedViolationLists */
-        $grabbedViolationLists = [];
-
-        $this->stubExtractorContent($this->mockExtractor, ['col_one', 'col_two'], $rows);
-        $slurp = $this->createSlurp(
-            $this->mockExtractor,
-            $this->mockLoader,
-            $this->mockValidator,
-            $this->mockTransformer
-        );
-
-        $this->mockValidator->shouldReceive('validateRow')
-            ->with($rows[0], 0)
-            ->andReturn($mockViolationList)
+        $this->mockLoader->shouldReceive('loadRow')
+            ->with(['FOO', 'BAR'])
             ->once();
 
-        $this->mockLoader->shouldReceive('update')
-            ->withArgs(function (Slurp $slurp) use (&$grabbedViolationLists) {
-                $grabbedViolationLists[] = $slurp->grabRowViolations();
-
-                return true;
-            });
-
         $slurp->load();
-
-        $this->assertCount(1, $grabbedViolationLists);
-        $this->assertSame($mockViolationList, $grabbedViolationLists[0]);
     }
 
     protected function createSlurp(
@@ -252,10 +168,8 @@ class SlurpTest extends TestCase
         return new Slurp($extractor, $loader, $validator, $transformer);
     }
 
-    protected function stubExtractorContent(MockInterface $mockExtractor, array $columns, array $rowValues)
+    protected function stubExtractorContent(MockInterface $mockExtractor, array $rowValues)
     {
-        $mockExtractor->shouldReceive('getColumns')
-            ->andReturn($columns);
         $this->stubIteratorMethods($mockExtractor, $rowValues);
     }
 
