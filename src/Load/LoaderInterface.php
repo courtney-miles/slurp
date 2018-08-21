@@ -7,9 +7,9 @@
 
 namespace MilesAsylum\Slurp\Load;
 
-use MilesAsylum\Slurp\Slurp;
-
 interface LoaderInterface
 {
-    public function update(Slurp $slurp);
+    public function loadRow(array $row) : void;
+
+    public function finalise() : void;
 }

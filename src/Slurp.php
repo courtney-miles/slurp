@@ -83,7 +83,7 @@ class Slurp
                 $this->currentRow = $this->transformer->transformRow($row);
             }
 
-            $this->loader->update($this);
+            $this->loader->loadRow($this->grabRow());
 
             $this->currentRowKey = $this->currentRow = $this->currentRowViolations = null;
         }
