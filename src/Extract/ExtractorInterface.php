@@ -8,6 +8,6 @@
 namespace MilesAsylum\Slurp\Extract;
 
 
-interface ExtractorInterface extends \Iterator
+interface ExtractorInterface extends \IteratorAggregate
 {
 }
