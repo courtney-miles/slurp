@@ -57,10 +57,6 @@ class SlurpTest extends TestCase
             ->andReturnUsing(function ($row) {
                 return $row;
             })->byDefault();
-
-        $this->mockExtractor->shouldReceive('getColumns')
-            ->andReturn([])
-            ->byDefault();
     }
 
     public function testGetSource()
@@ -170,36 +166,7 @@ class SlurpTest extends TestCase
 
     protected function stubExtractorContent(MockInterface $mockExtractor, array $rowValues)
     {
-        $this->stubIteratorMethods($mockExtractor, $rowValues);
-    }
-
-    /**
-     * @param MockInterface|\Iterator $mockIterator
-     * @param array $items
-     */
-    protected function stubIteratorMethods(MockInterface $mockIterator, array $items)
-    {
-        $arrayIterator = new \ArrayIterator($items);
-
-        $mockIterator->shouldReceive('rewind')
-            ->andReturnUsing(function () use ($arrayIterator) {
-                $arrayIterator->rewind();
-            });
-        $mockIterator->shouldReceive('current')
-            ->andReturnUsing(function () use ($arrayIterator) {
-                return $arrayIterator->current();
-            });
-        $mockIterator->shouldReceive('key')
-            ->andReturnUsing(function () use ($arrayIterator) {
-                return $arrayIterator->key();
-            });
-        $mockIterator->shouldReceive('next')
-            ->andReturnUsing(function () use ($arrayIterator) {
-                $arrayIterator->next();
-            });
-        $mockIterator->shouldReceive('valid')
-            ->andReturnUsing(function () use ($arrayIterator) {
-                return $arrayIterator->valid();
-            });
+        $mockExtractor->shouldReceive('getIterator')
+            ->andReturn(new \ArrayObject($rowValues));
     }
 }
