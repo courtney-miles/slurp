@@ -28,17 +28,17 @@ class SlurpBuilder
     /**
      * @var ValidationStage[]
      */
-    protected $validationStages;
+    protected $validationStages = [];
 
     /**
      * @var TransformationStage[]
      */
-    protected $transformationStages;
+    protected $transformationStages = [];
 
     /**
      * @var LoadStage[]
      */
-    protected $loadStages;
+    protected $loadStages = [];
 
     public function __construct(PipelineBuilder $pipelineBuilder)
     {

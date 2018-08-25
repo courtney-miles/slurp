@@ -17,7 +17,7 @@ class InsertUpdateSql
         $updateValues = [];
 
         foreach ($columns as $column) {
-            $updateValues[] = "`{$column}` = VALUE(`{$column}`)";
+            $updateValues[] = "`{$column}` = VALUES(`{$column}`)";
         }
 
         $updateValuesStr = implode(', ', $updateValues);

@@ -3,10 +3,21 @@
     <php>
         <ini name="display_errors" value="On" />
         <ini name="error_reporting" value="E_ALL" />
+        <env name="TESTS_SLURP_DBADAPTER_MYSQL_ENABLED" value="true" />
+        <env name="TESTS_SLURP_DBADAPTER_MYSQL_HOST" value="localhost" />
+        <env name="TESTS_SLURP_DBADAPTER_MYSQL_USERNAME" value="root" />
+        <env name="TESTS_SLURP_DBADAPTER_MYSQL_PASSWORD" value="" />
+        <env name="TESTS_SLURP_DBADAPTER_MYSQL_PORT" value="3306" />
+        <env name="TESTS_SLURP_DBADAPTER_MYSQL_DATABASE" value="slurp_testing" />
     </php>
-    <testsuite name="slurp_tests">
-        <directory>./tests/Slurp/</directory>
-    </testsuite>
+    <testsuites>
+        <testsuite name="unit_tests">
+            <directory>./tests/Slurp/</directory>
+        </testsuite>
+        <testsuite name="functional_tests">
+            <directory>./tests/functional/</directory>
+        </testsuite>
+    </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./src/</directory>

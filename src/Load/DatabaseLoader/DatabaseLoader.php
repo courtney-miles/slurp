@@ -104,8 +104,8 @@ class DatabaseLoader implements LoaderInterface
             throw new ColumnMismatchException(
                 sprintf(
                     'The supplied row has values for %s where it is expected to have values for %s.',
-                    array_keys($rowValues),
-                    $this->columns
+                    implode(',', array_keys($rowValues)),
+                    implode(',', $this->columns)
                 )
             );
         }

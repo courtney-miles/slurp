@@ -19,7 +19,7 @@ class InsertUpdateSqlTest extends TestCase
         $expectedInsSql = <<<SQL
 INSERT INTO `foo` (`col_alpha`, `col_beta`)
   VALUES (?, ?)
-  ON DUPLICATE KEY UPDATE `col_alpha` = VALUE(`col_alpha`), `col_beta` = VALUE(`col_beta`)
+  ON DUPLICATE KEY UPDATE `col_alpha` = VALUES(`col_alpha`), `col_beta` = VALUES(`col_beta`)
 SQL;
         $this->assertSame(
             $expectedInsSql,
@@ -36,7 +36,7 @@ INSERT INTO `foo` (`col_alpha`, `col_beta`)
   VALUES (?, ?),
     (?, ?),
     (?, ?)
-  ON DUPLICATE KEY UPDATE `col_alpha` = VALUE(`col_alpha`), `col_beta` = VALUE(`col_beta`)
+  ON DUPLICATE KEY UPDATE `col_alpha` = VALUES(`col_alpha`), `col_beta` = VALUES(`col_beta`)
 SQL;
         $this->assertSame(
             $expectedInsSql,

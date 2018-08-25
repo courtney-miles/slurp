@@ -14,9 +14,9 @@ apt-get install --yes php
 #apt-get install --yes php5.6-curl php5.6-xml
 #apt-get install --yes php7.0
 #apt-get install --yes php7.0-curl php7.0-xml
-apt-get install --yes php7.1 php7.1-curl php7.1-xml php7.1-mbstring
-apt-get install --yes php7.2 php7.2-curl php7.2-xml php7.2-mbstring
-apt-get install --yes php-xdebug php-dev
+apt-get install --yes php7.1 php7.1-curl php7.1-xml php7.1-mbstring php7.1-mysql
+apt-get install --yes php7.2 php7.2-curl php7.2-xml php7.2-mbstring php7.2-mysql
+apt-get install --yes php-xdebug php-dev php-mysql
 
 composer self-update
 
