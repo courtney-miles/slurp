@@ -1,19 +1,19 @@
 <?php
 /**
  * Author: Courtney Miles
- * Date: 17/08/18
- * Time: 5:58 AM
+ * Date: 20/08/18
+ * Time: 10:25 PM
  */
 
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
+use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\ColumnMismatchException;
 use MilesAsylum\Slurp\Load\LoaderInterface;
-use PDO;
 
 class DatabaseLoader implements LoaderInterface
 {
     /**
-     * @var PDO
+     * @var \PDO
      */
     private $pdo;
 
@@ -23,78 +23,113 @@ class DatabaseLoader implements LoaderInterface
     private $queryFactory;
 
     /**
+     * @var array
+     */
+    private $columns;
+
+    /**
+     * @var \PDOStatement
+     */
+    protected $batchStmt;
+
+    /**
+     * @var \PDOStatement
+     */
+    protected $singleStmt;
+
+    protected $rowCollection = [];
+    /**
+     * @var string
+     */
+    private $table;
+    /**
      * @var int
      */
     private $batchSize;
 
-    /**
-     * @var array[]
-     */
-    protected $mapping = [];
-
-    /**
-     * @var BatchWriter[]
-     */
-    protected $batchStatements = [];
-
-    /**
-     * @var array[]
-     */
-    protected $batchValues = [];
-    /**
-     * @var LoaderFactory
-     */
-    private $loaderFactory;
-
     public function __construct(
-        PDO $pdo,
-        LoaderFactory $loaderFactory,
+        \PDO $pdo,
         InsertUpdateSql $queryFactory,
+        string $table,
+        array $columns,
         int $batchSize = 100
     ) {
         $this->pdo = $pdo;
         $this->queryFactory = $queryFactory;
+        $this->table = $table;
+        $this->columns = $columns;
         $this->batchSize = $batchSize;
-        $this->loaderFactory = $loaderFactory;
-    }
-
-    public function addDestinationTable(string $table, array $columns) : void
-    {
-        $this->batchStatements[$table] = $this->loaderFactory->createBatchDatabaseInsert(
-            $this->pdo,
-            $this->queryFactory,
-            $table,
-            $columns
+        $this->batchStmt = $this->pdo->prepare(
+            $this->queryFactory->createSql($this->table, $this->columns, $this->batchSize)
         );
-        $this->mapping[$table] = $columns;
+        $this->singleStmt = $this->pdo->prepare(
+            $this->queryFactory->createSql($this->table, $this->columns)
+        );
     }
 
-    public function loadRow(array $row) : void
+    public function loadValues(array $values): void
     {
-        $this->ensureTransactionOpen();
+        $this->ensureColumnMatch($values);
+        $this->rowCollection[] = $values;
 
-        foreach ($this->batchStatements as $table => $batchStatement) {
-            $batchStatement->addRowValues(array_intersect_key($row, array_flip($this->mapping[$table])));
-        }
-    }
-
-    public function finalise() : void
-    {
-        $this->ensureTransactionOpen();
-
-        foreach ($this->batchStatements as $table => $batchStatement) {
-            $batchStatement->flush();
-        }
-
-        if ($this->pdo->inTransaction()) {
-            $this->pdo->commit();
+        if (count($this->rowCollection) == $this->batchSize) {
+            $this->flush();
         }
     }
 
-    protected function ensureTransactionOpen() : void
+    public function finalise(): void
     {
-        if (!$this->pdo->inTransaction()) {
-            $this->pdo->beginTransaction();
+        $this->flush();
+    }
+
+    protected function flush(): void
+    {
+        if (count($this->rowCollection) == $this->batchSize) {
+            $params = $this->convertRowCollectionToParams($this->rowCollection);
+
+            $this->batchStmt->execute($params);
+            $this->rowCollection = [];
+        } else {
+            foreach ($this->rowCollection as $row) {
+                $this->singleStmt->execute($this->convertRowToParams($row));
+            }
         }
+    }
+
+    protected function ensureColumnMatch($rowValues): void
+    {
+        $expectedCount = count($this->columns);
+
+        if (count(array_intersect_key(array_flip($this->columns), $rowValues)) < $expectedCount) {
+            throw new ColumnMismatchException(
+                sprintf(
+                    'The supplied row has values for %s where it is expected to have values for %s.',
+                    array_keys($rowValues),
+                    $this->columns
+                )
+            );
+        }
+    }
+
+    protected function convertRowCollectionToParams(array $rowCollection):array
+    {
+        $params = [];
+
+        foreach ($rowCollection as $row) {
+            $params = array_merge($params, $this->convertRowToParams($row));
+        }
+
+        return $params;
+    }
+
+    protected function convertRowToParams($row):array
+    {
+        $params = [];
+
+        foreach ($this->columns as $col) {
+            $params[] = $row[$col];
+        }
+
+        return $params;
     }
 }

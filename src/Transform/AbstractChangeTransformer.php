@@ -8,7 +8,7 @@
 namespace MilesAsylum\Slurp\Transform;
 
 
-abstract class AbstractTransformer implements TransformerInterface
+abstract class AbstractChangeTransformer implements ChangeTransformerInterface
 {
     final public function __construct()
     {

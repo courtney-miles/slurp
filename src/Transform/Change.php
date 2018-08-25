@@ -7,7 +7,6 @@
 
 namespace MilesAsylum\Slurp\Transform;
 
-
 abstract class Change
 {
     /**

@@ -57,6 +57,6 @@ class ValidatorTest extends TestCase
             ->andReturn($mockViolationList);
 
         $this->validator->addColumnConstraints('col_one', $constraints);
-        $this->assertSame($mockViolationList, $this->validator->validateRow(['foo', 'bar'], $rowId));
+        $this->assertSame($mockViolationList, $this->validator->validateValues(['foo', 'bar'], $rowId));
     }
 }

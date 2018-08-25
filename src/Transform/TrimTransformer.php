@@ -9,24 +9,24 @@ namespace MilesAsylum\Slurp\Transform;
 
 use MilesAsylum\Slurp\Transform\Exception\UnexpectedTypeException;
 
-class TrimTransformer extends AbstractTransformer
+class TrimTransformer extends AbstractChangeTransformer
 {
-    public function transform($value, Change $transformation)
+    public function transform($value, Change $change)
     {
-        if (!$transformation instanceof Trim) {
-            throw new UnexpectedTypeException($transformation, Trim::class);
+        if (!$change instanceof Trim) {
+            throw new UnexpectedTypeException($change, Trim::class);
         }
 
         if (!$this->isString($value)) {
             throw new UnexpectedTypeException($value, 'string');
         }
 
-        if ($transformation->fromLeft() && $transformation->fromRight()) {
-            $value = trim($value, $transformation->getChars());
-        } elseif ($transformation->fromLeft()) {
-            $value = ltrim($value, $transformation->getChars());
-        } elseif ($transformation->fromRight()) {
-            $value = rtrim($value, $transformation->getChars());
+        if ($change->fromLeft() && $change->fromRight()) {
+            $value = trim($value, $change->getChars());
+        } elseif ($change->fromLeft()) {
+            $value = ltrim($value, $change->getChars());
+        } elseif ($change->fromRight()) {
+            $value = rtrim($value, $change->getChars());
         }
 
         return $value;

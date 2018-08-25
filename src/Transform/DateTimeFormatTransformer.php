@@ -9,30 +9,30 @@ namespace MilesAsylum\Slurp\Transform;
 
 use MilesAsylum\Slurp\Transform\Exception\UnexpectedTypeException;
 
-class DateTimeFormatTransformer extends AbstractTransformer
+class DateTimeFormatTransformer extends AbstractChangeTransformer
 {
-    public function transform($value, Change $transformation)
+    public function transform($value, Change $change)
     {
-        if (!$transformation instanceof DateTimeFormat) {
-            throw new UnexpectedTypeException($transformation, DateTimeFormat::class);
+        if (!$change instanceof DateTimeFormat) {
+            throw new UnexpectedTypeException($change, DateTimeFormat::class);
         }
 
         if (!$this->isString($value)) {
             throw new UnexpectedTypeException($value, 'string');
         }
 
-        $value = \DateTime::createFromFormat($transformation->getFormatFrom(), $value);
+        $value = \DateTime::createFromFormat($change->getFormatFrom(), $value);
 
         if ($value === false) {
             throw new \InvalidArgumentException(
                 sprintf(
                     'The date value %s was not able to be converted from the format %s',
                     $value,
-                    $transformation->getFormatFrom()
+                    $change->getFormatFrom()
                 )
             );
         }
 
-        return $value->format($transformation->getFormatTo());
+        return $value->format($change->getFormatTo());
     }
 }

@@ -7,161 +7,53 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp;
 
+use League\Pipeline\Pipeline;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Extract\ExtractorInterface;
-use MilesAsylum\Slurp\Transform\Transformer;
+use MilesAsylum\Slurp\SlurpPayload;
+use MilesAsylum\Slurp\Transform\TransformerBork;
 use MilesAsylum\Slurp\Validate\Validator;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 
+/**
+ * @covers \MilesAsylum\Slurp\Slurp
+ */
 class SlurpTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
-    /**
-     * @var ExtractorInterface|MockInterface
-     */
-    protected $mockExtractor;
-
-    /**
-     * @var LoaderInterface|MockInterface
-     */
-    protected $mockLoader;
-
-    /**
-     * @var Validator|MockInterface
-     */
-    protected $mockValidator;
-
-    /**
-     * @var Transformer|MockInterface
-     */
-    protected $mockTransformer;
-
-    public function setUp()
+    public function testProcess()
     {
-        parent::setUp();
+        $rows = [['foo', 123], ['bar', 234]];
+        $mockExtractor = \Mockery::mock(ExtractorInterface::class);
+        $mockPipeLine = \Mockery::mock(Pipeline::class);
 
-        $this->mockExtractor = \Mockery::mock(ExtractorInterface::class);
-        $this->mockLoader = \Mockery::mock(LoaderInterface::class);
-        $this->mockValidator = \Mockery::mock(Validator::class);
-        $this->mockTransformer = \Mockery::mock(Transformer::class);
+        $this->stubExtractorContent($mockExtractor, $rows);
 
-        $this->mockValidator->shouldReceive('validateRow')
-            ->andReturn([])
-            ->byDefault();
-        $this->mockTransformer->shouldReceive('transformRow')
-            ->andReturnUsing(function ($row) {
-                return $row;
-            })->byDefault();
-    }
+        $mockPipeLine->shouldReceive('process')
+            ->withArgs(
+                function ($payload) use ($rows) {
+                    if (!$payload instanceof SlurpPayload) {
+                        return false;
+                    }
 
-    public function testGetSource()
-    {
-        $slurp = $this->createSlurp(
-            $this->mockExtractor,
-            $this->mockLoader,
-            $this->mockValidator,
-            $this->mockTransformer
-        );
-        $this->assertSame($this->mockExtractor, $slurp->getExtractor());
-    }
+                    if (!isset($rows[$payload->getRowId()])) {
+                        return false;
+                    }
 
-    public function testGetDest()
-    {
-        $slurp = $this->createSlurp(
-            $this->mockExtractor,
-            $this->mockLoader,
-            $this->mockValidator,
-            $this->mockTransformer
-        );
-        $this->assertSame($this->mockLoader, $slurp->getLoader());
-    }
+                    if ($rows[$payload->getRowId()] !== $payload->getValues()) {
+                        return false;
+                    }
 
-    public function testNumUpdateCalls()
-    {
-        $rows = [['foo', 'bar'], ['fee', 'baz']];
-        $this->stubExtractorContent($this->mockExtractor, $rows);
-        $slurp = $this->createSlurp(
-            $this->mockExtractor,
-            $this->mockLoader,
-            $this->mockValidator,
-            $this->mockTransformer
-        );
+                    return true;
+                }
+            )->times(count($rows));
 
-        foreach ($rows as $row) {
-            $this->mockLoader->shouldReceive('loadRow')
-                ->with($row)
-                ->once();
-        }
-
-        $slurp->load();
-    }
-
-    public function testGrabRowReturnNullAfterLoad()
-    {
-        $this->stubExtractorContent($this->mockExtractor, [['foo', 'bar'], ['fee', 'baz']]);
-        $slurp = $this->createSlurp(
-            $this->mockExtractor,
-            $this->mockLoader,
-            $this->mockValidator,
-            $this->mockTransformer
-        );
-        $this->mockLoader->shouldReceive('loadRow')->byDefault();
-
-        $slurp->load();
-
-        $this->assertNull($slurp->grabRow());
-    }
-
-    public function testGrabRowKeyReturnNullAfterLoad()
-    {
-        $this->stubExtractorContent($this->mockExtractor, [['foo', 'bar'], ['fee', 'baz']]);
-        $slurp = $this->createSlurp(
-            $this->mockExtractor,
-            $this->mockLoader,
-            $this->mockValidator,
-            $this->mockTransformer
-        );
-        $this->mockLoader->shouldReceive('loadRow')->byDefault();
-        $slurp->load();
-
-        $this->assertNull($slurp->grabRowKey());
-    }
-
-    public function testApplyTransformationsToRows()
-    {
-        $rows = [['foo', 'bar']];
-
-        $this->stubExtractorContent($this->mockExtractor, $rows);
-        $slurp = $this->createSlurp(
-            $this->mockExtractor,
-            $this->mockLoader,
-            $this->mockValidator,
-            $this->mockTransformer
-        );
-
-        $this->mockTransformer->shouldReceive('transformRow')
-            ->with($rows[0])
-            ->andReturn(['FOO', 'BAR']);
-
-        $this->mockLoader->shouldReceive('loadRow')
-            ->with(['FOO', 'BAR'])
-            ->once();
-
-        $slurp->load();
-    }
-
-    protected function createSlurp(
-        ExtractorInterface $extractor,
-        LoaderInterface $loader,
-        Validator $validator,
-        Transformer $transformer
-    ) {
-        return new Slurp($extractor, $loader, $validator, $transformer);
+        $slurp = new Slurp($mockPipeLine);
+        $slurp->process($mockExtractor);
     }
 
     protected function stubExtractorContent(MockInterface $mockExtractor, array $rowValues)
