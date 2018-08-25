@@ -9,7 +9,7 @@ namespace MilesAsylum\Slurp\Load;
 
 interface LoaderInterface
 {
-    public function loadRow(array $row) : void;
+    public function loadValues(array $values) : void;
 
     public function finalise() : void;
 }

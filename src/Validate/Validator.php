@@ -44,18 +44,18 @@ class Validator
     }
 
     /**
-     * @param $row
+     * @param $values
      * @param $rowId
      * @return ConstraintViolationListInterface
      */
-    public function validateRow($row, $rowId = null)
+    public function validateValues(array $values, $rowId = null)
     {
         $vContext = $this->validator
             ->startContext($rowId);
 
         foreach ($this->columnConstraints as $col => $constraints) {
             $vContext->atPath($col)
-                ->validate($this->getCellValue($row, $col), $constraints);
+                ->validate($this->getCellValue($values, $col), $constraints);
         }
 
         return $vContext->getViolations();

@@ -10,21 +10,21 @@ namespace MilesAsylum\Slurp\Transform;
 class TransformerLoader
 {
     /**
-     * @var TransformerInterface[]
+     * @var ChangeTransformerInterface[]
      */
     private $loadedTransformers = [];
 
     /**
-     * @param Change $transformation
-     * @return TransformerInterface
+     * @param Change $change
+     * @return ChangeTransformerInterface
      */
-    public function loadTransformer(Change $transformation)
+    public function loadTransformer(Change $change): ChangeTransformerInterface
     {
-        if (!isset($this->loadedTransformers[$transformation->transformedBy()])) {
-            $transformedBy = $transformation->transformedBy();
-            $this->loadedTransformers[$transformation->transformedBy()] = new $transformedBy;
+        if (!isset($this->loadedTransformers[$change->transformedBy()])) {
+            $transformedBy = $change->transformedBy();
+            $this->loadedTransformers[$transformedBy] = new $transformedBy();
         }
 
-        return $this->loadedTransformers[$transformation->transformedBy()];
+        return $this->loadedTransformers[$change->transformedBy()];
     }
 }

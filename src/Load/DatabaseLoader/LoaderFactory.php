@@ -15,7 +15,7 @@ class LoaderFactory
         string $table,
         array $columns,
         int $batchSize = 100
-    ) : BatchWriter {
-        return new BatchWriter($pdo, $queryFactory, $table, $columns, $batchSize);
+    ) : DatabaseLoader {
+        return new DatabaseLoader($pdo, $queryFactory, $table, $columns, $batchSize);
     }
 }

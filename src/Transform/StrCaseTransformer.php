@@ -9,19 +9,19 @@ namespace MilesAsylum\Slurp\Transform;
 
 use MilesAsylum\Slurp\Transform\Exception\UnexpectedTypeException;
 
-class StrCaseTransformer extends AbstractTransformer
+class StrCaseTransformer extends AbstractChangeTransformer
 {
-    public function transform($value, Change $transformation)
+    public function transform($value, Change $change)
     {
-        if (!$transformation instanceof StrCase) {
-            throw new UnexpectedTypeException($transformation, StrCase::class);
+        if (!$change instanceof StrCase) {
+            throw new UnexpectedTypeException($change, StrCase::class);
         }
 
         if (!$this->isString($value)) {
             throw new UnexpectedTypeException($value, 'string');
         }
 
-        switch ($transformation->getCaseChange()) {
+        switch ($change->getCaseChange()) {
             case StrCase::CASE_UPPER:
                 $value = strtoupper($value);
                 break;
