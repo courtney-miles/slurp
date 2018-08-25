@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "48d2af8ea23172e96ebe6d1ec8f64cf7",
+    "content-hash": "828db35571a692b01ed2f3b68b00e71b",
     "packages": [
         {
             "name": "league/csv",
@@ -2630,7 +2630,7 @@
     "platform": {
         "php": "7.1 - 7.2",
         "ext-pdo": "*",
-        "ext-pdo_mysql": "^7.2"
+        "ext-pdo_mysql": "*"
     },
     "platform-dev": []
 }

@@ -1,7 +1,7 @@
 {
     "name": "milesasylum/slurp",
     "description": "A simple PHP ETL tool with validation of source data.",
-    "keywords": ["etl", "extract", "tranform", "load", "csv"],
+    "keywords": ["etl", "extract", "transform", "load", "csv"],
     "homepage": "https://github.com/courtney-miles/slurp",
     "minimum-stability": "stable",
     "license": "MIT",
