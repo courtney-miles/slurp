@@ -7,7 +7,9 @@
 
 namespace MilesAsylum\Slurp\Stage;
 
+use MilesAsylum\Slurp\Slurp;
+
 interface OuterProcessStageInterface
 {
-    public function __invoke(): void;
+    public function __invoke(Slurp $slurp): Slurp;
 }

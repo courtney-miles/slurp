@@ -30,10 +30,12 @@ class BatchInsUpdStmt extends AbstractBatchStmt
      */
     public function write(array $rows)
     {
-        $this->getPreparedBatchStmt(count($rows))
-            ->execute(
-                $this->convertRowCollectionToParams($rows)
-            );
+        if (!empty($rows)) {
+            $this->getPreparedBatchStmt(count($rows))
+                ->execute(
+                    $this->convertRowCollectionToParams($rows)
+                );
+        }
     }
 
     protected function getPreparedBatchStmt($count): \PDOStatement

@@ -56,9 +56,36 @@ SQL
 
     public function testBasicLoad()
     {
-        $sb = new SlurpBuilder(new PipelineBuilder());
+        $sb = new SlurpBuilder(new PipelineBuilder(), new PipelineBuilder());
         $sb->addLoader(
             $this->createDatabaseLoader(1)
+        );
+        $cfe = new CsvFileExtractor(
+            Reader::createFromPath(__DIR__ . '/csv/simple.csv')
+        );
+        $cfe->loadHeadersFromFile();
+        $slurp = $sb->build();
+        $slurp->process($cfe);
+
+        $table = $this->fetchQueryTable('tbl_foo');
+        $expectedTable = $this->createArrayDataSet(
+            [
+                self::$table => [
+                    ['name' => 'foo', 'date' => '2018-01-01', 'value' => '123.00'],
+                    ['name' => 'bar', 'date' => '2018-01-02', 'value' => '234.00'],
+                    ['name' => 'baz', 'date' => '2018-01-03', 'value' => '345.00']
+                ]
+            ]
+        )->getTable(self::$table);
+
+        $this->assertTablesEqual($expectedTable, $table);
+    }
+
+    public function testBasicLoadUnevenBatch()
+    {
+        $sb = new SlurpBuilder(new PipelineBuilder(), new PipelineBuilder());
+        $sb->addLoader(
+            $this->createDatabaseLoader(2) // Batches of 2 will leave one row left over.
         );
         $cfe = new CsvFileExtractor(
             Reader::createFromPath(__DIR__ . '/csv/simple.csv')
@@ -85,7 +112,7 @@ SQL
     {
         $t = new Transformer(new TransformerLoader());
 
-        $sb = new SlurpBuilder(new PipelineBuilder());
+        $sb = new SlurpBuilder(new PipelineBuilder(), new PipelineBuilder());
         $sb->addChange(
             'name',
             new StrCase(StrCase::CASE_UPPER),

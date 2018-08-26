@@ -7,6 +7,7 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Stage;
 
+use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\Stage\CommitTransactionStage;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -26,11 +27,17 @@ class CommitTransactionStageTest extends TestCase
      */
     protected $mockPdo;
 
+    /**
+     * @var Slurp|MockInterface
+     */
+    protected $mockSlurp;
+
     public function setUp()
     {
         parent::setUp();
 
         $this->mockPdo = \Mockery::mock(\PDO::class);
+        $this->mockSlurp = \Mockery::mock(Slurp::class);
 
         $this->stage = new CommitTransactionStage($this->mockPdo);
     }
@@ -40,6 +47,6 @@ class CommitTransactionStageTest extends TestCase
         $this->mockPdo->shouldReceive('commit')
             ->once();
 
-        ($this->stage)();
+        ($this->stage)($this->mockSlurp);
     }
 }

@@ -8,14 +8,9 @@
 namespace MilesAsylum\Slurp\Tests\Slurp;
 
 use League\Pipeline\Pipeline;
-use MilesAsylum\Slurp\Slurp;
-use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Extract\ExtractorInterface;
-use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\Transform\TransformerBork;
-use MilesAsylum\Slurp\Validate\Validator;
+use MilesAsylum\Slurp\Slurp;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -27,38 +22,47 @@ class SlurpTest extends TestCase
 
     public function testProcess()
     {
-        $rows = [['foo', 123], ['bar', 234]];
+        $mockExtractor = \Mockery::mock(ExtractorInterface::class);
+        $mockPipeLine = \Mockery::spy(Pipeline::class);
+
+        $slurp = new Slurp($mockPipeLine);
+        $slurp->process($mockExtractor);
+
+        $mockPipeLine->shouldHaveReceived('process')
+            ->with($slurp)
+            ->once();
+    }
+
+    public function testExtractorIsNullBeforeProcessing()
+    {
+        $mockPipeLine = \Mockery::mock(Pipeline::class);
+        $slurp = new Slurp($mockPipeLine);
+
+        $this->assertNull($slurp->getExtractor());
+    }
+
+    public function testGetExtractorWhilstProcessing()
+    {
         $mockExtractor = \Mockery::mock(ExtractorInterface::class);
         $mockPipeLine = \Mockery::mock(Pipeline::class);
-
-        $this->stubExtractorContent($mockExtractor, $rows);
-
         $mockPipeLine->shouldReceive('process')
-            ->withArgs(
-                function ($payload) use ($rows) {
-                    if (!$payload instanceof SlurpPayload) {
-                        return false;
-                    }
-
-                    if (!isset($rows[$payload->getRowId()])) {
-                        return false;
-                    }
-
-                    if ($rows[$payload->getRowId()] !== $payload->getValues()) {
-                        return false;
-                    }
-
-                    return true;
-                }
-            )->times(count($rows));
+            ->withArgs(function (Slurp $slurp) use ($mockExtractor) {
+                $this->assertSame($mockExtractor, $slurp->getExtractor());
+                return true;
+            });
 
         $slurp = new Slurp($mockPipeLine);
         $slurp->process($mockExtractor);
     }
 
-    protected function stubExtractorContent(MockInterface $mockExtractor, array $rowValues)
+    public function testExtractorIsNullAfterProcessing()
     {
-        $mockExtractor->shouldReceive('getIterator')
-            ->andReturn(new \ArrayObject($rowValues));
+        $mockExtractor = \Mockery::mock(ExtractorInterface::class);
+        $mockPipeLine = \Mockery::mock(Pipeline::class);
+        $mockPipeLine->shouldReceive('process');
+
+        $slurp = new Slurp($mockPipeLine);
+        $slurp->process($mockExtractor);
+        $this->assertNull($slurp->getExtractor());
     }
 }

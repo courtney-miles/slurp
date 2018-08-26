@@ -43,4 +43,20 @@ SQL;
             $queryFactory->createQuery('foo', ['col_alpha', 'col_beta'], 3)
         );
     }
+
+    public function testExceptionOnNoColumns()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('One or more columns must be supplied.');
+
+        (new BatchInsUpdQueryFactory())->createQuery('foo', []);
+    }
+
+    public function testExceptionOnBatchSizeLessThanOne()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The batch size cannot be less than 1.');
+
+        (new BatchInsUpdQueryFactory())->createQuery('foo', ['col_alpha'], 0);
+    }
 }
