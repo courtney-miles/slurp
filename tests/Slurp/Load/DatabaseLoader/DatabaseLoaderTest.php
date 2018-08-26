@@ -9,7 +9,6 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\DatabaseLoader\BatchStmtInterface;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
-use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdQueryFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -17,11 +16,6 @@ use PHPUnit\Framework\TestCase;
 class DatabaseLoaderTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
-
-    /**
-     * @var DatabaseLoader
-     */
-    protected $databaseLoader;
 
     /**
      * @var BatchStmtInterface|MockInterface
@@ -35,23 +29,6 @@ class DatabaseLoaderTest extends TestCase
         parent::setUp();
 
         $this->mockBatchStmt = \Mockery::mock(BatchStmtInterface::class);
-
-        $this->databaseLoader = new DatabaseLoader(
-            $this->mockBatchStmt,
-            $this->batchSize
-        );
-    }
-
-    public function testFlushSingleRow()
-    {
-        $values = ['col1' => 123, 'col2' => 234];
-
-        $this->mockBatchStmt->shouldReceive('write')
-            ->with([$values])
-            ->once();
-
-        $this->databaseLoader->loadValues($values);
-        $this->databaseLoader->finalise();
     }
 
     public function testAutoFlushBatch()
@@ -59,15 +36,62 @@ class DatabaseLoaderTest extends TestCase
         $rows = [
             ['col1' => 123, 'col2' => 234],
             ['col1' => 345, 'col2' => 456],
-            ['col1' => 567, 'col2' => 678],
         ];
 
         $this->mockBatchStmt->shouldReceive('write')
             ->with($rows)
             ->once();
 
+        $databaseLoader = new DatabaseLoader(
+            $this->mockBatchStmt,
+            2
+        );
+
         foreach ($rows as $row) {
-            $this->databaseLoader->loadValues($row);
+            $databaseLoader->loadValues($row);
         }
+    }
+
+    public function testFlushRemainingOnFinalise()
+    {
+        $rows = [
+            ['col1' => 123, 'col2' => 234],
+            ['col1' => 345, 'col2' => 456],
+            ['col1' => 567, 'col2' => 678],
+        ];
+
+        $this->mockBatchStmt->shouldReceive('write')->byDefault();
+        $this->mockBatchStmt->shouldReceive('write')
+            ->with([$rows[2]])
+            ->once();
+
+        $databaseLoader = new DatabaseLoader(
+            $this->mockBatchStmt,
+            2
+        );
+
+        foreach ($rows as $row) {
+            $databaseLoader->loadValues($row);
+        }
+
+        $databaseLoader->finalise();
+    }
+
+
+    public function testRemapColumns()
+    {
+        $row = ['col1' => 123, 'col2' => 234];
+
+        $this->mockBatchStmt->shouldReceive('write')
+            ->with([['col_one' => 123, 'col_two' => 234]])
+            ->once();
+
+        $databaseLoader = new DatabaseLoader(
+            $this->mockBatchStmt,
+            1,
+            ['col_one' => 'col1', 'col_two' => 'col2']
+        );
+
+        $databaseLoader->loadValues($row);
     }
 }

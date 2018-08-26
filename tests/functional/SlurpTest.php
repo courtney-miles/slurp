@@ -114,7 +114,7 @@ SQL
 
         $sb = new SlurpBuilder(new PipelineBuilder(), new PipelineBuilder());
         $sb->addChange(
-            'name',
+            '_name_',
             new StrCase(StrCase::CASE_UPPER),
             $t
         )->addLoader(
@@ -151,7 +151,8 @@ SQL
                 ['name', 'date', 'value'],
                 new BatchInsUpdQueryFactory()
             ),
-            $batchSize
+            $batchSize,
+            ['name' => '_name_', 'date' => '_date_', 'value' => '_value_']
         );
     }
 
