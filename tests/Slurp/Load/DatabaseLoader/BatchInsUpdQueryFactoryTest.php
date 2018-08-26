@@ -7,14 +7,14 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
-use MilesAsylum\Slurp\Load\DatabaseLoader\InsertUpdateSql;
+use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdQueryFactory;
 use PHPUnit\Framework\TestCase;
 
-class InsertUpdateSqlTest extends TestCase
+class BatchInsUpdQueryFactoryTest extends TestCase
 {
     public function testCreateInsertQuery()
     {
-        $queryFactory = new InsertUpdateSql();
+        $queryFactory = new BatchInsUpdQueryFactory();
 
         $expectedInsSql = <<<SQL
 INSERT INTO `foo` (`col_alpha`, `col_beta`)
@@ -23,13 +23,13 @@ INSERT INTO `foo` (`col_alpha`, `col_beta`)
 SQL;
         $this->assertSame(
             $expectedInsSql,
-            $queryFactory->createSql('foo', ['col_alpha', 'col_beta'])
+            $queryFactory->createQuery('foo', ['col_alpha', 'col_beta'])
         );
     }
 
     public function testCreateInsertQueryBatch()
     {
-        $queryFactory = new InsertUpdateSql();
+        $queryFactory = new BatchInsUpdQueryFactory();
 
         $expectedInsSql = <<<SQL
 INSERT INTO `foo` (`col_alpha`, `col_beta`)
@@ -40,7 +40,7 @@ INSERT INTO `foo` (`col_alpha`, `col_beta`)
 SQL;
         $this->assertSame(
             $expectedInsSql,
-            $queryFactory->createSql('foo', ['col_alpha', 'col_beta'], 3)
+            $queryFactory->createQuery('foo', ['col_alpha', 'col_beta'], 3)
         );
     }
 }
