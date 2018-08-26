@@ -17,6 +17,11 @@ class Slurp
      */
     private $pipeline;
 
+    /**
+     * @var ExtractorInterface
+     */
+    private $extractor;
+
     public function __construct(Pipeline $pipeline)
     {
         $this->pipeline = $pipeline;
@@ -24,12 +29,13 @@ class Slurp
 
     public function process(ExtractorInterface $extractor)
     {
-        foreach ($extractor as $id => $values) {
-            $payload = new SlurpPayload();
-            $payload->setId($id);
-            $payload->setValues($values);
+        $this->extractor = $extractor;
+        $this->pipeline->process($this);
+        $this->extractor = null;
+    }
 
-            $this->pipeline->process($payload);
-        }
+    public function getExtractor(): ?ExtractorInterface
+    {
+        return $this->extractor;
     }
 }

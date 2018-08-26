@@ -7,6 +7,8 @@
 
 namespace MilesAsylum\Slurp\Stage;
 
+use MilesAsylum\Slurp\Slurp;
+
 class BeginTransactionStage implements OuterProcessStageInterface
 {
     /**
@@ -19,8 +21,10 @@ class BeginTransactionStage implements OuterProcessStageInterface
         $this->pdo = $pdo;
     }
 
-    public function __invoke(): void
+    public function __invoke(Slurp $slurp): Slurp
     {
         $this->pdo->beginTransaction();
+
+        return $slurp;
     }
 }

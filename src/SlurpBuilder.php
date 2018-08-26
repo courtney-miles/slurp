@@ -10,6 +10,8 @@ namespace MilesAsylum\Slurp;
 use League\Pipeline\PipelineBuilder;
 use MilesAsylum\Slurp\Extract\ExtractorInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
+use MilesAsylum\Slurp\Stage\FinaliseLoadStage;
+use MilesAsylum\Slurp\Stage\InvokeExtractionPipeline;
 use MilesAsylum\Slurp\Stage\LoadStage;
 use MilesAsylum\Slurp\Stage\TransformationStage;
 use MilesAsylum\Slurp\Stage\ValidationStage;
@@ -23,7 +25,12 @@ class SlurpBuilder
     /**
      * @var PipelineBuilder
      */
-    private $pipelineBuilder;
+    private $outerPipelineBuilder;
+
+    /**
+     * @var PipelineBuilder
+     */
+    private $innerPipelineBuilder;
 
     /**
      * @var ValidationStage[]
@@ -40,9 +47,13 @@ class SlurpBuilder
      */
     protected $loadStages = [];
 
-    public function __construct(PipelineBuilder $pipelineBuilder)
+    protected $preExtractionStages = [];
+    protected $postExtractionStages = [];
+
+    public function __construct(PipelineBuilder $innerPipelineBuilder, PipelineBuilder $outerPipelineBuilder)
     {
-        $this->pipelineBuilder = $pipelineBuilder;
+        $this->innerPipelineBuilder = $innerPipelineBuilder;
+        $this->outerPipelineBuilder = $outerPipelineBuilder;
     }
 
     public function addConstraint($valueName, Constraint $constraint, ValidatorInterface $validator): self
@@ -62,6 +73,7 @@ class SlurpBuilder
     public function addLoader(LoaderInterface $loader): self
     {
         $this->loadStages[] = new LoadStage($loader);
+        $this->postExtractionStages[] = new FinaliseLoadStage($loader);
 
         return $this;
     }
@@ -69,17 +81,25 @@ class SlurpBuilder
     public function build()
     {
         foreach ($this->validationStages as $validationStage) {
-            $this->pipelineBuilder->add($validationStage);
+            $this->innerPipelineBuilder->add($validationStage);
         }
 
         foreach ($this->transformationStages as $transformationStage) {
-            $this->pipelineBuilder->add($transformationStage);
+            $this->innerPipelineBuilder->add($transformationStage);
         }
 
         foreach ($this->loadStages as $loadStage) {
-            $this->pipelineBuilder->add($loadStage);
+            $this->innerPipelineBuilder->add($loadStage);
         }
 
-        return new Slurp($this->pipelineBuilder->build());
+        $this->outerPipelineBuilder->add(
+            new InvokeExtractionPipeline($this->innerPipelineBuilder->build())
+        );
+
+        foreach ($this->postExtractionStages as $postExtractionStage) {
+            $this->outerPipelineBuilder->add($postExtractionStage);
+        }
+
+        return new Slurp($this->outerPipelineBuilder->build());
     }
 }

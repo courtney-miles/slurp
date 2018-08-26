@@ -131,6 +131,20 @@ class BatchInsUpdStmtTest extends TestCase
         $this->batchInsUpdStmt->write($rows);
     }
 
+    public function testSkipWriteIfRowsEmpty()
+    {
+        $this->mockQueryFactory->shouldReceive('createQuery')
+            ->byDefault();
+
+        $mockStmt = \Mockery::mock(\PDOStatement::class);
+        $this->mockPdo->shouldReceive('prepare')
+            ->andReturn($mockStmt);
+
+        $mockStmt->shouldReceive('execute')->never();
+
+        $this->batchInsUpdStmt->write([]);
+    }
+
     public function testExceptionOnColumnMisMatch()
     {
         $this->expectException(MissingValueException::class);

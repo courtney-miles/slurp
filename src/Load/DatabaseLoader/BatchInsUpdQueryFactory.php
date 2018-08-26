@@ -9,8 +9,23 @@ namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
 class BatchInsUpdQueryFactory
 {
-    public function createQuery($table, array $columns, $batchSize = 1)
+    /**
+     * @param $table
+     * @param array $columns
+     * @param int $batchSize
+     * @return string
+     * @throws \Exception
+     */
+    public function createQuery($table, array $columns, $batchSize = 1): string
     {
+        if (empty($columns)) {
+            throw new \InvalidArgumentException('One or more columns must be supplied.');
+        }
+
+        if ($batchSize < 1) {
+            throw new \InvalidArgumentException('The batch size cannot be less than 1.');
+        }
+
         $colsStr = '`' . implode('`, `', $columns) . '`';
         $valueStr = '(' . implode(', ', array_fill(0, count($columns), '?')) . ')';
         $batchValueStr = implode(",\n    ", array_fill(0, $batchSize, $valueStr));
