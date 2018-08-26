@@ -7,8 +7,9 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
+use MilesAsylum\Slurp\Load\DatabaseLoader\BatchStmtInterface;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
-use MilesAsylum\Slurp\Load\DatabaseLoader\InsertUpdateSql;
+use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdQueryFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -18,77 +19,38 @@ class DatabaseLoaderTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     /**
-     * @var \PDO|MockInterface
-     */
-    protected $mockPdo;
-
-    /**
-     * @var InsertUpdateSql|MockInterface
-     */
-    protected $mockQueryFactory;
-
-    /**
-     * @var \PDOStatement|MockInterface
-     */
-    protected $mockBatchStmt;
-
-    /**
-     * @var \PDOStatement|MockInterface
-     */
-    protected $mockSingleStmt;
-
-    /**
      * @var DatabaseLoader
      */
     protected $databaseLoader;
+
+    /**
+     * @var BatchStmtInterface|MockInterface
+     */
+    protected $mockBatchStmt;
+
+    protected $batchSize = 3;
 
     public function setUp()
     {
         parent::setUp();
 
-        $table = 'foo';
-        $columns = ['col1', 'col2'];
-        $batchSize = 3;
-        $singleInsQuery = '__INSERT__';
-        $batchInsQuery = '__BATCH_INSERT__';
-
-        $this->mockPdo = \Mockery::mock(\PDO::class);
-        $this->mockQueryFactory = \Mockery::mock(InsertUpdateSql::class);
-        $this->mockBatchStmt = \Mockery::mock(\PDOStatement::class);
-        $this->mockSingleStmt = \Mockery::mock(\PDOStatement::class);
-
-        $this->mockQueryFactory->shouldReceive('createSql')
-            ->with($table, $columns)
-            ->andReturn($singleInsQuery);
-        $this->mockQueryFactory->shouldReceive('createSql')
-            ->with($table, $columns, $batchSize)
-            ->andReturn($batchInsQuery);
-
-        $this->mockPdo->shouldReceive('prepare')
-            ->with($singleInsQuery)
-            ->andReturn($this->mockSingleStmt);
-        $this->mockPdo->shouldReceive('prepare')
-            ->with($batchInsQuery)
-            ->andReturn($this->mockBatchStmt);
+        $this->mockBatchStmt = \Mockery::mock(BatchStmtInterface::class);
 
         $this->databaseLoader = new DatabaseLoader(
-            $this->mockPdo,
-            $this->mockQueryFactory,
-            $table,
-            $columns,
-            $batchSize
+            $this->mockBatchStmt,
+            $this->batchSize
         );
     }
 
     public function testFlushSingleRow()
     {
-        $row = ['col1' => 123, 'col2' => 234];
+        $values = ['col1' => 123, 'col2' => 234];
 
-        $this->mockSingleStmt->shouldReceive('execute')
-            ->with(array_values($row))
+        $this->mockBatchStmt->shouldReceive('write')
+            ->with([$values])
             ->once();
 
-        $this->databaseLoader->loadValues($row);
+        $this->databaseLoader->loadValues($values);
         $this->databaseLoader->finalise();
     }
 
@@ -100,8 +62,8 @@ class DatabaseLoaderTest extends TestCase
             ['col1' => 567, 'col2' => 678],
         ];
 
-        $this->mockBatchStmt->shouldReceive('execute')
-            ->with([123,234,345,456,567,678])
+        $this->mockBatchStmt->shouldReceive('write')
+            ->with($rows)
             ->once();
 
         foreach ($rows as $row) {

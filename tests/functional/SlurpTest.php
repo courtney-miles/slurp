@@ -10,8 +10,9 @@ namespace MilesAsylum\Slurp\Tests\functional;
 use League\Csv\Reader;
 use League\Pipeline\PipelineBuilder;
 use MilesAsylum\Slurp\Extract\CsvFileExtractor\CsvFileExtractor;
+use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdStmt;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
-use MilesAsylum\Slurp\Load\DatabaseLoader\InsertUpdateSql;
+use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdQueryFactory;
 use MilesAsylum\Slurp\PHPUnit\MySQLTestHelper;
 use MilesAsylum\Slurp\SlurpBuilder;
 use MilesAsylum\Slurp\Transform\StrCase;
@@ -28,6 +29,8 @@ class SlurpTest extends TestCase
 
     protected static $pdo;
 
+    protected static $table;
+
     public static function setUpBeforeClass()
     {
         parent::setUpBeforeClass();
@@ -38,8 +41,11 @@ class SlurpTest extends TestCase
         self::$pdo = $m->getConnection();
         self::$pdo->exec('USE ' . $_ENV['TESTS_SLURP_DBADAPTER_MYSQL_DATABASE']);
 
+        self::$table = 'tbl_foo';
+        $table = self::$table;
+
         self::$pdo->exec(<<<SQL
-CREATE TABLE tbl_foo (
+CREATE TABLE `{$table}` (
   `name` VARCHAR(100) NOT NULL,
   `date` DATE NOT NULL,
   `value` DECIMAL(10,2) NOT NULL
@@ -64,13 +70,13 @@ SQL
         $table = $this->fetchQueryTable('tbl_foo');
         $expectedTable = $this->createArrayDataSet(
             [
-                'tbl_foo' => [
+                self::$table => [
                     ['name' => 'foo', 'date' => '2018-01-01', 'value' => '123.00'],
                     ['name' => 'bar', 'date' => '2018-01-02', 'value' => '234.00'],
                     ['name' => 'baz', 'date' => '2018-01-03', 'value' => '345.00']
                 ]
             ]
-        )->getTable('tbl_foo');
+        )->getTable(self::$table);
 
         $this->assertTablesEqual($expectedTable, $table);
     }
@@ -98,7 +104,7 @@ SQL
         $table = $this->fetchQueryTable('tbl_foo');
         $expectedTable = $this->createArrayDataSet(
             [
-                'tbl_foo' => [
+                self::$table => [
                     ['name' => 'FOO', 'date' => '2018-01-01', 'value' => '123.00'],
                     ['name' => 'BAR', 'date' => '2018-01-02', 'value' => '234.00'],
                     ['name' => 'BAZ', 'date' => '2018-01-03', 'value' => '345.00']
@@ -112,10 +118,12 @@ SQL
     protected function createDatabaseLoader($batchSize)
     {
         return new DatabaseLoader(
-            self::$pdo,
-            new InsertUpdateSql(),
-            'tbl_foo',
-            ['name', 'date', 'value'],
+            new BatchInsUpdStmt(
+                self::$pdo,
+                self::$table,
+                ['name', 'date', 'value'],
+                new BatchInsUpdQueryFactory()
+            ),
             $batchSize
         );
     }

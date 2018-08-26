@@ -7,9 +7,9 @@
 
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
-class InsertUpdateSql
+class BatchInsUpdQueryFactory
 {
-    public function createSql($table, array $columns, $batchSize = 1)
+    public function createQuery($table, array $columns, $batchSize = 1)
     {
         $colsStr = '`' . implode('`, `', $columns) . '`';
         $valueStr = '(' . implode(', ', array_fill(0, count($columns), '?')) . ')';
