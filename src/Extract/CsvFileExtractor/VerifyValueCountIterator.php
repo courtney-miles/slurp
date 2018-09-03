@@ -30,13 +30,10 @@ class VerifyValueCountIterator extends \IteratorIterator
 
         if (count($record) !== $this->expectedValueCount) {
             $recordId = $this->key();
-            throw new ValueCountMismatchException(
-                sprintf(
-                    'Record %s contained %s values where we expected %s.',
-                    $recordId,
-                    count($record),
-                    $this->expectedValueCount
-                )
+            throw ValueCountMismatchException::createMismatch(
+                $recordId,
+                count($record),
+                $this->expectedValueCount
             );
         }
 

@@ -14,11 +14,11 @@ class StrCaseTransformer extends AbstractChangeTransformer
     public function transform($value, Change $change)
     {
         if (!$change instanceof StrCase) {
-            throw new UnexpectedTypeException($change, StrCase::class);
+            throw UnexpectedTypeException::createUnexpected($change, StrCase::class);
         }
 
         if (!$this->isString($value)) {
-            throw new UnexpectedTypeException($value, 'string');
+            throw UnexpectedTypeException::createUnexpected($value, 'string');
         }
 
         switch ($change->getCaseChange()) {

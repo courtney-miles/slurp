@@ -14,11 +14,11 @@ class TrimTransformer extends AbstractChangeTransformer
     public function transform($value, Change $change)
     {
         if (!$change instanceof Trim) {
-            throw new UnexpectedTypeException($change, Trim::class);
+            throw UnexpectedTypeException::createUnexpected($change, Trim::class);
         }
 
         if (!$this->isString($value)) {
-            throw new UnexpectedTypeException($value, 'string');
+            throw UnexpectedTypeException::createUnexpected($value, 'string');
         }
 
         if ($change->fromLeft() && $change->fromRight()) {

@@ -15,8 +15,11 @@ class VerifyValueCountIteratorTest extends TestCase
 {
     /**
      * @dataProvider getValueCountMismatchTestData
+     * @param array $values
+     * @param int $expectedCount
+     * @throws ValueCountMismatchException
      */
-    public function testValueCountMismatch($values, $expectedCount)
+    public function testValueCountMismatch(array $values, int $expectedCount)
     {
         $this->expectException(ValueCountMismatchException::class);
         $this->expectExceptionMessage(

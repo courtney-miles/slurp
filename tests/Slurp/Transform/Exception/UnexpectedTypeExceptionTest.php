@@ -20,7 +20,7 @@ class UnexpectedTypeExceptionTest extends TestCase
      */
     public function testConstructMessage($value, $expectedType, $expectedMessage)
     {
-        $e = new UnexpectedTypeException($value, $expectedType);
+        $e = UnexpectedTypeException::createUnexpected($value, $expectedType);
 
         $this->assertSame($expectedMessage, $e->getMessage());
     }

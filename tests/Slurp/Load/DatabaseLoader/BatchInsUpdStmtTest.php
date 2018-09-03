@@ -9,7 +9,7 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdQueryFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdStmt;
-use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\MissingValueException;
+use MilesAsylum\Slurp\Load\Exception\MissingValueException;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -148,7 +148,7 @@ class BatchInsUpdStmtTest extends TestCase
     public function testExceptionOnColumnMisMatch()
     {
         $this->expectException(MissingValueException::class);
-        $this->expectExceptionMessage('The supplied row is missing values for col_2');
+        $this->expectExceptionMessage('Record 0 is missing values for the following fields: col_2.');
 
         $this->mockQueryFactory->shouldReceive('createQuery')
             ->byDefault();
