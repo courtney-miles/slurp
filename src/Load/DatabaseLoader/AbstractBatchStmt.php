@@ -7,7 +7,7 @@
 
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
-use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\MissingValueException;
+use MilesAsylum\Slurp\Load\Exception\MissingValueException;
 
 abstract class AbstractBatchStmt implements BatchStmtInterface
 {
@@ -33,19 +33,14 @@ abstract class AbstractBatchStmt implements BatchStmtInterface
         $this->columns = $columns;
     }
 
-    protected function ensureColumnMatch($rowValues): void
+    protected function ensureColumnMatch($rowId, array $rowValues): void
     {
-        $missingValues = array_keys(
+        $missingFields = array_keys(
             array_diff_key(array_flip($this->columns), $rowValues)
         );
 
-        if (count($missingValues)) {
-            throw new MissingValueException(
-                sprintf(
-                    'The supplied row is missing values for %s.',
-                    implode(',', $missingValues)
-                )
-            );
+        if (count($missingFields)) {
+            throw MissingValueException::createMissing($rowId, $missingFields);
         }
     }
 
@@ -53,8 +48,8 @@ abstract class AbstractBatchStmt implements BatchStmtInterface
     {
         $params = [];
 
-        foreach ($rowCollection as $row) {
-            $this->ensureColumnMatch($row);
+        foreach ($rowCollection as $rowId => $row) {
+            $this->ensureColumnMatch($rowId, $row);
             $params = array_merge($params, $this->convertRowToParams($row));
         }
 

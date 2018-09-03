@@ -7,10 +7,18 @@
 
 namespace MilesAsylum\Slurp\Transform\Exception;
 
+use MilesAsylum\Slurp\Exception\ExceptionInterface;
+
 class UnexpectedTypeException extends \InvalidArgumentException implements ExceptionInterface
 {
-    public function __construct($value, string $expectedType)
+    public static function createUnexpected($value, string $expectedType): self
     {
-        parent::__construct(sprintf('Expected argument of type "%s", "%s" given', $expectedType, \is_object($value) ? \get_class($value) : \gettype($value)));
+        return new static(
+            sprintf(
+                'Expected argument of type "%s", "%s" given',
+                $expectedType,
+                \is_object($value) ? \get_class($value) : \gettype($value)
+            )
+        );
     }
 }

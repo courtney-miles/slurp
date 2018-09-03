@@ -7,7 +7,19 @@
 
 namespace MilesAsylum\Slurp\Extract\Exception;
 
+use MilesAsylum\Slurp\Exception\ExceptionInterface;
+
 class ValueCountMismatchException extends \Exception implements ExceptionInterface
 {
-
+    public static function createMismatch($recordId, int $givenValueCount, int $expectedValueCount): self
+    {
+        return new static(
+            sprintf(
+                'Record %s contained %s values where we expected %s.',
+                $recordId,
+                $givenValueCount,
+                $expectedValueCount
+            )
+        );
+    }
 }
