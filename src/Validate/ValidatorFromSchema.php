@@ -33,7 +33,7 @@ class ValidatorFromSchema implements ValidatorInterface
         try {
             $schemaField = $this->tableSchema->field($field);
         } catch (\Exception $e) {
-            throw new UnknownFieldException($field, 'Unknown field ' . $field);
+            throw new UnknownFieldException($field, 'Unknown field ' . $field . '.');
         }
 
         $schemaValidationErrors = $schemaField->validateValue($value);

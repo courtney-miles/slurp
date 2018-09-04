@@ -10,6 +10,7 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Validate;
 use frictionlessdata\tableschema\Fields\BaseField;
 use frictionlessdata\tableschema\Schema;
 use frictionlessdata\tableschema\SchemaValidationError;
+use MilesAsylum\Slurp\Validate\Exception\UnknownFieldException;
 use MilesAsylum\Slurp\Validate\ValidatorFromSchema;
 use MilesAsylum\Slurp\Validate\Violation;
 use MilesAsylum\Slurp\Validate\ViolationInterface;
@@ -81,6 +82,20 @@ class ValidatorFromSchemaTest extends TestCase
 
         $this->assertInstanceOf(ViolationInterface::class, $violation);
         $this->assertEquals(new Violation($recordId, $badField, $badValue, $message), $violation);
+    }
+
+    public function testUnknownFieldException()
+    {
+        $this->expectException(UnknownFieldException::class);
+        $this->expectExceptionMessage('Unknown field foo.');
+
+        $field = 'foo';
+
+        $this->mockTableSchema->shouldReceive('field')
+            ->with($field)
+            ->andThrow(\Exception::class);
+
+        $this->validator->validateRecord(123, [$field => 234]);
     }
 
     protected function stubSchemaValidationError(

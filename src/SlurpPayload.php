@@ -126,10 +126,6 @@ class SlurpPayload
 
     public function hasViolations(): bool
     {
-        if ($this->violations === null) {
-            return false;
-        }
-
-        return (bool)count($this->violations);
+        return !empty($this->violations);
     }
 }
