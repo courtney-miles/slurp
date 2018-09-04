@@ -5,8 +5,7 @@
  * Time: 11:22 AM
  */
 
-namespace MilesAsylum\Slurp\Transform;
-
+namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
 class DateTimeFormat extends Change
 {

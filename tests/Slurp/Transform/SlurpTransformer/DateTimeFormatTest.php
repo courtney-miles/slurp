@@ -5,10 +5,10 @@
  * Time: 11:27 AM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\Transform;
+namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SlurpTransformer;
 
-use MilesAsylum\Slurp\Transform\DateTimeFormat;
-use MilesAsylum\Slurp\Transform\DateTimeFormatTransformer;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\DateTimeFormat;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\DateTimeFormatTransformer;
 use PHPUnit\Framework\TestCase;
 
 class DateTimeFormatTest extends TestCase

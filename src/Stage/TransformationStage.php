@@ -8,8 +8,8 @@
 namespace MilesAsylum\Slurp\Stage;
 
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\Transform\Change;
-use MilesAsylum\Slurp\Transform\Transformer;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Transform\TransformerBork;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
 

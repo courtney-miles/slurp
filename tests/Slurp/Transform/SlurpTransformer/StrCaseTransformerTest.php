@@ -5,16 +5,16 @@
  * Time: 9:42 AM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\Transform;
+namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SlurpTransformer;
 
 use MilesAsylum\Slurp\Transform\Exception\UnexpectedTypeException;
-use MilesAsylum\Slurp\Transform\StrCase;
-use MilesAsylum\Slurp\Transform\StrCaseTransformer;
-use MilesAsylum\Slurp\Transform\Change;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\StrCase;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\StrCaseTransformer;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \MilesAsylum\Slurp\Transform\StrCaseTransformer
+ * @covers \MilesAsylum\Slurp\Transform\SlurpTransformer\StrCaseTransformer
  * @package MilesAsylum\Slurp\Tests\Slurp\Transform
  */
 class StrCaseTransformerTest extends TestCase

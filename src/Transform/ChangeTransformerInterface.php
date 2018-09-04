@@ -7,6 +7,8 @@
 
 namespace MilesAsylum\Slurp\Transform;
 
+use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
+
 interface ChangeTransformerInterface
 {
     public function transform($value, Change $change);

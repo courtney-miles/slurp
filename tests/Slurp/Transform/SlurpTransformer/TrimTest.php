@@ -5,10 +5,10 @@
  * Time: 10:52 AM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\Transform;
+namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SlurpTransformer;
 
-use MilesAsylum\Slurp\Transform\Trim;
-use MilesAsylum\Slurp\Transform\TrimTransformer;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\Trim;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\TrimTransformer;
 use PHPUnit\Framework\TestCase;
 
 class TrimTest extends TestCase

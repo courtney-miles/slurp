@@ -9,7 +9,7 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Stage;
 
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Stage\TransformationStage;
-use MilesAsylum\Slurp\Transform\Change;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;

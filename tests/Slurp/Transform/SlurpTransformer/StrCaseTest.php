@@ -5,10 +5,10 @@
  * Time: 9:41 AM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\Transform;
+namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SlurpTransformer;
 
-use MilesAsylum\Slurp\Transform\StrCase;
-use MilesAsylum\Slurp\Transform\StrCaseTransformer;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\StrCase;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\StrCaseTransformer;
 use PHPUnit\Framework\TestCase;
 
 class StrCaseTest extends TestCase

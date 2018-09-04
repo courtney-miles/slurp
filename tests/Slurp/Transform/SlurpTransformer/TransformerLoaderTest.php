@@ -5,11 +5,11 @@
  * Time: 10:14 PM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\Transform;
+namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SlurpTransformer;
 
-use MilesAsylum\Slurp\Transform\AbstractChangeTransformer;
-use MilesAsylum\Slurp\Transform\Change;
-use MilesAsylum\Slurp\Transform\TransformerLoader;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\AbstractChangeTransformer;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\TransformerLoader;
 use PHPUnit\Framework\TestCase;
 
 class TransformerLoaderTest extends TestCase

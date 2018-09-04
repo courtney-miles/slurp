@@ -5,8 +5,7 @@
  * Time: 10:45 AM
  */
 
-namespace MilesAsylum\Slurp\Transform;
-
+namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
 class Trim extends Change
 {

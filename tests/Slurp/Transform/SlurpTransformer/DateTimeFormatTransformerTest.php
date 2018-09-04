@@ -5,11 +5,11 @@
  * Time: 11:40 AM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\Transform;
+namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SlurpTransformer;
 
-use MilesAsylum\Slurp\Transform\Change;
-use MilesAsylum\Slurp\Transform\DateTimeFormat;
-use MilesAsylum\Slurp\Transform\DateTimeFormatTransformer;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\DateTimeFormat;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\DateTimeFormatTransformer;
 use MilesAsylum\Slurp\Transform\Exception\UnexpectedTypeException;
 use PHPUnit\Framework\TestCase;
 

@@ -5,7 +5,7 @@
  * Time: 11:03 PM
  */
 
-namespace MilesAsylum\Slurp\Transform;
+namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
 abstract class Change
 {

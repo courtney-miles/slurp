@@ -5,7 +5,7 @@
  * Time: 10:52 PM
  */
 
-namespace MilesAsylum\Slurp\Transform;
+namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
 class StrCase extends Change
 {

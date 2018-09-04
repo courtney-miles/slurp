@@ -5,7 +5,7 @@
  * Time: 10:53 PM
  */
 
-namespace MilesAsylum\Slurp\Transform;
+namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
 use MilesAsylum\Slurp\Transform\Exception\UnexpectedTypeException;
 

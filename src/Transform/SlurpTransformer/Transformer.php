@@ -5,7 +5,11 @@
  * Time: 10:27 PM
  */
 
-namespace MilesAsylum\Slurp\Transform;
+namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
+
+use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
+use MilesAsylum\Slurp\Transform\TransformerInterface;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\TransformerLoader;
 
 class Transformer implements TransformerInterface
 {

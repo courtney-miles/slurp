@@ -5,8 +5,10 @@
  * Time: 9:39 PM
  */
 
-namespace MilesAsylum\Slurp\Transform;
+namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
+
+use MilesAsylum\Slurp\Transform\ChangeTransformerInterface;
 
 abstract class AbstractChangeTransformer implements ChangeTransformerInterface
 {
