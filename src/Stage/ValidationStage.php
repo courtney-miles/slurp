@@ -8,45 +8,23 @@
 namespace MilesAsylum\Slurp\Stage;
 
 use MilesAsylum\Slurp\SlurpPayload;
-use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use MilesAsylum\Slurp\Validate\ValidatorInterface;
 
 class ValidationStage implements StageInterface
 {
-    private $valueName;
-
-    /**
-     * @var Constraint
-     */
-    private $constraint;
-
     /**
      * @var ValidatorInterface
      */
     private $validator;
 
-    public function __construct($valueName, Constraint $constraint, ValidatorInterface $validator)
+    public function __construct(ValidatorInterface $validator)
     {
-        $this->valueName = $valueName;
-        $this->constraint = $constraint;
         $this->validator = $validator;
     }
 
     public function __invoke(SlurpPayload $payload): SlurpPayload
     {
-        if ($payload->hasValue($this->valueName)) {
-            $payload->addViolations(
-                $this->validator->validate(
-                    $payload->getValue($this->valueName),
-                    $this->constraint
-                )
-            );
-        } else {
-            trigger_error(
-                "A value named {$this->valueName} does not exist in the payload to validate.",
-                E_USER_NOTICE
-            );
-        }
+        $payload->addViolations($this->validator->validateRecord($payload->getRowId(), $payload->getValues()));
 
         return $payload;
     }
