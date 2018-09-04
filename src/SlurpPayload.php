@@ -7,7 +7,7 @@
 
 namespace MilesAsylum\Slurp;
 
-use Symfony\Component\Validator\ConstraintViolationInterface;
+use MilesAsylum\Slurp\Validate\Violation;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class SlurpPayload
@@ -23,14 +23,14 @@ class SlurpPayload
     protected $values = [];
 
     /**
-     * @var ConstraintViolationListInterface|ConstraintViolationInterface[]
+     * @var Violation[]
      */
-    protected $violations;
+    protected $violations = [];
 
     /**
      * @return int
      */
-    public function getRowId(): ?int
+    public function getRowId():? int
     {
         return $this->rowId;
     }
@@ -59,6 +59,10 @@ class SlurpPayload
         $this->values = $values;
     }
 
+    /**
+     * @param $name
+     * @return mixed|null
+     */
     public function getValue($name)
     {
         return isset($this->values[$name]) ? $this->values[$name] : null;
@@ -86,21 +90,21 @@ class SlurpPayload
     }
 
     /**
-     * @return ConstraintViolationListInterface
+     * @return Violation[]
      */
-    public function getViolations(): ?ConstraintViolationListInterface
+    public function getViolations(): array
     {
         return $this->violations;
     }
 
-    public function valueHasViolation($valueName)
+    public function valueHasViolation($valueName): bool
     {
         if (!$this->hasViolations()) {
             return false;
         }
 
         foreach ($this->violations as $violation) {
-            if ($violation->getPropertyPath() == $valueName) {
+            if ($violation->getField() == $valueName) {
                 return true;
             }
         }
@@ -108,21 +112,20 @@ class SlurpPayload
         return false;
     }
 
-    public function addViolations(ConstraintViolationListInterface $violations): void
+    public function addViolations(array $violations): void
     {
-        if ($this->violations !== null) {
-            $this->violations->addAll($violations);
-        } else {
-            $this->violations = $violations;
+        foreach ($violations as $violation) {
+            $this->addViolation($violation);
         }
     }
 
-    public function hasViolations()
+    public function addViolation(Violation $violation): void
     {
-        if ($this->violations === null) {
-            return false;
-        }
+        $this->violations[] = $violation;
+    }
 
-        return (bool)count($this->violations);
+    public function hasViolations(): bool
+    {
+        return !empty($this->violations);
     }
 }

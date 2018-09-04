@@ -7,9 +7,10 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp;
 
+use MilesAsylum\Slurp\PHPUnit\StubValidatorTrait;
 use MilesAsylum\Slurp\SlurpPayload;
+use MilesAsylum\Slurp\Validate\Violation;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -17,6 +18,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 class SlurpPayloadTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
+    use StubValidatorTrait;
 
     public function testHasNotValue()
     {
@@ -88,50 +90,26 @@ class SlurpPayloadTest extends TestCase
 
         $this->assertFalse($payload->hasViolations());
         $this->assertfalse($payload->valueHasViolation('bar'));
-        $this->assertNull($payload->getViolations());
+        $this->assertSame([], $payload->getViolations());
     }
 
     public function testAddFirstViolations()
     {
         $payload = new SlurpPayload();
-        $mockViolations = \Mockery::mock(ConstraintViolationListInterface::class);
-        $this->stubViolationList($mockViolations, ['__violation__']);
-
-        $payload->addViolations($mockViolations);
+        $mockViolation = \Mockery::mock(Violation::class);
+        $payload->addViolations([$mockViolation]);
 
         $this->assertTrue($payload->hasViolations());
-        $this->assertSame($mockViolations, $payload->getViolations());
-    }
-
-    public function testAddMoreViolations()
-    {
-        $payload = new SlurpPayload();
-        $mockFirstViolations = \Mockery::mock(ConstraintViolationListInterface::class);
-        $mockMoreViolations = \Mockery::mock(ConstraintViolationListInterface::class);
-
-        $this->stubViolationList($mockFirstViolations, ['__violation__']);
-        $mockFirstViolations->shouldReceive('addAll')
-            ->with($mockMoreViolations)
-            ->once();
-
-        $payload->addViolations($mockFirstViolations);
-        $payload->addViolations($mockMoreViolations);
-
-        $this->assertTrue($payload->hasViolations());
-        $this->assertSame($mockFirstViolations, $payload->getViolations());
+        $this->assertSame([$mockViolation], $payload->getViolations());
     }
 
     public function testValueHasViolation()
     {
         $payload = new SlurpPayload();
-        $mockViolations = \Mockery::mock(ConstraintViolationListInterface::class);
-        $mockViolation = \Mockery::mock(ConstraintViolationInterface::class);
-        $this->stubViolationList($mockViolations, [$mockViolation]);
-
-        $mockViolation->shouldReceive('getPropertyPath')
+        $mockViolation = \Mockery::mock(Violation::class);
+        $mockViolation->shouldReceive('getField')
             ->andReturn('foo');
-
-        $payload->addViolations($mockViolations);
+        $payload->addViolations([$mockViolation]);
 
         $this->assertTrue($payload->valueHasViolation('foo'));
     }
@@ -139,26 +117,11 @@ class SlurpPayloadTest extends TestCase
     public function testValueHasNotViolation()
     {
         $payload = new SlurpPayload();
-        $mockViolations = \Mockery::mock(ConstraintViolationListInterface::class);
-        $mockViolation = \Mockery::mock(ConstraintViolationInterface::class);
-        $this->stubViolationList($mockViolations, [$mockViolation]);
-
-        $mockViolation->shouldReceive('getPropertyPath')
+        $mockViolation = \Mockery::mock(Violation::class);
+        $mockViolation->shouldReceive('getField')
             ->andReturn('foo');
-
-        $payload->addViolations($mockViolations);
+        $payload->addViolations([$mockViolation]);
 
         $this->assertfalse($payload->valueHasViolation('bar'));
-    }
-
-    protected function stubViolationList(MockInterface $mockViolationList, array $violations)
-    {
-        $arrayIterator = new \ArrayIterator($violations);
-
-        $mockViolationList->shouldReceive('count')
-            ->andReturn(count($violations));
-
-        $mockViolationList->shouldReceive('getIterator')
-            ->andReturn($arrayIterator);
     }
 }

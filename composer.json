@@ -17,7 +17,8 @@
         "ext-pdo_mysql": "*",
         "symfony/validator": "^4.1.0",
         "league/csv": "^9.0",
-        "league/pipeline": "^1.0"
+        "league/pipeline": "^1.0",
+        "frictionlessdata/tableschema": "^0.1"
     },
     "require-dev": {
         "php-coveralls/php-coveralls": "^2.1",

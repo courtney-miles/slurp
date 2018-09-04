@@ -9,13 +9,13 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Stage;
 
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Stage\ValidationStage;
+use MilesAsylum\Slurp\Validate\ValidatorInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Error\Notice;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ValidationStageTest extends TestCase
 {
@@ -42,45 +42,30 @@ class ValidationStageTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockConstraint = \Mockery::mock(Constraint::class);
         $this->mockValidator = \Mockery::mock(ValidatorInterface::class);
 
-        $this->stage = new ValidationStage($this->valueName, $this->mockConstraint, $this->mockValidator);
+        $this->stage = new ValidationStage($this->mockValidator);
     }
 
     public function testValidateOnInvoke()
     {
-        $value = 123;
-
-        $mockViolations = \Mockery::mock(ConstraintViolationListInterface::class);
+        $recordId = 123;
+        $record = ['bar'];
+        $violations = ['__violation__'];
 
         $mockPayload = \Mockery::mock(SlurpPayload::class);
-        $mockPayload->shouldReceive('hasValue')
-            ->with($this->valueName)
-            ->andReturn(true);
-        $mockPayload->shouldReceive('getValue')
-            ->with($this->valueName)
-            ->andReturn($value);
+        $mockPayload->shouldReceive('getRowId')
+            ->andReturn($recordId);
+        $mockPayload->shouldReceive('getValues')
+            ->andReturn($record);
 
-        $this->mockValidator->shouldReceive('validate')
-            ->with($value, $this->mockConstraint)
-            ->andReturn($mockViolations);
+        $this->mockValidator->shouldReceive('validateRecord')
+            ->with($recordId, $record)
+            ->andReturn($violations);
 
         $mockPayload->shouldReceive('addViolations')
-            ->with($mockViolations)
+            ->with($violations)
             ->once();
-
-        $this->assertSame($mockPayload, ($this->stage)($mockPayload));
-    }
-
-    public function testNoticeOnMissingValue()
-    {
-        $this->expectException(Notice::class);
-
-        $mockPayload = \Mockery::mock(SlurpPayload::class);
-        $mockPayload->shouldReceive('hasValue')
-            ->with($this->valueName)
-            ->andReturn(false);
 
         $this->assertSame($mockPayload, ($this->stage)($mockPayload));
     }
