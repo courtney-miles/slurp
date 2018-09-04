@@ -5,10 +5,10 @@
  * Time: 9:54 PM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\Validate;
+namespace MilesAsylum\Slurp\Tests\Slurp\Validate\ConstraintValidation;
 
 use MilesAsylum\Slurp\PHPUnit\StubValidatorTrait;
-use MilesAsylum\Slurp\Validate\ValidatorFromConstraints;
+use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
 use MilesAsylum\Slurp\Validate\Violation;
 use MilesAsylum\Slurp\Validate\ViolationInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -19,7 +19,7 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class ValidatorFromConstraintsTest extends TestCase
+class ConstraintValidatorTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
     use StubValidatorTrait;
@@ -30,7 +30,7 @@ class ValidatorFromConstraintsTest extends TestCase
     protected $mockValidator;
 
     /**
-     * @var ValidatorFromConstraints
+     * @var ConstraintValidator
      */
     protected $validator;
     
@@ -38,7 +38,7 @@ class ValidatorFromConstraintsTest extends TestCase
     {
         parent::setUp();
         $this->mockValidator = \Mockery::mock(ValidatorInterface::class);
-        $this->validator = new ValidatorFromConstraints($this->mockValidator);
+        $this->validator = new ConstraintValidator($this->mockValidator);
     }
 
     public function testValidateField()

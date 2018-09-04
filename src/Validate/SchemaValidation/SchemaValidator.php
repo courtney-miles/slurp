@@ -5,13 +5,15 @@
  * Time: 9:34 PM
  */
 
-namespace MilesAsylum\Slurp\Validate;
+namespace MilesAsylum\Slurp\Validate\SchemaValidation;
 
 use frictionlessdata\tableschema\Schema;
 use frictionlessdata\tableschema\SchemaValidationError;
 use MilesAsylum\Slurp\Validate\Exception\UnknownFieldException;
+use MilesAsylum\Slurp\Validate\ValidatorInterface;
+use MilesAsylum\Slurp\Validate\Violation;
 
-class ValidatorFromSchema implements ValidatorInterface
+class SchemaValidator implements ValidatorInterface
 {
     /**
      * @var Schema

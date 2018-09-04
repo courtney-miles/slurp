@@ -5,13 +5,15 @@
  * Time: 7:19 PM
  */
 
-namespace MilesAsylum\Slurp\Validate;
+namespace MilesAsylum\Slurp\Validate\ConstraintValidation;
 
+use MilesAsylum\Slurp\Validate\ValidatorInterface;
+use MilesAsylum\Slurp\Validate\Violation;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface as SymfonyValidator;
 
-class ValidatorFromConstraints implements ValidatorInterface
+class ConstraintValidator implements ValidatorInterface
 {
     /**
      * @var SymfonyValidator

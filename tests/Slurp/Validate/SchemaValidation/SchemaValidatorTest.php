@@ -5,22 +5,22 @@
  * Time: 7:57 PM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\Validate;
+namespace MilesAsylum\Slurp\Tests\Slurp\Validate\SchemaValidation;
 
 use frictionlessdata\tableschema\Fields\BaseField;
 use frictionlessdata\tableschema\Schema;
 use frictionlessdata\tableschema\SchemaValidationError;
 use MilesAsylum\Slurp\Validate\Exception\UnknownFieldException;
-use MilesAsylum\Slurp\Validate\ValidatorFromSchema;
+use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use MilesAsylum\Slurp\Validate\Violation;
 use MilesAsylum\Slurp\Validate\ViolationInterface;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
-class ValidatorFromSchemaTest extends TestCase
+class SchemaValidatorTest extends TestCase
 {
     /**
-     * @var ValidatorFromSchema
+     * @var SchemaValidator
      */
     protected $validator;
 
@@ -32,7 +32,7 @@ class ValidatorFromSchemaTest extends TestCase
     public function setUp()
     {
         $this->mockTableSchema = \Mockery::mock(Schema::class);
-        $this->validator = new ValidatorFromSchema($this->mockTableSchema);
+        $this->validator = new SchemaValidator($this->mockTableSchema);
     }
 
     public function testValidateField()
