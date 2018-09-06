@@ -16,8 +16,10 @@ use MilesAsylum\Slurp\Stage\TransformationStage;
 use MilesAsylum\Slurp\Stage\ValidationStage;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\TransformerLoader;
+use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Validation;
 
 class SlurpBuilder
 {
@@ -47,7 +49,18 @@ class SlurpBuilder
     protected $loadStages = [];
 
     protected $preExtractionStages = [];
+
     protected $postExtractionStages = [];
+
+    /**
+     * @var ConstraintValidator
+     */
+    protected $constraintValidator;
+
+    /**
+     * @var Transformer
+     */
+    protected $transformer;
 
     public function __construct(PipelineBuilder $innerPipelineBuilder, PipelineBuilder $outerPipelineBuilder)
     {
@@ -55,16 +68,30 @@ class SlurpBuilder
         $this->outerPipelineBuilder = $outerPipelineBuilder;
     }
 
-    public function addConstraint($valueName, Constraint $constraint, ValidatorInterface $validator): self
+    public function addConstraint($field, Constraint $constraint): self
     {
-        $this->validationStages[] = new ValidationStage($valueName, $constraint, $validator);
+        if (!isset($this->constraintValidator)) {
+            $this->constraintValidator = new ConstraintValidator(
+                Validation::createValidator()
+            );
+        }
+
+        $this->constraintValidator->addColumnConstraints($field, $constraint);
+
+        $this->validationStages[] = new ValidationStage($this->constraintValidator);
 
         return $this;
     }
 
-    public function addChange($valueName, Change $change, Transformer $transformer): self
+    public function addChange($valueName, Change $change): self
     {
-        $this->transformationStages[] = new TransformationStage($valueName, $change, $transformer);
+        if (!isset($this->transformer)) {
+            $this->transformer = Transformer::createTransformer();
+        }
+
+        $this->transformer->setFieldChanges($valueName, $change);
+
+        $this->transformationStages[] = new TransformationStage($this->transformer);
 
         return $this;
     }
