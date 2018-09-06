@@ -7,7 +7,7 @@
 
 namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
-use MilesAsylum\Slurp\Transform\ChangeTransformerInterface;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\ChangeTransformerInterface;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 
 class TransformerLoader

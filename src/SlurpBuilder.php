@@ -8,7 +8,6 @@
 namespace MilesAsylum\Slurp;
 
 use League\Pipeline\PipelineBuilder;
-use MilesAsylum\Slurp\Extract\ExtractorInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Stage\FinaliseLoadStage;
 use MilesAsylum\Slurp\Stage\InvokeExtractionPipeline;
@@ -16,7 +15,7 @@ use MilesAsylum\Slurp\Stage\LoadStage;
 use MilesAsylum\Slurp\Stage\TransformationStage;
 use MilesAsylum\Slurp\Stage\ValidationStage;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
-use MilesAsylum\Slurp\Transform\Transformer;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 

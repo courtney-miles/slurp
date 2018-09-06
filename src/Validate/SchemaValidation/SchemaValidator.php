@@ -9,7 +9,7 @@ namespace MilesAsylum\Slurp\Validate\SchemaValidation;
 
 use frictionlessdata\tableschema\Schema;
 use frictionlessdata\tableschema\SchemaValidationError;
-use MilesAsylum\Slurp\Validate\Exception\UnknownFieldException;
+use MilesAsylum\Slurp\Exception\UnknownFieldException;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
 use MilesAsylum\Slurp\Validate\Violation;
 
@@ -41,9 +41,9 @@ class SchemaValidator implements ValidatorInterface
         $schemaValidationErrors = $schemaField->validateValue($value);
 
         if (!empty($schemaValidationErrors)) {
-            /** @var SchemaValidationError $validationError */
-            foreach ($schemaValidationErrors as $validationError) {
-                $violations[] = new Violation($recordId, $field, $value, $validationError->getMessage());
+            /** @var SchemaValidationError $schemaError */
+            foreach ($schemaValidationErrors as $schemaError) {
+                $violations[] = new Violation($recordId, $field, $value, $schemaError->getMessage());
             }
         }
 
@@ -57,8 +57,15 @@ class SchemaValidator implements ValidatorInterface
     {
         $violations = [];
 
-        foreach ($record as $field => $value) {
-            $violations = array_merge($violations, $this->validateField($recordId, $field, $value));
+        $schemaValidationErrors = $this->tableSchema->validateRow($record);
+
+        foreach ($schemaValidationErrors as $schemaError) {
+            $violations[] = new Violation(
+                $recordId,
+                $schemaError->extraDetails['field'],
+                $schemaError->extraDetails['value'],
+                $schemaError->getMessage()
+            );
         }
 
         return $violations;
