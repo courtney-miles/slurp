@@ -10,7 +10,7 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Validate\SchemaValidation;
 use frictionlessdata\tableschema\Fields\BaseField;
 use frictionlessdata\tableschema\Schema;
 use frictionlessdata\tableschema\SchemaValidationError;
-use MilesAsylum\Slurp\Validate\Exception\UnknownFieldException;
+use MilesAsylum\Slurp\Exception\UnknownFieldException;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use MilesAsylum\Slurp\Validate\Violation;
 use MilesAsylum\Slurp\Validate\ViolationInterface;
@@ -45,7 +45,7 @@ class SchemaValidatorTest extends TestCase
         $mockValidationError = \Mockery::mock(SchemaValidationError::class);
         $mockValidationError->shouldReceive('getMessage')
             ->andReturn($message);
-        $this->stubSchemaValidationError($field, $value, $this->mockTableSchema, [$mockValidationError]);
+        $this->stubSchemaValidationFieldError($field, $value, $this->mockTableSchema, [$mockValidationError]);
 
         $violations = $this->validator->validateField($recordId, $field, $value);
 
@@ -67,13 +67,18 @@ class SchemaValidatorTest extends TestCase
         $goodValue = 'bar';
         $message = 'Oops!';
 
+        $record = [$badField => $badValue, $goodField => $goodValue];
+
         $mockValidationError = \Mockery::mock(SchemaValidationError::class);
+        $mockValidationError->extraDetails = [
+            'field' => $badField,
+            'value' => $badValue
+        ];
         $mockValidationError->shouldReceive('getMessage')
             ->andReturn($message);
-        $this->stubSchemaValidationError($badField, $badValue, $this->mockTableSchema, [$mockValidationError]);
-        $this->stubSchemaValidationError($goodField, $goodValue, $this->mockTableSchema, []);
+        $this->stubSchemaValidationRecordError($record, $this->mockTableSchema, [$mockValidationError]);
 
-        $violations = $this->validator->validateRecord($recordId, [$badField => $badValue, $goodField => $goodValue]);
+        $violations = $this->validator->validateRecord($recordId, $record);
 
         $this->assertInternalType('array', $violations);
         $this->assertCount(1, $violations);
@@ -95,10 +100,10 @@ class SchemaValidatorTest extends TestCase
             ->with($field)
             ->andThrow(\Exception::class);
 
-        $this->validator->validateRecord(123, [$field => 234]);
+        $this->validator->validateField(123, $field, 234);
     }
 
-    protected function stubSchemaValidationError(
+    protected function stubSchemaValidationFieldError(
         $field,
         $value,
         MockInterface $mockTableSchema,
@@ -111,5 +116,15 @@ class SchemaValidatorTest extends TestCase
         $mockTableSchema->shouldReceive('field')
             ->with($field)
             ->andReturn($mockSchemaField);
+    }
+
+    protected function stubSchemaValidationRecordError(
+        $record,
+        MockInterface $mockTableSchema,
+        array $validationErrors
+    ) {
+        $mockTableSchema->shouldReceive('validateRow')
+            ->with($record)
+            ->andReturn($validationErrors);
     }
 }

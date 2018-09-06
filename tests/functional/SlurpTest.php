@@ -15,7 +15,7 @@ use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdQueryFactory;
 use MilesAsylum\Slurp\PHPUnit\MySQLTestHelper;
 use MilesAsylum\Slurp\SlurpBuilder;
-use MilesAsylum\Slurp\Transform\StrCase;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\StrCase;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\TransformerLoader;
 use PHPUnit\DbUnit\Database\Connection;

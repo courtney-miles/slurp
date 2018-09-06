@@ -28,13 +28,6 @@ class TransformationStageTest extends TestCase
      */
     protected $stage;
 
-    protected $valueName = 'foo';
-
-    /**
-     * @var Change|MockInterface
-     */
-    protected $mockChange;
-
     /**
      * @var TransformerInterface|MockInterface
      */
@@ -44,67 +37,49 @@ class TransformationStageTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockChange = \Mockery::mock(Change::class);
         $this->mockTransformer = \Mockery::mock(TransformerInterface::class);
 
         $this->stage = new TransformationStage(
-            $this->valueName,
-            $this->mockChange,
             $this->mockTransformer
         );
     }
 
     public function testReplaceWithTransformedValue()
     {
-        $value = 'bar';
-        $transValue = 'BAR';
+        $field = 'foo';
+        $value = 123;
+        $transValue = 321;
+
         /** @var SlurpPayload $mockPayload */
         $mockPayload = \Mockery::mock(SlurpPayload::class)->makePartial();
-        $mockPayload->setValue($this->valueName, $value);
-        $mockPayload->shouldReceive('valueHasViolation')
-            ->with($this->valueName)
+        $mockPayload->setValue($field, $value);
+        $mockPayload->shouldReceive('hasViolations')
             ->andReturn(false);
 
-        $this->mockTransformer->shouldReceive('transform')
-            ->with($value, $this->mockChange)
-            ->andReturn($transValue);
+        $this->mockTransformer->shouldReceive('transformRecord')
+            ->with($mockPayload->getValues())
+            ->andReturn([$field => $transValue]);
 
         $this->assertSame($mockPayload, ($this->stage)($mockPayload));
-        $this->assertSame($transValue, $mockPayload->getValue($this->valueName));
+        $this->assertSame($transValue, $mockPayload->getValue($field));
     }
 
     public function testDoNotTransformWhereViolation()
     {
+        $field = 'foo';
         $value = 123;
+
         /** @var SlurpPayload $mockPayload */
         $mockPayload = \Mockery::mock(SlurpPayload::class)->makePartial();
-        $mockPayload->setValue($this->valueName, $value);
-        $mockPayload->shouldReceive('valueHasViolation')
-            ->with($this->valueName)
+        $mockPayload->setValue($field, $value);
+        $mockPayload->shouldReceive('hasViolations')
             ->andReturn(true);
 
+        $this->mockTransformer->shouldReceive('transformRecord')
+            ->with([$field => $value])
+            ->never();
+
         $this->assertSame($mockPayload, ($this->stage)($mockPayload));
-        $this->assertSame($value, $mockPayload->getValue($this->valueName));
-    }
-
-    public function testNoticeWherePayloadMissingValue()
-    {
-        $this->expectException(Notice::class);
-
-        $mockPayload = \Mockery::mock(SlurpPayload::class);
-        $mockPayload->shouldReceive('hasValue')
-            ->with($this->valueName)
-            ->andReturn(false);
-
-        ($this->stage)($mockPayload);
-    }
-
-    public function testDoNotTransformOnMissingValue()
-    {
-        /** @var SlurpPayload $mockPayload */
-        $mockPayload = \Mockery::mock(SlurpPayload::class)->makePartial();
-
-        @($this->stage)($mockPayload);
-        $this->assertNull($mockPayload->getValue($this->valueName));
+        $this->assertSame($value, $mockPayload->getValue($field));
     }
 }

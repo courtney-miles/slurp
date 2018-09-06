@@ -5,10 +5,8 @@
  * Time: 9:59 PM
  */
 
-namespace MilesAsylum\Slurp\Validate\Exception;
+namespace MilesAsylum\Slurp\Exception;
 
-
-use MilesAsylum\Slurp\Exception\ExceptionInterface;
 use Throwable;
 
 class UnknownFieldException extends \InvalidArgumentException implements ExceptionInterface

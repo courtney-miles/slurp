@@ -8,51 +8,25 @@
 namespace MilesAsylum\Slurp\Stage;
 
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
-use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
-use MilesAsylum\Slurp\Transform\TransformerBork;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
 
 class TransformationStage implements StageInterface
 {
     /**
-     * @var int|string
-     */
-    private $valueName;
-
-    /**
-     * @var Change
-     */
-    private $change;
-
-    /**
-     * @var TransformerBork
+     * @var TransformerInterface
      */
     private $transformer;
 
-    public function __construct($valueName, Change $change, TransformerInterface $transformer)
+    public function __construct(TransformerInterface $transformer)
     {
-        $this->valueName = $valueName;
-        $this->change = $change;
         $this->transformer = $transformer;
     }
 
     public function __invoke(SlurpPayload $payload): SlurpPayload
     {
-        if ($payload->hasValue($this->valueName)) {
-            if (!$payload->valueHasViolation($this->valueName)) {
-                $payload->replaceValue(
-                    $this->valueName,
-                    $this->transformer->transform(
-                        $payload->getValue($this->valueName),
-                        $this->change
-                    )
-                );
-            }
-        } else {
-            trigger_error(
-                "A value named {$this->valueName} does not exist in the payload to validate.",
-                E_USER_NOTICE
+        if (!$payload->hasViolations()) {
+            $payload->setValues(
+                $this->transformer->transformRecord($payload->getValues())
             );
         }
 

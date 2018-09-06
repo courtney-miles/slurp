@@ -8,7 +8,7 @@
 namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
 
-use MilesAsylum\Slurp\Transform\ChangeTransformerInterface;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\ChangeTransformerInterface;
 
 abstract class AbstractChangeTransformer implements ChangeTransformerInterface
 {

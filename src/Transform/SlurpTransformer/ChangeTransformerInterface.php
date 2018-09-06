@@ -5,9 +5,7 @@
  * Time: 10:53 PM
  */
 
-namespace MilesAsylum\Slurp\Transform;
-
-use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
+namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
 interface ChangeTransformerInterface
 {
