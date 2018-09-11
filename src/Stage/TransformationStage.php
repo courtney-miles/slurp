@@ -10,12 +10,17 @@ namespace MilesAsylum\Slurp\Stage;
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
 
-class TransformationStage implements StageInterface
+class TransformationStage extends AbstractStage
 {
     /**
      * @var TransformerInterface
      */
     private $transformer;
+
+    /**
+     * @var SlurpPayload
+     */
+    protected $payload;
 
     public function __construct(TransformerInterface $transformer)
     {
@@ -30,6 +35,14 @@ class TransformationStage implements StageInterface
             );
         }
 
+        $this->payload = $payload;
+        $this->notify();
+
         return $payload;
+    }
+
+    public function getPayload(): SlurpPayload
+    {
+        return $this->payload;
     }
 }
