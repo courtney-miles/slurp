@@ -11,12 +11,17 @@ namespace MilesAsylum\Slurp\Stage;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\SlurpPayload;
 
-class LoadStage implements StageInterface
+class LoadStage extends AbstractStage
 {
     /**
      * @var LoaderInterface
      */
     private $loader;
+
+    /**
+     * @var SlurpPayload
+     */
+    protected $payload;
 
     public function __construct(LoaderInterface $loader)
     {
@@ -29,6 +34,14 @@ class LoadStage implements StageInterface
             $this->loader->loadValues($payload->getValues());
         }
 
+        $this->payload = $payload;
+        $this->notify();
+
         return $payload;
+    }
+
+    public function getPayload(): SlurpPayload
+    {
+        return $this->payload;
     }
 }

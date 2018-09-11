@@ -12,4 +12,8 @@ use MilesAsylum\Slurp\SlurpPayload;
 interface StageInterface
 {
     public function __invoke(SlurpPayload $payload): SlurpPayload;
+
+    public function attachObserver(StageObserverInterface $observer);
+
+    public function getPayload(): SlurpPayload;
 }

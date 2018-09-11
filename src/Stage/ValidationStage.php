@@ -10,12 +10,17 @@ namespace MilesAsylum\Slurp\Stage;
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
 
-class ValidationStage implements StageInterface
+class ValidationStage extends AbstractStage
 {
     /**
      * @var ValidatorInterface
      */
     private $validator;
+
+    /**
+     * @var SlurpPayload
+     */
+    protected $payload;
 
     public function __construct(ValidatorInterface $validator)
     {
@@ -26,6 +31,14 @@ class ValidationStage implements StageInterface
     {
         $payload->addViolations($this->validator->validateRecord($payload->getRowId(), $payload->getValues()));
 
+        $this->payload = $payload;
+        $this->notify();
+
         return $payload;
+    }
+
+    public function getPayload(): SlurpPayload
+    {
+        return $this->payload;
     }
 }
