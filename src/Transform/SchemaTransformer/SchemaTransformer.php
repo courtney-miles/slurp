@@ -7,6 +7,10 @@
 
 namespace MilesAsylum\Slurp\Transform\SchemaTransformer;
 
+use Carbon\Carbon;
+use frictionlessdata\tableschema\Fields\DateField;
+use frictionlessdata\tableschema\Fields\DatetimeField;
+use frictionlessdata\tableschema\Fields\TimeField;
 use frictionlessdata\tableschema\Schema;
 use MilesAsylum\Slurp\Exception\UnknownFieldException;
 use MilesAsylum\Slurp\Transform\Exception\TransformationException;
@@ -68,6 +72,45 @@ class SchemaTransformer implements TransformerInterface
             );
         }
 
+        foreach ($record as $fieldName => $value) {
+            $field = $this->getField($fieldName);
+
+            if ($field === null) {
+                continue;
+            }
+
+            // Convert complex types back to simple types.
+            switch (true) {
+                case $field instanceof TimeField:
+                    $record[$fieldName] = implode(':', $value);
+                    break;
+                case $field instanceof DateField:
+                    /** @var Carbon $value */
+                    $record[$fieldName] = $value->toDateString();
+                    break;
+                case $field instanceof DatetimeField:
+                    /** @var Carbon $value */
+                    $record[$fieldName] = $value->toDateTimeString();
+                    break;
+            }
+
+        }
+
         return $record;
+    }
+
+    /**
+     * @param $name
+     * @return \frictionlessdata\tableschema\Fields\BaseField|null
+     */
+    protected function getField($name)
+    {
+        try {
+            $schemaField = $this->tableSchema->field($name);
+        } catch (\Exception $e) {
+            $schemaField = null;
+        }
+
+        return $schemaField;
     }
 }

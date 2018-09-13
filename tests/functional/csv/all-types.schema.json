@@ -1,0 +1,34 @@
+{
+    "fields": [
+        {
+            "name": "a_string",
+            "type": "string"
+        },
+        {
+            "name": "a_number",
+            "type": "number",
+            "bareNumber": false
+        },
+        {
+            "name": "an_integer",
+            "type": "integer"
+        },
+        {
+            "name": "a_boolean",
+            "type": "boolean"
+        },
+        {
+            "name": "a_date",
+            "type": "date"
+        },
+        {
+            "name": "a_time",
+            "type": "time"
+        },
+        {
+            "name": "a_datetime",
+            "type": "datetime",
+            "format": "any"
+        }
+    ]
+}

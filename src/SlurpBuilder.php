@@ -7,6 +7,7 @@
 
 namespace MilesAsylum\Slurp;
 
+use frictionlessdata\tableschema\Schema;
 use League\Pipeline\PipelineBuilder;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Stage\FinaliseLoadStage;
@@ -14,10 +15,11 @@ use MilesAsylum\Slurp\Stage\InvokeExtractionPipeline;
 use MilesAsylum\Slurp\Stage\LoadStage;
 use MilesAsylum\Slurp\Stage\TransformationStage;
 use MilesAsylum\Slurp\Stage\ValidationStage;
+use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
-use MilesAsylum\Slurp\Transform\SlurpTransformer\TransformerLoader;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
+use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validation;
 
@@ -53,6 +55,16 @@ class SlurpBuilder
     protected $postExtractionStages = [];
 
     /**
+     * @var SchemaValidator
+     */
+    protected $schemaValidator;
+
+    /**
+     * @var SchemaTransformer
+     */
+    protected $schemaTransformer;
+
+    /**
      * @var ConstraintValidator
      */
     protected $constraintValidator;
@@ -66,6 +78,22 @@ class SlurpBuilder
     {
         $this->innerPipelineBuilder = $innerPipelineBuilder;
         $this->outerPipelineBuilder = $outerPipelineBuilder;
+    }
+
+    public static function create(): self
+    {
+        return new static(
+            new PipelineBuilder(),
+            new PipelineBuilder()
+        );
+    }
+
+    public function setTableSchema(Schema $tableSchema): self
+    {
+        $this->schemaValidator = new SchemaValidator($tableSchema);
+        $this->schemaTransformer = new SchemaTransformer($tableSchema);
+
+        return $this;
     }
 
     public function addConstraint($field, Constraint $constraint): self
@@ -106,6 +134,18 @@ class SlurpBuilder
 
     public function build()
     {
+        if (isset($this->schemaValidator)) {
+            $this->innerPipelineBuilder->add(
+                new ValidationStage($this->schemaValidator)
+            );
+        }
+
+        if (isset($this->schemaTransformer)) {
+            $this->innerPipelineBuilder->add(
+                new TransformationStage($this->schemaTransformer)
+            );
+        }
+
         foreach ($this->validationStages as $validationStage) {
             $this->innerPipelineBuilder->add($validationStage);
         }

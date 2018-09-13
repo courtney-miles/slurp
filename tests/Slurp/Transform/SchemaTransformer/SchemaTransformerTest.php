@@ -7,8 +7,12 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SchemaTransformer;
 
+use Carbon\Carbon;
 use frictionlessdata\tableschema\Fields\BaseField;
+use frictionlessdata\tableschema\Fields\DateField;
+use frictionlessdata\tableschema\Fields\DatetimeField;
 use frictionlessdata\tableschema\Fields\StringField;
+use frictionlessdata\tableschema\Fields\TimeField;
 use frictionlessdata\tableschema\Schema;
 use MilesAsylum\Slurp\Transform\Exception\TransformationException;
 use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
@@ -53,6 +57,39 @@ class SchemaTransformerTest extends TestCase
             ->andReturn($castRecord);
 
         $this->assertSame($castRecord, $this->schemaTransformer->transformRecord($record));
+    }
+
+    /**
+     * @dataProvider getComplexTypeConversionTestData
+     * @param string $fieldClass
+     * @param mixed $complexValue
+     * @param mixed $scalarValue
+     * @throws TransformationException
+     */
+    public function testConvertComplexTypeBackToScalar(string $fieldClass, $complexValue, $scalarValue)
+    {
+        $fieldName = 'foo';
+
+        $this->mockSchema->shouldReceive('castRow')
+            ->withAnyArgs()
+            ->andReturn([$fieldName => $complexValue]);
+        $this->mockSchema->shouldReceive('field')
+            ->with($fieldName)
+            ->andReturn(\Mockery::mock($fieldClass));
+
+        $this->assertSame(
+            [$fieldName => $scalarValue],
+            $this->schemaTransformer->transformRecord(['anything'])
+        );
+    }
+
+    public function getComplexTypeConversionTestData()
+    {
+        return [
+            [TimeField::class, [12, 23, 34], '12:23:34'],
+            [DateField::class, new Carbon('2018-02-01'), '2018-02-01'],
+            [DatetimeField::class, new Carbon('2018-02-01 12:23:34'), '2018-02-01 12:23:34']
+        ];
     }
 
     public function testExceptionFromCastWhenTransformingRecord()

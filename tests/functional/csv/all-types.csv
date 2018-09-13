@@ -1,0 +1,2 @@
+a_string,a_number,an_integer,a_boolean,a_date,a_time,a_datetime
+foo,$123.45,234,true,2018-01-01,12:34:56,2018-01-01 12:34:56

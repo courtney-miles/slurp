@@ -7,6 +7,7 @@
 
 namespace MilesAsylum\Slurp\Tests\functional;
 
+use frictionlessdata\tableschema\Schema;
 use League\Csv\Reader;
 use League\Pipeline\PipelineBuilder;
 use MilesAsylum\Slurp\Extract\CsvFileExtractor\CsvFileExtractor;
@@ -15,6 +16,7 @@ use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdQueryFactory;
 use MilesAsylum\Slurp\PHPUnit\MySQLTestHelper;
 use MilesAsylum\Slurp\SlurpBuilder;
+use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\StrCase;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\TransformerLoader;
@@ -44,6 +46,7 @@ class SlurpTest extends TestCase
         self::$table = 'tbl_foo';
         $table = self::$table;
 
+        self::$pdo->exec("DROP TABLE IF EXISTS `{$table}`");
         self::$pdo->exec(<<<SQL
 CREATE TABLE `{$table}` (
   `name` VARCHAR(100) NOT NULL,
@@ -56,9 +59,13 @@ SQL
 
     public function testBasicLoad()
     {
-        $sb = new SlurpBuilder(new PipelineBuilder(), new PipelineBuilder());
+        $sb = SlurpBuilder::create();
         $sb->addLoader(
-            $this->createDatabaseLoader(1)
+            $this->createDatabaseLoader(
+                self::$table,
+                ['name' => '_name_', 'date' => '_date_', 'value' => '_value_'],
+                1
+            )
         );
         $cfe = new CsvFileExtractor(
             Reader::createFromPath(__DIR__ . '/csv/simple.csv')
@@ -67,7 +74,7 @@ SQL
         $slurp = $sb->build();
         $slurp->process($cfe);
 
-        $table = $this->fetchQueryTable('tbl_foo');
+        $table = $this->fetchQueryTable(self::$table);
         $expectedTable = $this->createArrayDataSet(
             [
                 self::$table => [
@@ -83,9 +90,13 @@ SQL
 
     public function testBasicLoadUnevenBatch()
     {
-        $sb = new SlurpBuilder(new PipelineBuilder(), new PipelineBuilder());
+        $sb = SlurpBuilder::create();
         $sb->addLoader(
-            $this->createDatabaseLoader(2) // Batches of 2 will leave one row left over.
+            $this->createDatabaseLoader(
+                self::$table,
+                ['name' => '_name_', 'date' => '_date_', 'value' => '_value_'],
+                2
+            ) // Batches of 2 will leave one row left over.
         );
         $cfe = new CsvFileExtractor(
             Reader::createFromPath(__DIR__ . '/csv/simple.csv')
@@ -94,7 +105,7 @@ SQL
         $slurp = $sb->build();
         $slurp->process($cfe);
 
-        $table = $this->fetchQueryTable('tbl_foo');
+        $table = $this->fetchQueryTable(self::$table);
         $expectedTable = $this->createArrayDataSet(
             [
                 self::$table => [
@@ -110,15 +121,16 @@ SQL
 
     public function testBasicLoadWithTransform()
     {
-        $t = new Transformer(new TransformerLoader());
-
-        $sb = new SlurpBuilder(new PipelineBuilder(), new PipelineBuilder());
+        $sb = SlurpBuilder::create();
         $sb->addChange(
             '_name_',
-            new StrCase(StrCase::CASE_UPPER),
-            $t
+            new StrCase(StrCase::CASE_UPPER)
         )->addLoader(
-            $this->createDatabaseLoader(1)
+            $this->createDatabaseLoader(
+                self::$table,
+                ['name' => '_name_', 'date' => '_date_', 'value' => '_value_'],
+                1
+            )
         );
 
         $cfe = new CsvFileExtractor(
@@ -128,7 +140,7 @@ SQL
         $slurp = $sb->build();
         $slurp->process($cfe);
 
-        $table = $this->fetchQueryTable('tbl_foo');
+        $table = $this->fetchQueryTable(self::$table);
         $expectedTable = $this->createArrayDataSet(
             [
                 self::$table => [
@@ -142,17 +154,72 @@ SQL
         $this->assertTablesEqual($expectedTable, $table);
     }
 
-    protected function createDatabaseLoader($batchSize)
+    public function testAllTypesFromSchema()
+    {
+        self::$pdo->exec('DROP TABLE IF EXISTS `all_types`');
+        self::$pdo->exec(<<<SQL
+CREATE TABLE `all_types` (
+  `a_string` VARCHAR(100) NOT NULL,
+  `a_number` DECIMAL(10,2) NOT NULL,
+  `an_integer` INT NOT NULL,
+  `a_boolean` BOOL NOT NULL,
+  `a_date` DATE NOT NULL,
+  `a_time` TIME NOT NULL,
+  `a_datetime` DATETIME NOT NULL
+) COLLATE ascii_general_ci
+SQL
+        );
+
+        $slurp = SlurpBuilder::create()->setTableSchema(
+            new Schema(__DIR__ . '/csv/all-types.schema.json')
+        )->addLoader(
+            $this->createDatabaseLoader(
+                'all_types',
+                array_combine(
+                    ['a_string','a_number','an_integer','a_boolean','a_date','a_time','a_datetime'],
+                    ['a_string','a_number','an_integer','a_boolean','a_date','a_time','a_datetime']
+                ),
+                1
+            )
+        )->build();
+
+        $cfe = new CsvFileExtractor(
+            Reader::createFromPath(__DIR__ . '/csv/all-types.csv')
+        );
+        $cfe->loadHeadersFromFile();
+        $slurp->process($cfe);
+
+        $table = $this->fetchQueryTable('all_types');
+        $expectedTable = $this->createArrayDataSet(
+            [
+                'all_types' => [
+                    [
+                        'a_string' => 'foo',
+                        'a_number' => 123.45,
+                        'an_integer' => 234,
+                        'a_boolean' => 1,
+                        'a_date' => '2018-01-01',
+                        'a_time' => '12:34:56',
+                        'a_datetime' => '2018-01-01 12:34:56'
+                    ],
+                ]
+            ]
+        )->getTable('all_types');
+
+        $this->assertTablesEqual($expectedTable, $table);
+    }
+
+    protected function createDatabaseLoader(string $table, array $fieldMappings, int $batchSize)
     {
         return new DatabaseLoader(
             new BatchInsUpdStmt(
                 self::$pdo,
-                self::$table,
-                ['name', 'date', 'value'],
+                $table,
+                array_keys($fieldMappings),
                 new BatchInsUpdQueryFactory()
             ),
             $batchSize,
-            ['name' => '_name_', 'date' => '_date_', 'value' => '_value_']
+            $fieldMappings
         );
     }
 
