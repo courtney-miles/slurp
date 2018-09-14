@@ -61,7 +61,8 @@ SQL
     {
         $sb = SlurpBuilder::create();
         $sb->addLoader(
-            $this->createDatabaseLoader(
+            $sb->createDatabaseLoader(
+                self::$pdo,
                 self::$table,
                 ['name' => '_name_', 'date' => '_date_', 'value' => '_value_'],
                 1
@@ -92,7 +93,8 @@ SQL
     {
         $sb = SlurpBuilder::create();
         $sb->addLoader(
-            $this->createDatabaseLoader(
+            $sb->createDatabaseLoader(
+                self::$pdo,
                 self::$table,
                 ['name' => '_name_', 'date' => '_date_', 'value' => '_value_'],
                 2
@@ -126,7 +128,8 @@ SQL
             '_name_',
             new StrCase(StrCase::CASE_UPPER)
         )->addLoader(
-            $this->createDatabaseLoader(
+            $sb->createDatabaseLoader(
+                self::$pdo,
                 self::$table,
                 ['name' => '_name_', 'date' => '_date_', 'value' => '_value_'],
                 1
@@ -170,10 +173,12 @@ CREATE TABLE `all_types` (
 SQL
         );
 
-        $slurp = SlurpBuilder::create()->setTableSchema(
+        $sb = SlurpBuilder::create();
+        $slurp = $sb->setTableSchema(
             new Schema(__DIR__ . '/csv/all-types.schema.json')
         )->addLoader(
-            $this->createDatabaseLoader(
+            $sb->createDatabaseLoader(
+                self::$pdo,
                 'all_types',
                 array_combine(
                     ['a_string','a_number','an_integer','a_boolean','a_date','a_time','a_datetime'],
@@ -207,20 +212,6 @@ SQL
         )->getTable('all_types');
 
         $this->assertTablesEqual($expectedTable, $table);
-    }
-
-    protected function createDatabaseLoader(string $table, array $fieldMappings, int $batchSize)
-    {
-        return new DatabaseLoader(
-            new BatchInsUpdStmt(
-                self::$pdo,
-                $table,
-                array_keys($fieldMappings),
-                new BatchInsUpdQueryFactory()
-            ),
-            $batchSize,
-            $fieldMappings
-        );
     }
 
     protected function fetchQueryTable($tableName)

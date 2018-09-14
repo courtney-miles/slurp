@@ -9,6 +9,9 @@ namespace MilesAsylum\Slurp;
 
 use frictionlessdata\tableschema\Schema;
 use League\Pipeline\PipelineBuilder;
+use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdQueryFactory;
+use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdStmt;
+use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Stage\FinaliseLoadStage;
 use MilesAsylum\Slurp\Stage\InvokeExtractionPipeline;
@@ -130,6 +133,20 @@ class SlurpBuilder
         $this->postExtractionStages[] = new FinaliseLoadStage($loader);
 
         return $this;
+    }
+
+    public function createDatabaseLoader(\PDO $pdo, string $table, array $fieldMappings, int $batchSize)
+    {
+        return new DatabaseLoader(
+            new BatchInsUpdStmt(
+                $pdo,
+                $table,
+                array_keys($fieldMappings),
+                new BatchInsUpdQueryFactory()
+            ),
+            $batchSize,
+            $fieldMappings
+        );
     }
 
     public function build()
