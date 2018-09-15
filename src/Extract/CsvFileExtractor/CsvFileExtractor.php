@@ -27,6 +27,11 @@ class CsvFileExtractor implements ExtractorInterface
         $this->csvReader = $csvReader;
     }
 
+    public static function createFromPath(string $path)
+    {
+        return new static(Reader::createFromPath($path));
+    }
+
     /**
      * Loads the first row in the CSV file as the headers.
      */

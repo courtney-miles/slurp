@@ -124,7 +124,7 @@ SQL
     public function testBasicLoadWithTransform()
     {
         $sb = SlurpBuilder::create();
-        $sb->addChange(
+        $sb->addTransformationChange(
             '_name_',
             new StrCase(StrCase::CASE_UPPER)
         )->addLoader(
@@ -175,7 +175,7 @@ SQL
 
         $sb = SlurpBuilder::create();
         $slurp = $sb->setTableSchema(
-            new Schema(__DIR__ . '/csv/all-types.schema.json')
+            $sb->createTableSchemaFromPath(__DIR__ . '/csv/all-types.schema.json')
         )->addLoader(
             $sb->createDatabaseLoader(
                 self::$pdo,
@@ -188,9 +188,7 @@ SQL
             )
         )->build();
 
-        $cfe = new CsvFileExtractor(
-            Reader::createFromPath(__DIR__ . '/csv/all-types.csv')
-        );
+        $cfe = CsvFileExtractor::createFromPath(__DIR__ . '/csv/all-types.csv');
         $cfe->loadHeadersFromFile();
         $slurp->process($cfe);
 
