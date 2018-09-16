@@ -7,7 +7,7 @@
 
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
-interface BatchStmtInterface
+interface BatchManagerInterface
 {
     public function write(array $rows);
 }

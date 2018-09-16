@@ -7,40 +7,38 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
-use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdQueryFactory;
+use MilesAsylum\Slurp\Load\DatabaseLoader\QueryFactory;
 use PHPUnit\Framework\TestCase;
 
-class BatchInsUpdQueryFactoryTest extends TestCase
+class QueryFactoryTest extends TestCase
 {
     public function testCreateInsertQuery()
     {
-        $queryFactory = new BatchInsUpdQueryFactory();
+        $queryFactory = new QueryFactory();
 
         $expectedInsSql = <<<SQL
 INSERT INTO `foo` (`col_alpha`, `col_beta`)
   VALUES (?, ?)
-  ON DUPLICATE KEY UPDATE `col_alpha` = VALUES(`col_alpha`), `col_beta` = VALUES(`col_beta`)
 SQL;
         $this->assertSame(
             $expectedInsSql,
-            $queryFactory->createQuery('foo', ['col_alpha', 'col_beta'])
+            $queryFactory->createInsertQuery('foo', ['col_alpha', 'col_beta'])
         );
     }
 
     public function testCreateInsertQueryBatch()
     {
-        $queryFactory = new BatchInsUpdQueryFactory();
+        $queryFactory = new QueryFactory();
 
         $expectedInsSql = <<<SQL
 INSERT INTO `foo` (`col_alpha`, `col_beta`)
   VALUES (?, ?),
     (?, ?),
     (?, ?)
-  ON DUPLICATE KEY UPDATE `col_alpha` = VALUES(`col_alpha`), `col_beta` = VALUES(`col_beta`)
 SQL;
         $this->assertSame(
             $expectedInsSql,
-            $queryFactory->createQuery('foo', ['col_alpha', 'col_beta'], 3)
+            $queryFactory->createInsertQuery('foo', ['col_alpha', 'col_beta'], 3)
         );
     }
 
@@ -49,7 +47,7 @@ SQL;
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('One or more columns must be supplied.');
 
-        (new BatchInsUpdQueryFactory())->createQuery('foo', []);
+        (new QueryFactory())->createInsertQuery('foo', []);
     }
 
     public function testExceptionOnBatchSizeLessThanOne()
@@ -57,6 +55,6 @@ SQL;
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The batch size cannot be less than 1.');
 
-        (new BatchInsUpdQueryFactory())->createQuery('foo', ['col_alpha'], 0);
+        (new QueryFactory())->createInsertQuery('foo', ['col_alpha'], 0);
     }
 }

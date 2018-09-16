@@ -2,14 +2,14 @@
 /**
  * Author: Courtney Miles
  * Date: 26/08/18
- * Time: 9:07 AM
+ * Time: 8:53 AM
  */
 
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\Exception\MissingValueException;
 
-abstract class AbstractBatchStmt implements BatchStmtInterface
+class BatchInsertManager implements BatchManagerInterface
 {
     /**
      * @var \PDO
@@ -26,11 +26,50 @@ abstract class AbstractBatchStmt implements BatchStmtInterface
      */
     protected $columns;
 
-    public function __construct(\PDO $pdo, string $table, array $columns)
+    /**
+     * @var QueryFactory
+     */
+    private $queryFactory;
+
+    /**
+     * @var \PDOStatement[]
+     */
+    private $preparedBatchStmts = [];
+
+    public function __construct(\PDO $pdo, string $table, array $columns, QueryFactory $queryFactory)
     {
         $this->pdo = $pdo;
         $this->table = $table;
         $this->columns = $columns;
+        $this->queryFactory = $queryFactory;
+    }
+
+    /**
+     * @param array[] $rows
+     */
+    public function write(array $rows)
+    {
+        if (!empty($rows)) {
+            $this->getPreparedBatchStmt(count($rows))
+                ->execute(
+                    $this->convertRowCollectionToParams($rows)
+                );
+        }
+    }
+
+    protected function getPreparedBatchStmt($count): \PDOStatement
+    {
+        if (!isset($this->preparedBatchStmts[$count])) {
+            $this->preparedBatchStmts[$count] = $this->pdo->prepare(
+                $this->queryFactory->createInsertQuery(
+                    $this->table,
+                    $this->columns,
+                    $count
+                )
+            );
+        }
+
+        return $this->preparedBatchStmts[$count];
     }
 
     protected function ensureColumnMatch($rowId, array $rowValues): void

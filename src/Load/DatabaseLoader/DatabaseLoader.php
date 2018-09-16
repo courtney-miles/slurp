@@ -7,12 +7,13 @@
 
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
+use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\DatabaseLoaderException;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 
 class DatabaseLoader implements LoaderInterface
 {
     /**
-     * @var \PDOStatement
+     * @var BatchManagerInterface
      */
     protected $batchStmt;
 
@@ -30,25 +31,55 @@ class DatabaseLoader implements LoaderInterface
      * @var array
      */
     private $columnMapping;
+    /**
+     * @var string
+     */
+    private $table;
+
+    /**
+     * @var StagedLoad
+     */
+    private $stagedLoad;
+
+    /**
+     * @var LoaderFactory
+     */
+    private $loaderFactory;
 
     /**
      * DatabaseLoader constructor.
-     * @param BatchStmtInterface $batchStmt
-     * @param int $batchSize
+     * @param string $table
      * @param array $columnMapping Array key is the destination column and the array value is the source column.
+     * @param LoaderFactory $dmlFactory
+     * @param int $batchSize
      */
     public function __construct(
-        BatchStmtInterface $batchStmt,
-        int $batchSize = 100,
-        array $columnMapping = []
+        string $table,
+        array $columnMapping,
+        LoaderFactory $dmlFactory,
+        int $batchSize = 100
     ) {
+        $this->loaderFactory = $dmlFactory;
+        $this->table = $table;
         $this->batchSize = $batchSize;
-        $this->batchStmt = $batchStmt;
         $this->columnMapping = $columnMapping;
     }
 
+    /**
+     * @param array $values
+     * @throws DatabaseLoaderException
+     */
     public function loadValues(array $values): void
     {
+        if (!$this->hasBegun()) {
+            throw new DatabaseLoaderException(
+                sprintf(
+                    'Data cannot be loaded until %s has been called.',
+                    __CLASS__ . '::begin()'
+                )
+            );
+        }
+
         $this->rowCollection[] = $this->mapColumnNames($values);
 
         if (count($this->rowCollection) >= $this->batchSize) {
@@ -56,9 +87,35 @@ class DatabaseLoader implements LoaderInterface
         }
     }
 
+    public function begin(): void
+    {
+        $this->stagedLoad = $this->loaderFactory->createStagedLoad(
+            $this->table,
+            array_keys($this->columnMapping)
+        );
+        $stagedTable = $this->stagedLoad->begin();
+        $this->batchStmt = $this->loaderFactory->createBatchInsStmt(
+            $stagedTable,
+            array_keys($this->columnMapping)
+        );
+    }
+
+    public function hasBegun(): bool
+    {
+        return isset($this->stagedLoad);
+    }
+
     public function finalise(): void
     {
         $this->flush();
+        $this->stagedLoad->commit();
+    }
+
+    public function abort(): void
+    {
+        $this->stagedLoad->discard();
+        $this->stagedLoad = null;
+        $this->batchStmt = null;
     }
 
     protected function flush(): void
