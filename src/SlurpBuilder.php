@@ -9,9 +9,10 @@ namespace MilesAsylum\Slurp;
 
 use frictionlessdata\tableschema\Schema;
 use League\Pipeline\PipelineBuilder;
-use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdQueryFactory;
-use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdStmt;
+use MilesAsylum\Slurp\Load\DatabaseLoader\QueryFactory;
+use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsertManager;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
+use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Stage\FinaliseLoadStage;
 use MilesAsylum\Slurp\Stage\InvokeExtractionPipeline;
@@ -185,14 +186,10 @@ class SlurpBuilder
     public function createDatabaseLoader(\PDO $pdo, string $table, array $fieldMappings, int $batchSize)
     {
         return new DatabaseLoader(
-            new BatchInsUpdStmt(
-                $pdo,
-                $table,
-                array_keys($fieldMappings),
-                new BatchInsUpdQueryFactory()
-            ),
-            $batchSize,
-            $fieldMappings
+            $table,
+            $fieldMappings,
+            new LoaderFactory($pdo),
+            $batchSize
         );
     }
 
@@ -225,7 +222,7 @@ class SlurpBuilder
         }
 
         if (isset($this->schemaTransformer)) {
-            $ts = new TransformationStage($this->schemaTransformer);
+            $ts = $this->stageFactory->createTransformationStage($this->schemaTransformer);
             $this->attachTransformationObservers($ts);
             $this->innerPipelineBuilder->add($ts);
         }

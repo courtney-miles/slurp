@@ -23,6 +23,8 @@ class LoadStage extends AbstractStage
      */
     protected $payload;
 
+    protected $loadAborted = false;
+
     public function __construct(LoaderInterface $loader)
     {
         $this->loader = $loader;
@@ -30,8 +32,20 @@ class LoadStage extends AbstractStage
 
     public function __invoke(SlurpPayload $payload): SlurpPayload
     {
-        if (!$payload->hasViolations()) {
-            $this->loader->loadValues($payload->getValues());
+        if (!$this->loader->hasBegun()) {
+            $this->loader->begin();
+        }
+
+        if (!$this->loadAborted) {
+            if ($payload->hasViolations()) {
+                $this->loader->abort();
+                $this->loadAborted = true;
+                $payload->setLoadAborted($this->loadAborted);
+            } else {
+                $this->loader->loadValues($payload->getValues());
+            }
+        } else {
+            $payload->setLoadAborted(true);
         }
 
         $this->payload = $payload;

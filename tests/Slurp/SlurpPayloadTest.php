@@ -12,8 +12,6 @@ use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Validate\Violation;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Validator\ConstraintViolationInterface;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class SlurpPayloadTest extends TestCase
 {
@@ -123,5 +121,14 @@ class SlurpPayloadTest extends TestCase
         $payload->addViolations([$mockViolation]);
 
         $this->assertfalse($payload->valueHasViolation('bar'));
+    }
+
+    public function testSetLoadAborted()
+    {
+        $payload = new SlurpPayload();
+        $this->assertFalse($payload->isLoadAborted());
+
+        $payload->setLoadAborted(true);
+        $this->assertTrue($payload->isLoadAborted());
     }
 }

@@ -27,6 +27,8 @@ class SlurpPayload
      */
     protected $violations = [];
 
+    protected $loadAborted = false;
+
     /**
      * @return int
      */
@@ -127,5 +129,21 @@ class SlurpPayload
     public function hasViolations(): bool
     {
         return !empty($this->violations);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLoadAborted(): bool
+    {
+        return $this->loadAborted;
+    }
+
+    /**
+     * @param bool $loadAborted
+     */
+    public function setLoadAborted(bool $loadAborted): void
+    {
+        $this->loadAborted = $loadAborted;
     }
 }

@@ -7,8 +7,10 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
-use MilesAsylum\Slurp\Load\DatabaseLoader\BatchStmtInterface;
+use MilesAsylum\Slurp\Load\DatabaseLoader\BatchManagerInterface;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
+use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
+use MilesAsylum\Slurp\Load\DatabaseLoader\StagedLoad;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -18,9 +20,19 @@ class DatabaseLoaderTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     /**
-     * @var BatchStmtInterface|MockInterface
+     * @var LoaderFactory|MockInterface
+     */
+    protected $mockLoaderFactory;
+
+    /**
+     * @var BatchManagerInterface|MockInterface
      */
     protected $mockBatchStmt;
+
+    /**
+     * @var StagedLoad|MockInterface
+     */
+    protected $mockStagedLoad;
 
     protected $batchSize = 3;
 
@@ -28,7 +40,19 @@ class DatabaseLoaderTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockBatchStmt = \Mockery::mock(BatchStmtInterface::class);
+        $this->mockBatchStmt = \Mockery::mock(BatchManagerInterface::class);
+        $this->mockStagedLoad = \Mockery::mock(StagedLoad::class);
+        $this->mockStagedLoad->shouldReceive('begin')
+            ->byDefault();
+        $this->mockLoaderFactory = \Mockery::mock(LoaderFactory::class);
+        $this->mockLoaderFactory->shouldReceive('createBatchInsStmt')
+            ->withAnyArgs()
+            ->andReturn($this->mockBatchStmt)
+            ->byDefault();
+        $this->mockLoaderFactory->shouldReceive('createStagedLoad')
+            ->withAnyArgs()
+            ->andReturn($this->mockStagedLoad)
+            ->byDefault();
     }
 
     public function testAutoFlushBatch()
@@ -43,9 +67,12 @@ class DatabaseLoaderTest extends TestCase
             ->once();
 
         $databaseLoader = new DatabaseLoader(
-            $this->mockBatchStmt,
+            'my_tbl',
+            ['col1' => 'col1', 'col2' => 'col2'],
+            $this->mockLoaderFactory,
             2
         );
+        $databaseLoader->begin();
 
         foreach ($rows as $row) {
             $databaseLoader->loadValues($row);
@@ -65,10 +92,16 @@ class DatabaseLoaderTest extends TestCase
             ->with([$rows[2]])
             ->once();
 
+        $this->mockStagedLoad->shouldReceive('commit')
+            ->once();
+
         $databaseLoader = new DatabaseLoader(
-            $this->mockBatchStmt,
+            'my_tbl',
+            ['col1' => 'col1', 'col2' => 'col2'],
+            $this->mockLoaderFactory,
             2
         );
+        $databaseLoader->begin();
 
         foreach ($rows as $row) {
             $databaseLoader->loadValues($row);
@@ -76,7 +109,6 @@ class DatabaseLoaderTest extends TestCase
 
         $databaseLoader->finalise();
     }
-
 
     public function testRemapColumns()
     {
@@ -87,10 +119,12 @@ class DatabaseLoaderTest extends TestCase
             ->once();
 
         $databaseLoader = new DatabaseLoader(
-            $this->mockBatchStmt,
-            1,
-            ['col_one' => 'col1', 'col_two' => 'col2']
+            'my_tbl',
+            ['col_one' => 'col1', 'col_two' => 'col2'],
+            $this->mockLoaderFactory,
+            1
         );
+        $databaseLoader->begin();
 
         $databaseLoader->loadValues($row);
     }

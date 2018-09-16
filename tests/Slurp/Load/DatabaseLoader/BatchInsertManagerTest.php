@@ -7,19 +7,19 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
-use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdQueryFactory;
-use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsUpdStmt;
+use MilesAsylum\Slurp\Load\DatabaseLoader\QueryFactory;
+use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsertManager;
 use MilesAsylum\Slurp\Load\Exception\MissingValueException;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
-class BatchInsUpdStmtTest extends TestCase
+class BatchInsertManagerTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
     /**
-     * @var BatchInsUpdStmt
+     * @var BatchInsertManager
      */
     protected $batchInsUpdStmt;
 
@@ -29,7 +29,7 @@ class BatchInsUpdStmtTest extends TestCase
     protected $mockPdo;
 
     /**
-     * @var BatchInsUpdQueryFactory|MockInterface
+     * @var QueryFactory|MockInterface
      */
     protected $mockQueryFactory;
 
@@ -42,9 +42,9 @@ class BatchInsUpdStmtTest extends TestCase
         parent::setUp();
 
         $this->mockPdo = \Mockery::mock(\PDO::class);
-        $this->mockQueryFactory = \Mockery::mock(BatchInsUpdQueryFactory::class);
+        $this->mockQueryFactory = \Mockery::mock(QueryFactory::class);
 
-        $this->batchInsUpdStmt = new BatchInsUpdStmt(
+        $this->batchInsUpdStmt = new BatchInsertManager(
             $this->mockPdo,
             $this->table,
             $this->columns,
@@ -60,7 +60,7 @@ class BatchInsUpdStmtTest extends TestCase
         ];
         $dummyQuery = '__INSERT_UPDATE__';
 
-        $this->mockQueryFactory->shouldReceive('createQuery')
+        $this->mockQueryFactory->shouldReceive('createInsertQuery')
             ->with($this->table, $this->columns, count($rows))
             ->andReturn($dummyQuery);
 
@@ -88,7 +88,7 @@ class BatchInsUpdStmtTest extends TestCase
         ];
         $dummyQuery = '__INSERT_UPDATE__';
 
-        $this->mockQueryFactory->shouldReceive('createQuery')
+        $this->mockQueryFactory->shouldReceive('createInsertQuery')
             ->with($this->table, $this->columns, count($rowsBatch1))
             ->andReturn($dummyQuery)
             ->once();
@@ -117,7 +117,7 @@ class BatchInsUpdStmtTest extends TestCase
             ['col_2' => 345, 'col_1' => 456],
         ];
 
-        $this->mockQueryFactory->shouldReceive('createQuery')
+        $this->mockQueryFactory->shouldReceive('createInsertQuery')
             ->byDefault();
 
         $mockStmt = \Mockery::mock(\PDOStatement::class);
@@ -133,7 +133,7 @@ class BatchInsUpdStmtTest extends TestCase
 
     public function testSkipWriteIfRowsEmpty()
     {
-        $this->mockQueryFactory->shouldReceive('createQuery')
+        $this->mockQueryFactory->shouldReceive('createInsertQuery')
             ->byDefault();
 
         $mockStmt = \Mockery::mock(\PDOStatement::class);
@@ -150,7 +150,7 @@ class BatchInsUpdStmtTest extends TestCase
         $this->expectException(MissingValueException::class);
         $this->expectExceptionMessage('Record 0 is missing values for the following fields: col_2.');
 
-        $this->mockQueryFactory->shouldReceive('createQuery')
+        $this->mockQueryFactory->shouldReceive('createInsertQuery')
             ->byDefault();
 
         $mockStmt = \Mockery::mock(\PDOStatement::class);

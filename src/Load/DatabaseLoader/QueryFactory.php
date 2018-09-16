@@ -7,7 +7,7 @@
 
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
-class BatchInsUpdQueryFactory
+class QueryFactory
 {
     /**
      * @param $table
@@ -16,7 +16,7 @@ class BatchInsUpdQueryFactory
      * @return string
      * @throws \Exception
      */
-    public function createQuery($table, array $columns, $batchSize = 1): string
+    public function createInsertQuery($table, array $columns, $batchSize = 1): string
     {
         if (empty($columns)) {
             throw new \InvalidArgumentException('One or more columns must be supplied.');
@@ -29,18 +29,10 @@ class BatchInsUpdQueryFactory
         $colsStr = '`' . implode('`, `', $columns) . '`';
         $valueStr = '(' . implode(', ', array_fill(0, count($columns), '?')) . ')';
         $batchValueStr = implode(",\n    ", array_fill(0, $batchSize, $valueStr));
-        $updateValues = [];
-
-        foreach ($columns as $column) {
-            $updateValues[] = "`{$column}` = VALUES(`{$column}`)";
-        }
-
-        $updateValuesStr = implode(', ', $updateValues);
 
         return <<<SQL
 INSERT INTO `{$table}` ({$colsStr})
   VALUES $batchValueStr
-  ON DUPLICATE KEY UPDATE {$updateValuesStr}
 SQL;
     }
 }

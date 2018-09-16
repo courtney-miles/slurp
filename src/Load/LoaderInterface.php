@@ -11,5 +11,11 @@ interface LoaderInterface
 {
     public function loadValues(array $values) : void;
 
-    public function finalise() : void;
+    public function begin(): void;
+
+    public function hasBegun(): bool;
+
+    public function finalise(): void;
+
+    public function abort(): void;
 }
