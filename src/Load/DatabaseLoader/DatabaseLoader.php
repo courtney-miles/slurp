@@ -46,6 +46,10 @@ class DatabaseLoader implements LoaderInterface
      */
     private $loaderFactory;
 
+    protected $begun = false;
+
+    protected $aborted = false;
+
     /**
      * DatabaseLoader constructor.
      * @param string $table
@@ -80,6 +84,10 @@ class DatabaseLoader implements LoaderInterface
             );
         }
 
+        if ($this->isAborted()) {
+            throw new DatabaseLoaderException('Data cannot be loaded because the loading has been aborted.');
+        }
+
         $this->rowCollection[] = $this->mapColumnNames($values);
 
         if (count($this->rowCollection) >= $this->batchSize) {
@@ -98,24 +106,39 @@ class DatabaseLoader implements LoaderInterface
             $stagedTable,
             array_keys($this->columnMapping)
         );
+
+        $this->begun = true;
     }
 
     public function hasBegun(): bool
     {
-        return isset($this->stagedLoad);
+        return $this->begun;
+    }
+
+    /**
+     * @throws DatabaseLoaderException
+     */
+    public function abort(): void
+    {
+        if (!$this->hasBegun()) {
+            throw new DatabaseLoaderException('Unable to abort when loading has not begun.');
+        }
+
+        $this->aborted = true;
+        $this->stagedLoad->discard();
+        $this->stagedLoad = null;
+        $this->batchStmt = null;
+    }
+
+    public function isAborted(): bool
+    {
+        return $this->aborted;
     }
 
     public function finalise(): void
     {
         $this->flush();
         $this->stagedLoad->commit();
-    }
-
-    public function abort(): void
-    {
-        $this->stagedLoad->discard();
-        $this->stagedLoad = null;
-        $this->batchStmt = null;
     }
 
     protected function flush(): void

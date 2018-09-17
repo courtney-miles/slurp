@@ -32,11 +32,11 @@ class LoadStage extends AbstractStage
 
     public function __invoke(SlurpPayload $payload): SlurpPayload
     {
-        if (!$this->loader->hasBegun()) {
-            $this->loader->begin();
-        }
-
         if (!$this->loadAborted) {
+            if (!$this->loader->hasBegun()) {
+                $this->loader->begin();
+            }
+
             if ($payload->hasViolations()) {
                 $this->loader->abort();
                 $this->loadAborted = true;

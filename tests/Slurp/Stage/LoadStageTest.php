@@ -82,6 +82,24 @@ class LoadStageTest extends TestCase
         $this->assertSame($mockViolatedPayload, ($this->stage)($mockViolatedPayload));
     }
 
+    public function testDoNotReBeginWhenPreviouslyAborted()
+    {
+        $mockViolatedPayload = $this->createMockPayload([], true);
+        $mockPayload = $this->createMockPayload([], false);
+
+        $this->mockLoader->shouldReceive('abort');
+
+        $this->mockLoader->shouldReceive('hasBegun')
+            ->andReturn(false);
+        $this->mockLoader->shouldReceive('begin')
+            ->once();
+        $mockViolatedPayload->shouldReceive('setLoadAborted');
+        $mockPayload->shouldReceive('setLoadAborted');
+
+        ($this->stage)($mockViolatedPayload);
+        ($this->stage)($mockPayload);
+    }
+
     /**
      * @depends testAbortOnViolation
      */

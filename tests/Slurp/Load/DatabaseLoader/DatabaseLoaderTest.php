@@ -9,6 +9,7 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\DatabaseLoader\BatchManagerInterface;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
+use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\DatabaseLoaderException;
 use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\StagedLoad;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -44,6 +45,8 @@ class DatabaseLoaderTest extends TestCase
         $this->mockStagedLoad = \Mockery::mock(StagedLoad::class);
         $this->mockStagedLoad->shouldReceive('begin')
             ->byDefault();
+        $this->mockStagedLoad->shouldReceive('discard')
+            ->byDefault();
         $this->mockLoaderFactory = \Mockery::mock(LoaderFactory::class);
         $this->mockLoaderFactory->shouldReceive('createBatchInsStmt')
             ->withAnyArgs()
@@ -53,6 +56,31 @@ class DatabaseLoaderTest extends TestCase
             ->withAnyArgs()
             ->andReturn($this->mockStagedLoad)
             ->byDefault();
+    }
+
+    public function testBegin()
+    {
+        $this->mockStagedLoad->shouldReceive('begin')
+            ->once();
+
+        $databaseLoader = new DatabaseLoader('', [], $this->mockLoaderFactory, 1);
+
+        $databaseLoader->begin();
+        
+        $this->assertTrue($databaseLoader->hasBegun());
+    }
+
+    public function testAbort()
+    {
+        $this->mockStagedLoad->shouldReceive('discard')
+            ->once();
+
+        $databaseLoader = new DatabaseLoader('', [], $this->mockLoaderFactory, 1);
+        $databaseLoader->begin();
+
+        $this->assertFalse($databaseLoader->isAborted());
+        $databaseLoader->abort();
+        $this->assertTrue($databaseLoader->isAborted());
     }
 
     public function testAutoFlushBatch()
@@ -127,5 +155,34 @@ class DatabaseLoaderTest extends TestCase
         $databaseLoader->begin();
 
         $databaseLoader->loadValues($row);
+    }
+
+    public function testExceptionWhenLoadBeforeBegin()
+    {
+        $this->expectException(DatabaseLoaderException::class);
+
+        $databaseLoader = new DatabaseLoader('', [], $this->mockLoaderFactory, 1);
+
+        $databaseLoader->loadValues([]);
+    }
+
+    public function testExceptionWhenLoadAfterAbort()
+    {
+        $this->expectException(DatabaseLoaderException::class);
+
+        $databaseLoader = new DatabaseLoader('', [], $this->mockLoaderFactory, 1);
+
+        $databaseLoader->begin();
+        $databaseLoader->abort();
+        $databaseLoader->loadValues([]);
+    }
+
+    public function testExceptionWhenAbortBeforeBegin()
+    {
+        $this->expectException(DatabaseLoaderException::class);
+
+        $databaseLoader = new DatabaseLoader('', [], $this->mockLoaderFactory, 1);
+
+        $databaseLoader->abort();
     }
 }
