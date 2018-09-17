@@ -137,12 +137,12 @@ class SlurpBuilder
         return $this;
     }
 
-    public function createTableSchemaFromPath(string $path)
+    public function createTableSchemaFromPath(string $path): Schema
     {
         return new Schema($path);
     }
 
-    public function createTableSchemaFromArray(array $arr)
+    public function createTableSchemaFromArray(array $arr): Schema
     {
         return new Schema($arr);
     }
@@ -183,7 +183,7 @@ class SlurpBuilder
         return $this;
     }
 
-    public function createDatabaseLoader(\PDO $pdo, string $table, array $fieldMappings, int $batchSize)
+    public function createDatabaseLoader(\PDO $pdo, string $table, array $fieldMappings, int $batchSize): DatabaseLoader
     {
         return new DatabaseLoader(
             $table,
@@ -193,27 +193,35 @@ class SlurpBuilder
         );
     }
 
-    public function addAllStagesObserver(StageObserverInterface $observer)
+    public function addAllStagesObserver(StageObserverInterface $observer): self
     {
         $this->allStageObservers[] = $observer;
+
+        return $this;
     }
 
-    public function addValidationObserver(StageObserverInterface $observer)
+    public function addValidationObserver(StageObserverInterface $observer): self
     {
         $this->validationObservers[] = $observer;
+
+        return $this;
     }
 
-    public function addTransformationObserver(StageObserverInterface $observer)
+    public function addTransformationObserver(StageObserverInterface $observer): self
     {
         $this->transformationObservers[] = $observer;
+
+        return $this;
     }
 
-    public function addLoadObserver(StageObserverInterface $observer)
+    public function addLoadObserver(StageObserverInterface $observer): self
     {
         $this->loadObservers[] = $observer;
+
+        return $this;
     }
 
-    public function build()
+    public function build(): Slurp
     {
         if (isset($this->schemaValidator)) {
             $vs = $this->stageFactory->createValidationStage($this->schemaValidator);
