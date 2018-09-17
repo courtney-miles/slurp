@@ -15,7 +15,9 @@ interface LoaderInterface
 
     public function hasBegun(): bool;
 
-    public function finalise(): void;
-
     public function abort(): void;
+
+    public function isAborted(): bool;
+
+    public function finalise(): void;
 }

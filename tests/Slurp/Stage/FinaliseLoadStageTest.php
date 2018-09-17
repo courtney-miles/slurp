@@ -38,6 +38,9 @@ class FinaliseLoadStageTest extends TestCase
         parent::setUp();
 
         $this->mockLoader = \Mockery::mock(LoaderInterface::class);
+        $this->mockLoader->shouldReceive('isAborted')
+            ->andReturn(false)
+            ->byDefault();
         $this->mockSlurp = \Mockery::mock(Slurp::class);
 
         $this->stage = new FinaliseLoadStage($this->mockLoader);
@@ -49,5 +52,13 @@ class FinaliseLoadStageTest extends TestCase
             ->once();
 
         $this->assertSame($this->mockSlurp, ($this->stage)($this->mockSlurp));
+    }
+
+    public function testsDoNotFinaliseIfAborted()
+    {
+        $this->mockLoader->shouldReceive('isAborted')
+            ->andReturn(true);
+        $this->mockLoader->shouldReceive('finalise')
+            ->never();
     }
 }

@@ -25,7 +25,9 @@ class FinaliseLoadStage implements OuterProcessStageInterface
 
     public function __invoke(Slurp $slurp): Slurp
     {
-        $this->loader->finalise();
+        if (!$this->loader->isAborted()) {
+            $this->loader->finalise();
+        }
 
         return $slurp;
     }

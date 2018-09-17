@@ -137,6 +137,14 @@ class DatabaseLoader implements LoaderInterface
 
     public function finalise(): void
     {
+        if (!$this->hasBegun()) {
+            throw new DatabaseLoaderException('Unable to finalise when loading has not begun.');
+        }
+
+        if ($this->isAborted()) {
+            throw new DatabaseLoaderException('Unable to finalise when loading has been aborted.');
+        }
+
         $this->flush();
         $this->stagedLoad->commit();
     }

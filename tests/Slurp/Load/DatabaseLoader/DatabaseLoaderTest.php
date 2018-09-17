@@ -185,4 +185,25 @@ class DatabaseLoaderTest extends TestCase
 
         $databaseLoader->abort();
     }
+
+    public function testExceptionWhenFinaliseBeforeBegin()
+    {
+        $this->expectException(DatabaseLoaderException::class);
+
+        $databaseLoader = new DatabaseLoader('', [], $this->mockLoaderFactory, 1);
+
+        $databaseLoader->finalise();
+    }
+
+    public function testExceptionWhenFinaliseAfterAbort()
+    {
+        $this->expectException(DatabaseLoaderException::class);
+
+        $databaseLoader = new DatabaseLoader('', [], $this->mockLoaderFactory, 1);
+
+        $databaseLoader->begin();
+        $databaseLoader->abort();
+
+        $databaseLoader->finalise();
+    }
 }
