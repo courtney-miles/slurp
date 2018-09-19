@@ -89,6 +89,32 @@ class SchemaValidatorTest extends TestCase
         $this->assertEquals(new Violation($recordId, $badField, $badValue, $message), $violation);
     }
 
+    public function testValidatRecordWithUniqueField()
+    {
+        $field = 'id';
+        $record = [$field => 123];
+
+        $mockUniqueField = \Mockery::mock(BaseField::class);
+        $mockUniqueField->shouldReceive('name')
+            ->andReturn($field);
+        $mockUniqueField->shouldReceive('unique')
+            ->withNoArgs()
+            ->andReturn(true);
+
+        $this->stubSchemaValidationRecordError($record, $this->mockTableSchema, [], [$mockUniqueField]);
+
+        $this->validator->validateRecord(1, $record);
+        $violations = $this->validator->validateRecord(2, $record);
+
+        $this->assertInternalType('array', $violations);
+        $this->assertCount(1, $violations);
+
+        $violation = array_pop($violations);
+
+        $this->assertInstanceOf(ViolationInterface::class, $violation);
+        $this->assertEquals(new Violation(2, $field, $record[$field], "Field value is not unique."), $violation);
+    }
+
     public function testUnknownFieldException()
     {
         $this->expectException(UnknownFieldException::class);
@@ -121,10 +147,13 @@ class SchemaValidatorTest extends TestCase
     protected function stubSchemaValidationRecordError(
         $record,
         MockInterface $mockTableSchema,
-        array $validationErrors
+        array $validationErrors,
+        array $fields = []
     ) {
         $mockTableSchema->shouldReceive('validateRow')
             ->with($record)
             ->andReturn($validationErrors);
+        $mockTableSchema->shouldReceive('fields')
+            ->andReturn($fields);
     }
 }
