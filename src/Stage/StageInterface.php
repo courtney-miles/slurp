@@ -13,7 +13,7 @@ interface StageInterface
 {
     public function __invoke(SlurpPayload $payload): SlurpPayload;
 
-    public function attachObserver(StageObserverInterface $observer);
+    public function attachObserver(StageObserverInterface $observer): void;
 
     public function getPayload(): SlurpPayload;
 }

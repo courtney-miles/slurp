@@ -10,17 +10,17 @@ namespace MilesAsylum\Slurp\Validate;
 interface ValidatorInterface
 {
     /**
-     * @param $recordId
-     * @param $field
+     * @param int $recordId
+     * @param string $field
      * @param $value
      * @return ViolationInterface[]
      */
-    public function validateField($recordId, $field, $value): array;
+    public function validateField(int $recordId, string $field, $value): array;
 
     /**
-     * @param $recordId
+     * @param int $recordId
      * @param array $record
      * @return ViolationInterface[]
      */
-    public function validateRecord($recordId, array $record): array;
+    public function validateRecord(int $recordId, array $record): array;
 }

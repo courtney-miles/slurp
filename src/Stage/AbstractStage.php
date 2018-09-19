@@ -14,12 +14,12 @@ abstract class AbstractStage implements StageInterface
      */
     protected $observers = [];
 
-    public function attachObserver(StageObserverInterface $observer)
+    public function attachObserver(StageObserverInterface $observer): void
     {
         $this->observers[spl_object_hash($observer)] = $observer;
     }
 
-    protected function notify()
+    protected function notify(): void
     {
         foreach ($this->observers as $observer) {
             $observer->update($this);

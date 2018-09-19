@@ -8,6 +8,7 @@
 namespace MilesAsylum\Slurp\Transform\SchemaTransformer;
 
 use Carbon\Carbon;
+use frictionlessdata\tableschema\Fields\BaseField;
 use frictionlessdata\tableschema\Fields\DateField;
 use frictionlessdata\tableschema\Fields\DatetimeField;
 use frictionlessdata\tableschema\Fields\TimeField;
@@ -29,12 +30,12 @@ class SchemaTransformer implements TransformerInterface
     }
 
     /**
-     * @param $field
+     * @param string $field
      * @param $value
      * @return mixed
      * @throws TransformationException
      */
-    public function transformField($field, $value)
+    public function transformField(string $field, $value)
     {
         try {
             $schemaField = $this->tableSchema->field($field);
@@ -103,7 +104,7 @@ class SchemaTransformer implements TransformerInterface
      * @param $name
      * @return \frictionlessdata\tableschema\Fields\BaseField|null
      */
-    protected function getField($name)
+    protected function getField($name): ?BaseField
     {
         try {
             $schemaField = $this->tableSchema->field($name);

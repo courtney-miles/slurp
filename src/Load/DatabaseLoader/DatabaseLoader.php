@@ -102,7 +102,7 @@ class DatabaseLoader implements LoaderInterface
             array_keys($this->columnMapping)
         );
         $stagedTable = $this->stagedLoad->begin();
-        $this->batchStmt = $this->loaderFactory->createBatchInsStmt(
+        $this->batchStmt = $this->loaderFactory->createBatchInsertManager(
             $stagedTable,
             array_keys($this->columnMapping)
         );
@@ -135,6 +135,9 @@ class DatabaseLoader implements LoaderInterface
         return $this->aborted;
     }
 
+    /**
+     * @throws DatabaseLoaderException
+     */
     public function finalise(): void
     {
         if (!$this->hasBegun()) {

@@ -9,8 +9,19 @@ namespace MilesAsylum\Slurp\Validate;
 
 class Violation implements ViolationInterface
 {
+    /**
+     * @var int
+     */
     private $recordId;
+
+    /**
+     * @var string
+     */
     private $field;
+
+    /**
+     * @var mixed
+     */
     private $value;
 
     /**
@@ -18,7 +29,7 @@ class Violation implements ViolationInterface
      */
     private $message;
 
-    public function __construct($recordId, $field, $value, string $message)
+    public function __construct(int $recordId, string $field, $value, string $message)
     {
         $this->recordId = $recordId;
         $this->field = $field;
@@ -26,7 +37,7 @@ class Violation implements ViolationInterface
         $this->message = $message;
     }
 
-    public function getRecordId()
+    public function getRecordId(): int
     {
         return $this->recordId;
     }

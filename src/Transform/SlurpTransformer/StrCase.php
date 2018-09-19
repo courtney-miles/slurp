@@ -9,22 +9,25 @@ namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
 class StrCase extends Change
 {
+    /**
+     * @var string
+     */
     private $caseChange;
 
     const CASE_UPPER = 'upper';
     const CASE_LOWER = 'lower';
 
-    public function __construct($caseChange)
+    public function __construct(string $caseChange)
     {
         $this->caseChange = $caseChange;
     }
 
-    public function transformedBy()
+    public function transformedBy(): string
     {
         return StrCaseTransformer::class;
     }
 
-    public function getCaseChange()
+    public function getCaseChange(): string
     {
         return $this->caseChange;
     }

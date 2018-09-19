@@ -28,12 +28,12 @@ class Transformer implements TransformerInterface
         $this->loader = $loader;
     }
 
-    public static function createTransformer()
+    public static function createTransformer(): self
     {
         return new self(new TransformerLoader());
     }
 
-    public function setFieldChanges($field, $changes)
+    public function setFieldChanges($field, $changes): void
     {
         unset($this->fieldChanges[$field]);
 
@@ -50,7 +50,7 @@ class Transformer implements TransformerInterface
         }
     }
 
-    public function transformField($field, $value)
+    public function transformField(string $field, $value)
     {
         if (!isset($this->fieldChanges[$field])) {
             throw new UnknownFieldException($field, "Unknown field $field");

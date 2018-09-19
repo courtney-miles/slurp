@@ -41,7 +41,7 @@ class Scratch extends Change
     /**
      * @return string
      */
-    public function transformedBy()
+    public function transformedBy(): string
     {
         return ScratchTransformer::class;
     }

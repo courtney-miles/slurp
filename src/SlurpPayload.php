@@ -8,7 +8,6 @@
 namespace MilesAsylum\Slurp;
 
 use MilesAsylum\Slurp\Validate\Violation;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class SlurpPayload
 {
@@ -70,12 +69,12 @@ class SlurpPayload
         return isset($this->values[$name]) ? $this->values[$name] : null;
     }
 
-    public function setValue($name, $value): void
+    public function setValue(string $name, $value): void
     {
         $this->values[$name] = $value;
     }
 
-    public function replaceValue($name, $value): void
+    public function replaceValue(string $name, $value): void
     {
         if (!$this->hasValue($name)) {
             throw new \InvalidArgumentException(
@@ -86,7 +85,7 @@ class SlurpPayload
         $this->setValue($name, $value);
     }
 
-    public function hasValue($name): bool
+    public function hasValue(string $name): bool
     {
         return array_key_exists($name, $this->values);
     }

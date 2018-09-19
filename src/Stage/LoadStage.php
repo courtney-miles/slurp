@@ -23,6 +23,9 @@ class LoadStage extends AbstractStage
      */
     protected $payload;
 
+    /**
+     * @var bool
+     */
     protected $loadAborted = false;
 
     public function __construct(LoaderInterface $loader)

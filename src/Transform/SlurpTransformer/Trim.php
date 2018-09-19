@@ -30,7 +30,7 @@ class Trim extends Change
      * @param bool $fromRight
      * @param string $chars
      */
-    public function __construct($fromLeft = true, $fromRight = true, $chars = " \t\n\r\0\x0B")
+    public function __construct(bool $fromLeft = true, bool $fromRight = true, string $chars = " \t\n\r\0\x0B")
     {
         $this->chars = $chars;
         $this->fromLeft = $fromLeft;
@@ -64,7 +64,7 @@ class Trim extends Change
     /**
      * @return string
      */
-    public function transformedBy()
+    public function transformedBy(): string
     {
         return TrimTransformer::class;
     }

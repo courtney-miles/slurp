@@ -22,7 +22,7 @@ class DateTimeFormat extends Change
     /**
      * @return string
      */
-    public function getFormatFrom()
+    public function getFormatFrom(): string
     {
         return $this->formatFrom;
     }
@@ -30,7 +30,7 @@ class DateTimeFormat extends Change
     /**
      * @return string
      */
-    public function getFormatTo()
+    public function getFormatTo(): string
     {
         return $this->formatTo;
     }
@@ -38,7 +38,7 @@ class DateTimeFormat extends Change
     /**
      * @return string
      */
-    public function transformedBy()
+    public function transformedBy(): string
     {
         return DateTimeFormatTransformer::class;
     }

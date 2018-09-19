@@ -11,15 +11,21 @@ use Throwable;
 
 class UnknownFieldException extends \InvalidArgumentException implements ExceptionInterface
 {
+    /**
+     * @var string
+     */
     protected $field;
 
-    public function __construct($field, string $message = "", int $code = 0, Throwable $previous = null)
+    public function __construct(string $field, string $message = "", int $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
         $this->field = $field;
     }
 
-    public function getField()
+    /**
+     * @return string
+     */
+    public function getField(): string
     {
         return $this->field;
     }

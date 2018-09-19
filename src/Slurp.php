@@ -27,7 +27,7 @@ class Slurp
         $this->pipeline = $pipeline;
     }
 
-    public function process(ExtractorInterface $extractor)
+    public function process(ExtractorInterface $extractor): void
     {
         $this->extractor = $extractor;
         $this->pipeline->process($this);

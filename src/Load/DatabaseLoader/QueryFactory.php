@@ -10,13 +10,12 @@ namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 class QueryFactory
 {
     /**
-     * @param $table
+     * @param string $table
      * @param array $columns
      * @param int $batchSize
      * @return string
-     * @throws \Exception
      */
-    public function createInsertQuery($table, array $columns, $batchSize = 1): string
+    public function createInsertQuery(string $table, array $columns, int $batchSize = 1): string
     {
         if (empty($columns)) {
             throw new \InvalidArgumentException('One or more columns must be supplied.');

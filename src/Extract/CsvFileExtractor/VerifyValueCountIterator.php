@@ -21,7 +21,7 @@ class VerifyValueCountIterator extends \IteratorIterator
     }
 
     /**
-     * {@inheritdoc}
+     * @return array
      * @throws ValueCountMismatchException
      */
     public function current()

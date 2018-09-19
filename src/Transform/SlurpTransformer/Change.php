@@ -12,5 +12,5 @@ abstract class Change
     /**
      * @return string
      */
-    abstract public function transformedBy();
+    abstract public function transformedBy(): string;
 }

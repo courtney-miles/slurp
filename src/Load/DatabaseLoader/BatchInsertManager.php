@@ -47,7 +47,7 @@ class BatchInsertManager implements BatchManagerInterface
     /**
      * @param array[] $rows
      */
-    public function write(array $rows)
+    public function write(array $rows): void
     {
         if (!empty($rows)) {
             $this->getPreparedBatchStmt(count($rows))
@@ -72,7 +72,7 @@ class BatchInsertManager implements BatchManagerInterface
         return $this->preparedBatchStmts[$count];
     }
 
-    protected function ensureColumnMatch($rowId, array $rowValues): void
+    protected function ensureColumnMatch(int $rowId, array $rowValues): void
     {
         $missingFields = array_keys(
             array_diff_key(array_flip($this->columns), $rowValues)
@@ -83,7 +83,7 @@ class BatchInsertManager implements BatchManagerInterface
         }
     }
 
-    protected function convertRowCollectionToParams(array $rowCollection):array
+    protected function convertRowCollectionToParams(array $rowCollection): array
     {
         $params = [];
 
@@ -95,7 +95,7 @@ class BatchInsertManager implements BatchManagerInterface
         return $params;
     }
 
-    protected function convertRowToParams($row):array
+    protected function convertRowToParams(array $row): array
     {
         $params = [];
 

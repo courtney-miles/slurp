@@ -19,17 +19,17 @@ class LoaderFactory
         $this->pdo = $pdo;
     }
 
-    public function createBatchInsStmt(string $table, array $columns)
+    public function createBatchInsertManager(string $table, array $columns): BatchInsertManager
     {
-        return new BatchInsertManager($this->pdo, $table, $columns, $this->createBatchInsQueryFactory());
+        return new BatchInsertManager($this->pdo, $table, $columns, $this->createQueryFactory());
     }
 
-    public function createStagedLoad(string $table, array $columns)
+    public function createStagedLoad(string $table, array $columns): StagedLoad
     {
         return new StagedLoad($this->pdo, $table, $columns);
     }
 
-    protected function createBatchInsQueryFactory()
+    protected function createQueryFactory(): QueryFactory
     {
         return new QueryFactory();
     }

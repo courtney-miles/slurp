@@ -7,7 +7,7 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
-use MilesAsylum\Slurp\Load\DatabaseLoader\BatchManagerInterface;
+use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsertManager;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\DatabaseLoaderException;
 use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
@@ -26,7 +26,7 @@ class DatabaseLoaderTest extends TestCase
     protected $mockLoaderFactory;
 
     /**
-     * @var BatchManagerInterface|MockInterface
+     * @var BatchInsertManager|MockInterface
      */
     protected $mockBatchStmt;
 
@@ -41,14 +41,14 @@ class DatabaseLoaderTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockBatchStmt = \Mockery::mock(BatchManagerInterface::class);
+        $this->mockBatchStmt = \Mockery::mock(BatchInsertManager::class);
         $this->mockStagedLoad = \Mockery::mock(StagedLoad::class);
         $this->mockStagedLoad->shouldReceive('begin')
             ->byDefault();
         $this->mockStagedLoad->shouldReceive('discard')
             ->byDefault();
         $this->mockLoaderFactory = \Mockery::mock(LoaderFactory::class);
-        $this->mockLoaderFactory->shouldReceive('createBatchInsStmt')
+        $this->mockLoaderFactory->shouldReceive('createBatchInsertManager')
             ->withAnyArgs()
             ->andReturn($this->mockBatchStmt)
             ->byDefault();

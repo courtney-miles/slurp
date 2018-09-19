@@ -59,7 +59,7 @@ class StagedLoad
         return $this->stageTable;
     }
 
-    public function discard()
+    public function discard(): void
     {
         if (!$this->hasBegun) {
             throw new DatabaseLoaderException(
@@ -71,7 +71,7 @@ class StagedLoad
         $this->hasBegun = false;
     }
 
-    public function commit()
+    public function commit(): void
     {
         if (!$this->hasBegun) {
             throw new DatabaseLoaderException(
@@ -101,7 +101,7 @@ SQL
         $this->hasBegun = false;
     }
 
-    protected function createTemporaryTable($likeName, $asName)
+    protected function createTemporaryTable($likeName, $asName): void
     {
         $this->pdo->exec(<<<SQL
 CREATE TEMPORARY TABLE `{$asName}` LIKE `{$likeName}`
@@ -109,7 +109,7 @@ SQL
         );
     }
 
-    protected function dropTemporaryTable($name)
+    protected function dropTemporaryTable($name): void
     {
         $this->pdo->exec(<<<SQL
 DROP TEMPORARY TABLE IF EXISTS `{$name}`

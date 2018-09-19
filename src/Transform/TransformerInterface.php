@@ -9,7 +9,7 @@ namespace MilesAsylum\Slurp\Transform;
 
 interface TransformerInterface
 {
-    public function transformField($field, $value);
+    public function transformField(string $field, $value);
 
     public function transformRecord(array $record): array;
 }

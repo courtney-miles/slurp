@@ -9,12 +9,9 @@ namespace MilesAsylum\Slurp;
 
 use frictionlessdata\tableschema\Schema;
 use League\Pipeline\PipelineBuilder;
-use MilesAsylum\Slurp\Load\DatabaseLoader\QueryFactory;
-use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsertManager;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
 use MilesAsylum\Slurp\Load\LoaderInterface;
-use MilesAsylum\Slurp\Stage\FinaliseLoadStage;
 use MilesAsylum\Slurp\Stage\InvokeExtractionPipeline;
 use MilesAsylum\Slurp\Stage\LoadStage;
 use MilesAsylum\Slurp\Stage\StageFactory;

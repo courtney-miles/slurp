@@ -9,5 +9,5 @@ namespace MilesAsylum\Slurp\Stage;
 
 interface StageObserverInterface
 {
-    public function update(StageInterface $stage);
+    public function update(StageInterface $stage): void;
 }

@@ -34,7 +34,7 @@ class SchemaValidator implements ValidatorInterface
     /**
      * {@inheritdoc}
      */
-    public function validateField($recordId, $field, $value): array
+    public function validateField(int $recordId, string $field, $value): array
     {
         $violations = [];
 
@@ -59,7 +59,7 @@ class SchemaValidator implements ValidatorInterface
     /**
      * {@inheritdoc}
      */
-    public function validateRecord($recordId, array $record): array
+    public function validateRecord(int $recordId, array $record): array
     {
         $violations = [];
 

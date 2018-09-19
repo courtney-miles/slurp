@@ -9,7 +9,7 @@ namespace MilesAsylum\Slurp\Validate;
 
 interface ViolationInterface
 {
-    public function getRecordId();
+    public function getRecordId(): int;
 
     public function getField(): string;
 

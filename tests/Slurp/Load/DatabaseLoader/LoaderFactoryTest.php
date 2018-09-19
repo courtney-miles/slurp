@@ -51,7 +51,7 @@ class LoaderFactoryTest extends TestCase
     {
         $this->assertInstanceOf(
             BatchInsertManager::class,
-            $this->factory->createBatchInsStmt(
+            $this->factory->createBatchInsertManager(
                 'foo',
                 ['col']
             )

@@ -11,7 +11,7 @@ use MilesAsylum\Slurp\Exception\ExceptionInterface;
 
 class MissingValueException extends \InvalidArgumentException implements ExceptionInterface
 {
-    public static function createMissing($recordId, array $missingFields): self
+    public static function createMissing(int $recordId, array $missingFields): self
     {
         return new static(
             sprintf(
