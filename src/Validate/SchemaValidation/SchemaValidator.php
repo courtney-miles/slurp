@@ -26,6 +26,11 @@ class SchemaValidator implements ValidatorInterface
      */
     private $uniqueFieldValues = [];
 
+    /**
+     * @var null|array
+     */
+    private $foundUniqueFields = null;
+
     public function __construct(Schema $tableSchema)
     {
         $this->tableSchema = $tableSchema;
@@ -74,21 +79,22 @@ class SchemaValidator implements ValidatorInterface
             );
         }
 
-        foreach ($this->findUniqueFields($this->tableSchema) as $uniqueField) {
+        foreach ($this->getUniqueFields($this->tableSchema) as $uniqueField) {
             $fieldName = $uniqueField->name();
             $value = $record[$uniqueField->name()];
+            $keyValue = is_object($value) ? spl_object_hash($value) : $value;
 
             if (isset($this->uniqueFieldValues[$fieldName])
-                && in_array($value, $this->uniqueFieldValues[$fieldName])
+                && isset($this->uniqueFieldValues[$fieldName][$keyValue])
             ) {
                 $violations[] = new Violation(
                     $recordId,
                     $fieldName,
                     $value,
-                    "Field value is not unique."
+                    "$fieldName: value is not unique."
                 );
             } else {
-                $this->uniqueFieldValues[$fieldName][] = $value;
+                $this->uniqueFieldValues[$fieldName][$keyValue] = true;
             }
         }
 
@@ -99,16 +105,20 @@ class SchemaValidator implements ValidatorInterface
      * @param Schema $tableSchema
      * @return BaseField[]
      */
-    protected function findUniqueFields(Schema $tableSchema): array
+    protected function getUniqueFields(Schema $tableSchema): array
     {
-        $uniqueFields = [];
+        if ($this->foundUniqueFields === null) {
+            $uniqueFields = [];
 
-        foreach ($tableSchema->fields() as $field) {
-            if ($field->unique()) {
-                $uniqueFields[] = $field;
+            foreach ($tableSchema->fields() as $field) {
+                if ($field->unique()) {
+                    $uniqueFields[] = $field;
+                }
             }
+
+            $this->foundUniqueFields = $uniqueFields;
         }
 
-        return $uniqueFields;
+        return $this->foundUniqueFields;
     }
 }
