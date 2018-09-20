@@ -1,0 +1,56 @@
+<?php
+/**
+ * Author: Courtney Miles
+ * Date: 20/09/18
+ * Time: 8:56 PM
+ */
+
+namespace MilesAsylum\Slurp\Tests\Slurp\Extract\DatabaseExtractor;
+
+use MilesAsylum\Slurp\Extract\DatabaseExtractor\DatabaseExtractor;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
+use PHPUnit\Framework\TestCase;
+
+class DatabaseExtractorTest extends TestCase
+{
+    use MockeryPHPUnitIntegration;
+
+    /**
+     * @var \PDO|MockInterface
+     */
+    protected $mockPdo;
+
+    /**
+     * @var \PDOStatement|MockInterface
+     */
+    protected $mockStmt;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->mockPdo = \Mockery::mock(\PDO::class);
+        $this->mockStmt = \Mockery::mock(\PDOStatement::class);
+    }
+
+    public function testGetIterator()
+    {
+        $qry = 'SELECT';
+        $qryParams = [':foo' => 123];
+
+        $this->mockPdo->shouldReceive('prepare')
+            ->with($qry)
+            ->andReturn($this->mockStmt);
+        $this->mockStmt->shouldReceive('execute')
+            ->with($qryParams);
+
+        $dbExtractor = new DatabaseExtractor(
+            $this->mockPdo,
+            $qry,
+            $qryParams
+        );
+
+        $this->assertInstanceOf(\Iterator::class, $dbExtractor->getIterator());
+    }
+}
