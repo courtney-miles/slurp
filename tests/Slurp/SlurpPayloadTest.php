@@ -22,41 +22,41 @@ class SlurpPayloadTest extends TestCase
     {
         $payload = new SlurpPayload();
 
-        $this->assertFalse($payload->hasValue('foo'));
-        $this->assertNull($payload->getValue('foo'));
+        $this->assertFalse($payload->hasField('foo'));
+        $this->assertNull($payload->getFieldValue('foo'));
     }
 
     public function testSetValue()
     {
         $payload = new SlurpPayload();
-        $payload->setValue('foo', 123);
+        $payload->setFieldValue('foo', 123);
 
-        $this->assertTrue($payload->hasValue('foo'));
-        $this->assertSame(123, $payload->getValue('foo'));
+        $this->assertTrue($payload->hasField('foo'));
+        $this->assertSame(123, $payload->getFieldValue('foo'));
     }
 
     public function testSetValues()
     {
         $values = ['foo' => 123, 'bar' => 234];
         $payload = new SlurpPayload();
-        $payload->setValues($values);
+        $payload->setRecord($values);
 
-        $this->assertSame($values, $payload->getValues());
+        $this->assertSame($values, $payload->getRecord());
 
         foreach ($values as $name => $value) {
-            $this->assertTrue($payload->hasValue($name));
-            $this->assertSame($value, $payload->getValue($name));
+            $this->assertTrue($payload->hasField($name));
+            $this->assertSame($value, $payload->getFieldValue($name));
         }
     }
 
     public function testReplaceValue()
     {
         $payload = new SlurpPayload();
-        $payload->setValue('foo', 123);
+        $payload->setFieldValue('foo', 123);
 
-        $payload->replaceValue('foo', 234);
+        $payload->replaceFieldValue('foo', 234);
 
-        $this->assertSame(234, $payload->getValue('foo'));
+        $this->assertSame(234, $payload->getFieldValue('foo'));
     }
 
     public function testExceptionOnReplaceUnknownValue()
@@ -64,22 +64,22 @@ class SlurpPayloadTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         $payload = new SlurpPayload();
-        $payload->replaceValue('foo', 234);
+        $payload->replaceFieldValue('foo', 234);
     }
 
     public function testGetRowIdDefault()
     {
         $payload = new SlurpPayload();
 
-        $this->assertNull($payload->getRowId());
+        $this->assertNull($payload->getRecordId());
     }
 
     public function testSetId()
     {
         $payload = new SlurpPayload();
-        $payload->setId(123);
+        $payload->setRecordId(123);
 
-        $this->assertSame(123, $payload->getRowId());
+        $this->assertSame(123, $payload->getRecordId());
     }
 
     public function testHasNoViolations()
@@ -87,7 +87,7 @@ class SlurpPayloadTest extends TestCase
         $payload = new SlurpPayload();
 
         $this->assertFalse($payload->hasViolations());
-        $this->assertfalse($payload->valueHasViolation('bar'));
+        $this->assertfalse($payload->fieldHasViolation('bar'));
         $this->assertSame([], $payload->getViolations());
     }
 
@@ -109,7 +109,7 @@ class SlurpPayloadTest extends TestCase
             ->andReturn('foo');
         $payload->addViolations([$mockViolation]);
 
-        $this->assertTrue($payload->valueHasViolation('foo'));
+        $this->assertTrue($payload->fieldHasViolation('foo'));
     }
 
     public function testValueHasNotViolation()
@@ -120,7 +120,7 @@ class SlurpPayloadTest extends TestCase
             ->andReturn('foo');
         $payload->addViolations([$mockViolation]);
 
-        $this->assertfalse($payload->valueHasViolation('bar'));
+        $this->assertfalse($payload->fieldHasViolation('bar'));
     }
 
     public function testSetLoadAborted()

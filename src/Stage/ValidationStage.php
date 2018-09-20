@@ -29,7 +29,7 @@ class ValidationStage extends AbstractStage
 
     public function __invoke(SlurpPayload $payload): SlurpPayload
     {
-        $payload->addViolations($this->validator->validateRecord($payload->getRowId(), $payload->getValues()));
+        $payload->addViolations($this->validator->validateRecord($payload->getRecordId(), $payload->getRecord()));
 
         $this->payload = $payload;
         $this->notify();

@@ -89,9 +89,9 @@ class ValidationStageTest extends TestCase
     public function createMockPayload(int $recordId, array $record)
     {
         $mockPayload = \Mockery::mock(SlurpPayload::class);
-        $mockPayload->shouldReceive('getRowId')
+        $mockPayload->shouldReceive('getRecordId')
             ->andReturn($recordId);
-        $mockPayload->shouldReceive('getValues')
+        $mockPayload->shouldReceive('getRecord')
             ->andReturn($record);
         $mockPayload->shouldReceive('addViolations')
             ->withAnyArgs()

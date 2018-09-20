@@ -45,7 +45,7 @@ class LoadStage extends AbstractStage
                 $this->loadAborted = true;
                 $payload->setLoadAborted($this->loadAborted);
             } else {
-                $this->loader->loadValues($payload->getValues());
+                $this->loader->loadValues($payload->getRecord());
             }
         } else {
             $payload->setLoadAborted(true);

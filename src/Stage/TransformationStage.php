@@ -30,8 +30,8 @@ class TransformationStage extends AbstractStage
     public function __invoke(SlurpPayload $payload): SlurpPayload
     {
         if (!$payload->hasViolations()) {
-            $payload->setValues(
-                $this->transformer->transformRecord($payload->getValues())
+            $payload->setRecord(
+                $this->transformer->transformRecord($payload->getRecord())
             );
         }
 

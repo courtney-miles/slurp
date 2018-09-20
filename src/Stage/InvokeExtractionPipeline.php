@@ -27,8 +27,8 @@ class InvokeExtractionPipeline implements OuterProcessStageInterface
     {
         foreach ($slurp->getExtractor() as $id => $values) {
             $payload = new SlurpPayload();
-            $payload->setId($id);
-            $payload->setValues($values);
+            $payload->setRecordId($id);
+            $payload->setRecord($values);
 
             $this->innerPipeline->process($payload);
         }

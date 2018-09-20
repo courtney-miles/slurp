@@ -14,12 +14,12 @@ class SlurpPayload
     /**
      * @var int
      */
-    protected $rowId;
+    protected $recordId;
 
     /**
      * @var array
      */
-    protected $values = [];
+    protected $record = [];
 
     /**
      * @var Violation[]
@@ -31,63 +31,63 @@ class SlurpPayload
     /**
      * @return int
      */
-    public function getRowId():? int
+    public function getRecordId():? int
     {
-        return $this->rowId;
+        return $this->recordId;
     }
 
     /**
-     * @param int $rowId
+     * @param int $recordId
      */
-    public function setId(int $rowId): void
+    public function setRecordId(int $recordId): void
     {
-        $this->rowId = $rowId;
+        $this->recordId = $recordId;
     }
 
     /**
      * @return array
      */
-    public function getValues(): array
+    public function getRecord(): array
     {
-        return $this->values;
+        return $this->record;
     }
 
     /**
-     * @param array $values
+     * @param array $record
      */
-    public function setValues(array $values): void
+    public function setRecord(array $record): void
     {
-        $this->values = $values;
+        $this->record = $record;
     }
 
     /**
      * @param $name
      * @return mixed|null
      */
-    public function getValue($name)
+    public function getFieldValue($name)
     {
-        return isset($this->values[$name]) ? $this->values[$name] : null;
+        return isset($this->record[$name]) ? $this->record[$name] : null;
     }
 
-    public function setValue(string $name, $value): void
+    public function setFieldValue(string $name, $value): void
     {
-        $this->values[$name] = $value;
+        $this->record[$name] = $value;
     }
 
-    public function replaceValue(string $name, $value): void
+    public function replaceFieldValue(string $name, $value): void
     {
-        if (!$this->hasValue($name)) {
+        if (!$this->hasField($name)) {
             throw new \InvalidArgumentException(
                 "Unable to replace value for $name. A value does not exists for $name."
             );
         }
 
-        $this->setValue($name, $value);
+        $this->setFieldValue($name, $value);
     }
 
-    public function hasValue(string $name): bool
+    public function hasField(string $name): bool
     {
-        return array_key_exists($name, $this->values);
+        return array_key_exists($name, $this->record);
     }
 
     /**
@@ -98,14 +98,14 @@ class SlurpPayload
         return $this->violations;
     }
 
-    public function valueHasViolation($valueName): bool
+    public function fieldHasViolation(string $field): bool
     {
         if (!$this->hasViolations()) {
             return false;
         }
 
         foreach ($this->violations as $violation) {
-            if ($violation->getField() == $valueName) {
+            if ($violation->getField() == $field) {
                 return true;
             }
         }

@@ -52,16 +52,16 @@ class TransformationStageTest extends TestCase
 
         /** @var SlurpPayload $mockPayload */
         $mockPayload = \Mockery::mock(SlurpPayload::class)->makePartial();
-        $mockPayload->setValue($field, $value);
+        $mockPayload->setFieldValue($field, $value);
         $mockPayload->shouldReceive('hasViolations')
             ->andReturn(false);
 
         $this->mockTransformer->shouldReceive('transformRecord')
-            ->with($mockPayload->getValues())
+            ->with($mockPayload->getRecord())
             ->andReturn([$field => $transValue]);
 
         $this->assertSame($mockPayload, ($this->stage)($mockPayload));
-        $this->assertSame($transValue, $mockPayload->getValue($field));
+        $this->assertSame($transValue, $mockPayload->getFieldValue($field));
     }
 
     public function testDoNotTransformWhereViolation()
@@ -71,7 +71,7 @@ class TransformationStageTest extends TestCase
 
         /** @var SlurpPayload $mockPayload */
         $mockPayload = \Mockery::mock(SlurpPayload::class)->makePartial();
-        $mockPayload->setValue($field, $value);
+        $mockPayload->setFieldValue($field, $value);
         $mockPayload->shouldReceive('hasViolations')
             ->andReturn(true);
 
@@ -80,6 +80,6 @@ class TransformationStageTest extends TestCase
             ->never();
 
         $this->assertSame($mockPayload, ($this->stage)($mockPayload));
-        $this->assertSame($value, $mockPayload->getValue($field));
+        $this->assertSame($value, $mockPayload->getFieldValue($field));
     }
 }

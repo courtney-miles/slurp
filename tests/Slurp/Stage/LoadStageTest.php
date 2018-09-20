@@ -128,7 +128,7 @@ class LoadStageTest extends TestCase
     {
         /** @var SlurpPayload|MockInterface $mockPayload */
         $mockPayload = \Mockery::mock(SlurpPayload::class);
-        $mockPayload->shouldReceive('getValues')
+        $mockPayload->shouldReceive('getRecord')
             ->andReturn($values);
         $mockPayload->shouldReceive('hasViolations')
             ->andReturn($hasViolations);

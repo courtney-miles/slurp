@@ -58,11 +58,11 @@ class InvokeExtractionPipelineTest extends TestCase
                         return false;
                     }
 
-                    if (!isset($rows[$payload->getRowId()])) {
+                    if (!isset($rows[$payload->getRecordId()])) {
                         return false;
                     }
 
-                    if ($rows[$payload->getRowId()] !== $payload->getValues()) {
+                    if ($rows[$payload->getRecordId()] !== $payload->getRecord()) {
                         return false;
                     }
 
