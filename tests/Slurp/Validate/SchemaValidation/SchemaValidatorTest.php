@@ -89,7 +89,7 @@ class SchemaValidatorTest extends TestCase
         $this->assertEquals(new Violation($recordId, $badField, $badValue, $message), $violation);
     }
 
-    public function testValidatRecordWithUniqueField()
+    public function testValidateRecordWithUniqueField()
     {
         $field = 'id';
         $record = [$field => 123];
@@ -112,7 +112,7 @@ class SchemaValidatorTest extends TestCase
         $violation = array_pop($violations);
 
         $this->assertInstanceOf(ViolationInterface::class, $violation);
-        $this->assertEquals(new Violation(2, $field, $record[$field], "Field value is not unique."), $violation);
+        $this->assertEquals(new Violation(2, $field, $record[$field], "id: value is not unique."), $violation);
     }
 
     public function testUnknownFieldException()

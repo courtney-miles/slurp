@@ -11,6 +11,7 @@ use frictionlessdata\tableschema\Schema;
 use League\Pipeline\PipelineBuilder;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
+use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Stage\InvokeExtractionPipeline;
 use MilesAsylum\Slurp\Stage\LoadStage;
@@ -180,13 +181,19 @@ class SlurpBuilder
         return $this;
     }
 
-    public function createDatabaseLoader(\PDO $pdo, string $table, array $fieldMappings, int $batchSize): DatabaseLoader
-    {
+    public function createDatabaseLoader(
+        \PDO $pdo,
+        string $table,
+        array $fieldMappings,
+        int $batchSize,
+        PreCommitDmlInterface $preCommitDml = null
+    ): DatabaseLoader {
         return new DatabaseLoader(
             $table,
             $fieldMappings,
             new LoaderFactory($pdo),
-            $batchSize
+            $batchSize,
+            $preCommitDml
         );
     }
 

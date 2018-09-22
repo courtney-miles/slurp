@@ -11,6 +11,7 @@ use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsertManager;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\DatabaseLoaderException;
 use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
+use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
 use MilesAsylum\Slurp\Load\DatabaseLoader\StagedLoad;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -34,6 +35,11 @@ class DatabaseLoaderTest extends TestCase
      * @var StagedLoad|MockInterface
      */
     protected $mockStagedLoad;
+
+    /**
+     * @var \PDO|MockInterface
+     */
+    protected $mockPdo;
 
     protected $batchSize = 3;
 
@@ -134,6 +140,28 @@ class DatabaseLoaderTest extends TestCase
         foreach ($rows as $row) {
             $databaseLoader->loadValues($row);
         }
+
+        $databaseLoader->finalise();
+    }
+
+    public function testCallPreCommitDmlOnFinalise()
+    {
+        $mockPreCommitDml = \Mockery::mock(PreCommitDmlInterface::class);
+
+        $mockPreCommitDml->shouldReceive('execute')
+            ->once();
+
+        $this->mockBatchStmt->shouldReceive('write')->byDefault();
+        $this->mockStagedLoad->shouldReceive('commit')->byDefault();
+
+        $databaseLoader = new DatabaseLoader(
+            'my_tbl',
+            ['col1' => 'col1', 'col2' => 'col2'],
+            $this->mockLoaderFactory,
+            2,
+            $mockPreCommitDml
+        );
+        $databaseLoader->begin();
 
         $databaseLoader->finalise();
     }

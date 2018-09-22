@@ -49,24 +49,32 @@ class DatabaseLoader implements LoaderInterface
     protected $begun = false;
 
     protected $aborted = false;
+    /**
+     * @var PreCommitDmlInterface
+     */
+    private $preCommitDml;
 
     /**
      * DatabaseLoader constructor.
      * @param string $table
      * @param array $columnMapping Array key is the destination column and the array value is the source column.
      * @param LoaderFactory $dmlFactory
+     * @param \PDO $pdo
      * @param int $batchSize
+     * @param PreCommitDmlInterface|null $preCommitDml
      */
     public function __construct(
         string $table,
         array $columnMapping,
         LoaderFactory $dmlFactory,
-        int $batchSize = 100
+        int $batchSize = 100,
+        PreCommitDmlInterface $preCommitDml = null
     ) {
         $this->loaderFactory = $dmlFactory;
         $this->table = $table;
         $this->batchSize = $batchSize;
         $this->columnMapping = $columnMapping;
+        $this->preCommitDml = $preCommitDml;
     }
 
     /**
@@ -149,6 +157,11 @@ class DatabaseLoader implements LoaderInterface
         }
 
         $this->flush();
+
+        if ($this->preCommitDml !== null) {
+            $this->preCommitDml->execute();
+        }
+
         $this->stagedLoad->commit();
     }
 
