@@ -7,9 +7,15 @@ php:
 services:
 - mysql
 
+env:
+- VALIDATOR_VER=3.4.*
+- VALIDATOR_VER=4.0.*
+- VALIDATOR_VER=4.1.*
+
 before_script:
 - composer self-update
 - composer install --no-interaction --dev
+- composer require symfony/validator:${VALIDATOR_VER} --no-update
 
 script:
 - php vendor/bin/phpunit -c phpunit.xml.dist --testsuite unit_tests --coverage-clover build/logs/clover.xml
