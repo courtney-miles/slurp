@@ -15,7 +15,7 @@ use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Stage\InvokeExtractionPipeline;
 use MilesAsylum\Slurp\Stage\LoadStage;
-use MilesAsylum\Slurp\Stage\StageFactory;
+use MilesAsylum\Slurp\SlurpFactory;
 use MilesAsylum\Slurp\Stage\StageInterface;
 use MilesAsylum\Slurp\Stage\StageObserverInterface;
 use MilesAsylum\Slurp\Stage\TransformationStage;
@@ -41,9 +41,9 @@ class SlurpBuilder
     private $innerPipelineBuilder;
 
     /**
-     * @var StageFactory
+     * @var SlurpFactory
      */
-    private $stageFactory;
+    private $factory;
 
     /**
      * @var ValidationStage[]
@@ -62,7 +62,7 @@ class SlurpBuilder
 
     protected $preExtractionStages = [];
 
-    protected $postExtractionStages = [];
+    protected $finaliseStages = [];
 
     /**
      * @var SchemaValidator
@@ -111,11 +111,11 @@ class SlurpBuilder
     public function __construct(
         PipelineBuilder $innerPipelineBuilder,
         PipelineBuilder $outerPipelineBuilder,
-        StageFactory $stageFactory
+        SlurpFactory $stageFactory
     ) {
         $this->innerPipelineBuilder = $innerPipelineBuilder;
         $this->outerPipelineBuilder = $outerPipelineBuilder;
-        $this->stageFactory = $stageFactory;
+        $this->factory = $stageFactory;
     }
 
     public static function create(): self
@@ -123,60 +123,66 @@ class SlurpBuilder
         return new static(
             new PipelineBuilder(),
             new PipelineBuilder(),
-            new StageFactory()
+            new SlurpFactory()
         );
     }
 
     public function setTableSchema(Schema $tableSchema): self
     {
-        $this->schemaValidator = new SchemaValidator($tableSchema);
-        $this->schemaTransformer = new SchemaTransformer($tableSchema);
+        $this->schemaValidator = $this->factory->createSchemaValidator($tableSchema);
+        $this->schemaTransformer = $this->factory->createSchemaTransformer($tableSchema);
 
         return $this;
     }
 
+    /**
+     * @param string $path
+     * @return Schema
+     * @throws Exception\FactoryException
+     */
     public function createTableSchemaFromPath(string $path): Schema
     {
-        return new Schema($path);
+        return $this->factory->createTableSchemaFromPath($path);
     }
 
+    /**
+     * @param array $arr
+     * @return Schema
+     * @throws Exception\FactoryException
+     */
     public function createTableSchemaFromArray(array $arr): Schema
     {
-        return new Schema($arr);
+        return $this->factory->createTableSchemaFromArray($arr);
     }
 
-    public function addValidationConstraint($field, Constraint $constraint): self
+    public function addValidationConstraint(string $field, Constraint $constraint): self
     {
         if (!isset($this->constraintValidator)) {
-            $this->constraintValidator = new ConstraintValidator(
-                Validation::createValidator()
-            );
+            $this->constraintValidator = $this->factory->createConstraintValidator();
+            $this->validationStages[] = $this->factory->createValidationStage($this->constraintValidator);
         }
 
-        $this->constraintValidator->addColumnConstraints($field, $constraint);
-
-        $this->validationStages[] = $this->stageFactory->createValidationStage($this->constraintValidator);
+        $this->constraintValidator->setFieldConstraints($field, $constraint);
 
         return $this;
     }
 
-    public function addTransformationChange($valueName, Change $change): self
+    public function addTransformationChange(string $field, Change $change): self
     {
         if (!isset($this->transformer)) {
-            $this->transformer = Transformer::createTransformer();
+            $this->transformer = $this->factory->createTransformer();
+            $this->transformationStages[] = $this->factory->createTransformationStage($this->transformer);
         }
 
-        $this->transformer->setFieldChanges($valueName, $change);
-
-        $this->transformationStages[] = $this->stageFactory->createTransformationStage($this->transformer);
+        $this->transformer->addFieldChange($field, $change);
 
         return $this;
     }
 
     public function addLoader(LoaderInterface $loader): self
     {
-        $this->loadStages[] = $this->stageFactory->createLoadStage($loader);
-        $this->postExtractionStages[] = $this->stageFactory->createFinaliseLoadStage($loader);
+        $this->loadStages[] = $this->factory->createLoadStage($loader);
+        $this->finaliseStages[] = $this->factory->createFinaliseStage($loader);
 
         return $this;
     }
@@ -188,10 +194,10 @@ class SlurpBuilder
         int $batchSize,
         PreCommitDmlInterface $preCommitDml = null
     ): DatabaseLoader {
-        return new DatabaseLoader(
+        return $this->factory->createDatabaseLoader(
+            $pdo,
             $table,
             $fieldMappings,
-            new LoaderFactory($pdo),
             $batchSize,
             $preCommitDml
         );
@@ -228,13 +234,13 @@ class SlurpBuilder
     public function build(): Slurp
     {
         if (isset($this->schemaValidator)) {
-            $vs = $this->stageFactory->createValidationStage($this->schemaValidator);
+            $vs = $this->factory->createValidationStage($this->schemaValidator);
             $this->attachValidationObservers($vs);
             $this->innerPipelineBuilder->add($vs);
         }
 
         if (isset($this->schemaTransformer)) {
-            $ts = $this->stageFactory->createTransformationStage($this->schemaTransformer);
+            $ts = $this->factory->createTransformationStage($this->schemaTransformer);
             $this->attachTransformationObservers($ts);
             $this->innerPipelineBuilder->add($ts);
         }
@@ -255,14 +261,14 @@ class SlurpBuilder
         }
 
         $this->outerPipelineBuilder->add(
-            new InvokeExtractionPipeline($this->innerPipelineBuilder->build())
+            $this->factory->createInvokeExtractionPipeline($this->innerPipelineBuilder->build())
         );
 
-        foreach ($this->postExtractionStages as $postExtractionStage) {
+        foreach ($this->finaliseStages as $postExtractionStage) {
             $this->outerPipelineBuilder->add($postExtractionStage);
         }
 
-        return new Slurp($this->outerPipelineBuilder->build());
+        return $this->factory->createSlurp($this->outerPipelineBuilder->build());
     }
 
     protected function attachValidationObservers(ValidationStage $validationStage)

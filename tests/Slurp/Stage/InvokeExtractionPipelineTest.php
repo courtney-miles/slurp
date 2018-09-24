@@ -51,7 +51,7 @@ class InvokeExtractionPipelineTest extends TestCase
         $mockExtractor = \Mockery::mock(ExtractorInterface::class);
         $this->stubExtractorContent($mockExtractor, $rows);
         $this->mockSlurp->shouldReceive('getExtractor')->andReturn($mockExtractor);
-        $this->mockPipeline->shouldReceive('process')
+        $this->mockPipeline->shouldReceive('__invoke')
             ->withArgs(
                 function ($payload) use ($rows) {
                     if (!$payload instanceof SlurpPayload) {

@@ -7,13 +7,13 @@
 
 namespace MilesAsylum\Slurp;
 
-use League\Pipeline\Pipeline;
+use League\Pipeline\PipelineInterface;
 use MilesAsylum\Slurp\Extract\ExtractorInterface;
 
 class Slurp
 {
     /**
-     * @var Pipeline
+     * @var PipelineInterface
      */
     private $pipeline;
 
@@ -22,7 +22,7 @@ class Slurp
      */
     private $extractor;
 
-    public function __construct(Pipeline $pipeline)
+    public function __construct(PipelineInterface $pipeline)
     {
         $this->pipeline = $pipeline;
     }
@@ -30,7 +30,7 @@ class Slurp
     public function process(ExtractorInterface $extractor): void
     {
         $this->extractor = $extractor;
-        $this->pipeline->process($this);
+        ($this->pipeline)($this);
         $this->extractor = null;
     }
 

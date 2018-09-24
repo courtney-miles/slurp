@@ -11,7 +11,7 @@ namespace MilesAsylum\Slurp\Stage;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
 
-class FinaliseLoadStage implements OuterProcessStageInterface
+class FinaliseStage implements OuterProcessStageInterface
 {
     /**
      * @var LoaderInterface

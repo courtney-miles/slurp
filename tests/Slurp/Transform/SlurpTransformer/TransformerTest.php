@@ -72,6 +72,61 @@ class TransformerTest extends TestCase
         $this->assertSame([$field => $newValue], $this->transformer->transformRecord([$field => $value]));
     }
 
+    public function testTransformNoChanges()
+    {
+        $field = 'foo';
+        $value = 123;
+
+        $this->assertSame([$field => $value], $this->transformer->transformRecord([$field => $value]));
+    }
+
+    public function testAddChange()
+    {
+        $field = 'foo';
+        $value = 123;
+        $newValueOne = 321;
+        $newValueTwo = 654;
+        $mockChangeOne = \Mockery::mock(Change::class);
+        $mockChangeTwo = \Mockery::mock(Change::class);
+        $mockChangeTransformer = \Mockery::mock(ChangeTransformerInterface::class);
+        $mockChangeTransformer->shouldReceive('transform')
+            ->with($value, $mockChangeOne)
+            ->andReturn($newValueOne);
+        $mockChangeTransformer->shouldReceive('transform')
+            ->with($newValueOne, $mockChangeTwo)
+            ->andReturn($newValueTwo);
+        $this->stubTransformerLoader($this->mockLoader, $mockChangeOne, $mockChangeTransformer);
+        $this->stubTransformerLoader($this->mockLoader, $mockChangeTwo, $mockChangeTransformer);
+
+        $this->transformer->setFieldChanges($field, $mockChangeOne);
+        $this->transformer->addFieldChange($field, $mockChangeTwo);
+
+        $this->assertSame([$field => $newValueTwo], $this->transformer->transformRecord([$field => $value]));
+    }
+
+    public function testResetChanges()
+    {
+        $field = 'foo';
+        $value = 123;
+        $newValueTwo = 654;
+        $mockChangeOne = \Mockery::mock(Change::class);
+        $mockChangeTwo = \Mockery::mock(Change::class);
+        $mockChangeTransformer = \Mockery::mock(ChangeTransformerInterface::class);
+        $mockChangeTransformer->shouldReceive('transform')
+            ->with($value, $mockChangeOne)
+            ->never();
+        $mockChangeTransformer->shouldReceive('transform')
+            ->with($value, $mockChangeTwo)
+            ->andReturn($newValueTwo);
+        $this->stubTransformerLoader($this->mockLoader, $mockChangeTwo, $mockChangeTransformer);
+
+        $this->transformer->setFieldChanges($field, $mockChangeOne);
+        // Replace the previously set change.
+        $this->transformer->setFieldChanges($field, $mockChangeTwo);
+
+        $this->assertSame([$field => $newValueTwo], $this->transformer->transformRecord([$field => $value]));
+    }
+
     protected function stubTransformerLoader(
         MockInterface $mockLoader,
         Change $change,

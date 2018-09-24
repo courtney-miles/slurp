@@ -9,17 +9,17 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Stage;
 
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
-use MilesAsylum\Slurp\Stage\FinaliseLoadStage;
+use MilesAsylum\Slurp\Stage\FinaliseStage;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
-class FinaliseLoadStageTest extends TestCase
+class FinaliseStageTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
     /**
-     * @var FinaliseLoadStage
+     * @var FinaliseStage
      */
     protected $stage;
 
@@ -43,7 +43,7 @@ class FinaliseLoadStageTest extends TestCase
             ->byDefault();
         $this->mockSlurp = \Mockery::mock(Slurp::class);
 
-        $this->stage = new FinaliseLoadStage($this->mockLoader);
+        $this->stage = new FinaliseStage($this->mockLoader);
     }
 
     public function testFinaliseLoadOnInvoke()

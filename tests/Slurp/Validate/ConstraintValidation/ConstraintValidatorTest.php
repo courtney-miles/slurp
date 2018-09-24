@@ -54,7 +54,7 @@ class ConstraintValidatorTest extends TestCase
         $mockViolation->shouldReceive('getMessage')->andReturn($message);
         $this->stubValidator($value, $constraints, $this->mockValidator, $mockViolationList, [$mockViolation]);
 
-        $this->validator->addColumnConstraints('col_one', $constraints);
+        $this->validator->setFieldConstraints('col_one', $constraints);
 
         $violations = $this->validator->validateField($recordId, $field, $value);
 
@@ -80,7 +80,7 @@ class ConstraintValidatorTest extends TestCase
         $mockViolation->shouldReceive('getMessage')->andReturn($message);
         $this->stubValidator($value, $constraints, $this->mockValidator, $mockViolationList, [$mockViolation]);
 
-        $this->validator->addColumnConstraints('col_one', $constraints);
+        $this->validator->setFieldConstraints('col_one', $constraints);
 
         $violations = $this->validator->validateRecord($recordId, [$field => $value, 'col_two' => 'bar']);
 

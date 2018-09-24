@@ -34,7 +34,7 @@ class ConstraintValidator implements ValidatorInterface
      * @param $field
      * @param Constraint|Constraint[] $constraints
      */
-    public function addColumnConstraints($field, $constraints): void
+    public function setFieldConstraints(string $field, $constraints): void
     {
         $this->fieldConstraints[$field] = $constraints;
     }

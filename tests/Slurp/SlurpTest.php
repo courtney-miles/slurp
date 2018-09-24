@@ -28,7 +28,7 @@ class SlurpTest extends TestCase
         $slurp = new Slurp($mockPipeLine);
         $slurp->process($mockExtractor);
 
-        $mockPipeLine->shouldHaveReceived('process')
+        $mockPipeLine->shouldHaveReceived('__invoke')
             ->with($slurp)
             ->once();
     }
@@ -45,7 +45,7 @@ class SlurpTest extends TestCase
     {
         $mockExtractor = \Mockery::mock(ExtractorInterface::class);
         $mockPipeLine = \Mockery::mock(Pipeline::class);
-        $mockPipeLine->shouldReceive('process')
+        $mockPipeLine->shouldReceive('__invoke')
             ->withArgs(function (Slurp $slurp) use ($mockExtractor) {
                 $this->assertSame($mockExtractor, $slurp->getExtractor());
                 return true;
@@ -59,7 +59,7 @@ class SlurpTest extends TestCase
     {
         $mockExtractor = \Mockery::mock(ExtractorInterface::class);
         $mockPipeLine = \Mockery::mock(Pipeline::class);
-        $mockPipeLine->shouldReceive('process');
+        $mockPipeLine->shouldReceive('__invoke');
 
         $slurp = new Slurp($mockPipeLine);
         $slurp->process($mockExtractor);

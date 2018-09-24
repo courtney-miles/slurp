@@ -33,7 +33,11 @@ class Transformer implements TransformerInterface
         return new self(new TransformerLoader());
     }
 
-    public function setFieldChanges($field, $changes): void
+    /**
+     * @param string $field
+     * @param Change|Change[] $changes
+     */
+    public function setFieldChanges(string $field, $changes): void
     {
         unset($this->fieldChanges[$field]);
 
@@ -42,12 +46,17 @@ class Transformer implements TransformerInterface
         }
 
         foreach ($changes as $change) {
-            if (!$change instanceof Change) {
-                throw UnexpectedTypeException::createUnexpected($change, Change::class);
-            }
-
-            $this->fieldChanges[$field][] = $change;
+            $this->addFieldChange($field, $change);
         }
+    }
+
+    public function addFieldChange(string $field, Change $change): void
+    {
+        if (!$change instanceof Change) {
+            throw UnexpectedTypeException::createUnexpected($change, Change::class);
+        }
+
+        $this->fieldChanges[$field][] = $change;
     }
 
     public function transformField(string $field, $value)

@@ -8,6 +8,7 @@
 namespace MilesAsylum\Slurp\Stage;
 
 use League\Pipeline\Pipeline;
+use League\Pipeline\PipelineInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
 
@@ -18,7 +19,7 @@ class InvokeExtractionPipeline implements OuterProcessStageInterface
      */
     private $innerPipeline;
 
-    public function __construct(Pipeline $innerPipeline)
+    public function __construct(PipelineInterface $innerPipeline)
     {
         $this->innerPipeline = $innerPipeline;
     }
@@ -30,7 +31,7 @@ class InvokeExtractionPipeline implements OuterProcessStageInterface
             $payload->setRecordId($id);
             $payload->setRecord($values);
 
-            $this->innerPipeline->process($payload);
+            ($this->innerPipeline)($payload);
         }
 
         return $slurp;
