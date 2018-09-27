@@ -7,7 +7,7 @@
 
 namespace MilesAsylum\Slurp\Validate;
 
-class Violation implements ViolationInterface
+class FieldViolation implements ViolationInterface
 {
     /**
      * @var int

@@ -11,8 +11,9 @@ use frictionlessdata\tableschema\Fields\BaseField;
 use frictionlessdata\tableschema\Schema;
 use frictionlessdata\tableschema\SchemaValidationError;
 use MilesAsylum\Slurp\Exception\UnknownFieldException;
+use MilesAsylum\Slurp\Validate\RecordViolation;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
-use MilesAsylum\Slurp\Validate\Violation;
+use MilesAsylum\Slurp\Validate\FieldViolation;
 
 class SchemaValidator implements ValidatorInterface
 {
@@ -30,6 +31,11 @@ class SchemaValidator implements ValidatorInterface
      * @var null|array
      */
     private $foundUniqueFields = null;
+
+    /**
+     * @var null|array
+     */
+    private $fieldNames = null;
 
     public function __construct(Schema $tableSchema)
     {
@@ -54,7 +60,7 @@ class SchemaValidator implements ValidatorInterface
         if (!empty($schemaValidationErrors)) {
             /** @var SchemaValidationError $schemaError */
             foreach ($schemaValidationErrors as $schemaError) {
-                $violations[] = new Violation($recordId, $field, $value, $schemaError->getMessage());
+                $violations[] = new FieldViolation($recordId, $field, $value, $schemaError->getMessage());
             }
         }
 
@@ -71,7 +77,7 @@ class SchemaValidator implements ValidatorInterface
         $schemaValidationErrors = $this->tableSchema->validateRow($record);
 
         foreach ($schemaValidationErrors as $schemaError) {
-            $violations[] = new Violation(
+            $violations[] = new FieldViolation(
                 $recordId,
                 $schemaError->extraDetails['field'],
                 $schemaError->extraDetails['value'],
@@ -79,7 +85,29 @@ class SchemaValidator implements ValidatorInterface
             );
         }
 
-        foreach ($this->getUniqueFields($this->tableSchema) as $uniqueField) {
+        $expectedFields = $this->getFieldNames();
+
+        if (count($missingFields = array_diff($expectedFields, array_keys($record)))) {
+            $violations[] = new RecordViolation(
+                $recordId,
+                sprintf(
+                    'Record is missing field/s: %s',
+                    implode(', ', $missingFields)
+                )
+            );
+        }
+
+        if (count($extraFields = array_diff(array_keys($record), $expectedFields))) {
+            $violations[] = new RecordViolation(
+                $recordId,
+                sprintf(
+                    'Record has extra field/s: %s',
+                    implode(', ', $extraFields)
+                )
+            );
+        }
+
+        foreach ($this->getUniqueFields() as $uniqueField) {
             $fieldName = $uniqueField->name();
             $value = $record[$uniqueField->name()];
             $keyValue = is_object($value) ? spl_object_hash($value) : $value;
@@ -87,7 +115,7 @@ class SchemaValidator implements ValidatorInterface
             if (isset($this->uniqueFieldValues[$fieldName])
                 && isset($this->uniqueFieldValues[$fieldName][$keyValue])
             ) {
-                $violations[] = new Violation(
+                $violations[] = new FieldViolation(
                     $recordId,
                     $fieldName,
                     $value,
@@ -102,23 +130,33 @@ class SchemaValidator implements ValidatorInterface
     }
 
     /**
-     * @param Schema $tableSchema
      * @return BaseField[]
      */
-    protected function getUniqueFields(Schema $tableSchema): array
+    protected function getUniqueFields(): array
     {
         if ($this->foundUniqueFields === null) {
-            $uniqueFields = [];
+            $this->foundUniqueFields = [];
 
-            foreach ($tableSchema->fields() as $field) {
+            foreach ($this->tableSchema->fields() as $field) {
                 if ($field->unique()) {
-                    $uniqueFields[] = $field;
+                    $this->foundUniqueFields[] = $field;
                 }
             }
-
-            $this->foundUniqueFields = $uniqueFields;
         }
 
         return $this->foundUniqueFields;
+    }
+
+    protected function getFieldNames(): array
+    {
+        if ($this->fieldNames === null) {
+            $this->fieldNames = [];
+
+            foreach ($this->tableSchema->fields() as $field) {
+                $this->fieldNames[] = $field->name();
+            }
+        }
+
+        return $this->fieldNames;
     }
 }

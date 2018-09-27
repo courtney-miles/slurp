@@ -9,7 +9,7 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Validate\ConstraintValidation;
 
 use MilesAsylum\Slurp\PHPUnit\StubValidatorTrait;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
-use MilesAsylum\Slurp\Validate\Violation;
+use MilesAsylum\Slurp\Validate\FieldViolation;
 use MilesAsylum\Slurp\Validate\ViolationInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -64,7 +64,7 @@ class ConstraintValidatorTest extends TestCase
         $violation = array_pop($violations);
 
         $this->assertInstanceOf(ViolationInterface::class, $violation);
-        $this->assertEquals(new Violation($recordId, $field, $value, $message), $violation);
+        $this->assertEquals(new FieldViolation($recordId, $field, $value, $message), $violation);
     }
 
     public function testValidateRecord()
@@ -90,6 +90,6 @@ class ConstraintValidatorTest extends TestCase
         $violation = array_pop($violations);
 
         $this->assertInstanceOf(ViolationInterface::class, $violation);
-        $this->assertEquals(new Violation($recordId, $field, $value, $message), $violation);
+        $this->assertEquals(new FieldViolation($recordId, $field, $value, $message), $violation);
     }
 }

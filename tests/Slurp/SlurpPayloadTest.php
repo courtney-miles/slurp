@@ -9,7 +9,7 @@ namespace MilesAsylum\Slurp\Tests\Slurp;
 
 use MilesAsylum\Slurp\PHPUnit\StubValidatorTrait;
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\Validate\Violation;
+use MilesAsylum\Slurp\Validate\FieldViolation;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
@@ -94,7 +94,7 @@ class SlurpPayloadTest extends TestCase
     public function testAddFirstViolations()
     {
         $payload = new SlurpPayload();
-        $mockViolation = \Mockery::mock(Violation::class);
+        $mockViolation = \Mockery::mock(FieldViolation::class);
         $payload->addViolations([$mockViolation]);
 
         $this->assertTrue($payload->hasViolations());
@@ -104,7 +104,7 @@ class SlurpPayloadTest extends TestCase
     public function testValueHasViolation()
     {
         $payload = new SlurpPayload();
-        $mockViolation = \Mockery::mock(Violation::class);
+        $mockViolation = \Mockery::mock(FieldViolation::class);
         $mockViolation->shouldReceive('getField')
             ->andReturn('foo');
         $payload->addViolations([$mockViolation]);
@@ -115,7 +115,7 @@ class SlurpPayloadTest extends TestCase
     public function testValueHasNotViolation()
     {
         $payload = new SlurpPayload();
-        $mockViolation = \Mockery::mock(Violation::class);
+        $mockViolation = \Mockery::mock(FieldViolation::class);
         $mockViolation->shouldReceive('getField')
             ->andReturn('foo');
         $payload->addViolations([$mockViolation]);

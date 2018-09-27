@@ -7,13 +7,13 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Validate;
 
-use MilesAsylum\Slurp\Validate\Violation;
+use MilesAsylum\Slurp\Validate\FieldViolation;
 use PHPUnit\Framework\TestCase;
 
-class ViolationTest extends TestCase
+class FieldViolationTest extends TestCase
 {
     /**
-     * @var Violation
+     * @var FieldViolation
      */
     protected $violation;
 
@@ -34,7 +34,7 @@ class ViolationTest extends TestCase
         $this->value = 'abc';
         $this->message = 'Value abc is invalid.';
 
-        $this->violation = new Violation(
+        $this->violation = new FieldViolation(
             $this->recordId,
             $this->field,
             $this->value,

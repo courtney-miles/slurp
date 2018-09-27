@@ -59,7 +59,6 @@ class DatabaseLoader implements LoaderInterface
      * @param string $table
      * @param array $columnMapping Array key is the destination column and the array value is the source column.
      * @param LoaderFactory $dmlFactory
-     * @param \PDO $pdo
      * @param int $batchSize
      * @param PreCommitDmlInterface|null $preCommitDml
      */

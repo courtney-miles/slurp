@@ -7,19 +7,15 @@
 
 namespace MilesAsylum\Slurp\Tests\functional;
 
-use frictionlessdata\tableschema\Schema;
 use League\Csv\Reader;
-use League\Pipeline\PipelineBuilder;
 use MilesAsylum\Slurp\Extract\CsvFileExtractor\CsvFileExtractor;
-use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsertManager;
-use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
-use MilesAsylum\Slurp\Load\DatabaseLoader\QueryFactory;
 use MilesAsylum\Slurp\PHPUnit\MySQLTestHelper;
 use MilesAsylum\Slurp\SlurpBuilder;
 use MilesAsylum\Slurp\SlurpPayload;
+use MilesAsylum\Slurp\Stage\StageObserverInterface;
+use MilesAsylum\Slurp\Stage\ValidationStage;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\StrCase;
-use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
-use MilesAsylum\Slurp\Transform\SlurpTransformer\TransformerLoader;
+use MilesAsylum\Slurp\Validate\RecordViolation;
 use PHPUnit\DbUnit\Database\Connection;
 use PHPUnit\DbUnit\DataSet\IDataSet;
 use PHPUnit\DbUnit\TestCaseTrait;
@@ -210,6 +206,40 @@ SQL
         )->getTable('all_types');
 
         $this->assertTablesEqual($expectedTable, $table);
+    }
+
+    public function testValidateAgainstSchemaWithMissingColumns()
+    {
+        $violations = [];
+        $mockObserver = \Mockery::mock(StageObserverInterface::class);
+        $mockObserver->shouldReceive('update')
+            ->withArgs(function (ValidationStage $stage) use (&$violations) {
+                $violations = array_merge($violations, $stage->getPayload()->getViolations());
+                return true;
+            });
+
+        $cfe = CsvFileExtractor::createFromPath(__DIR__ . '/csv/missing-column.csv');
+        $cfe->loadHeadersFromFile();
+
+        $sb = SlurpBuilder::create();
+        $slurp = $sb->setTableSchema(
+            $sb->createTableSchemaFromArray(
+                [
+                   'fields' => [
+                       ['name' => 'col_a'],
+                       ['name' => 'col_b'],
+                       ['name' => 'col_c'],
+                   ]
+                ]
+            )
+        )->addValidationObserver($mockObserver)
+            ->build();
+
+        $slurp->process($cfe);
+
+        $this->assertCount(1, $violations);
+        $violation = array_pop($violations);
+        $this->assertInstanceOf(RecordViolation::class, $violation);
     }
 
     protected function fetchQueryTable($tableName)

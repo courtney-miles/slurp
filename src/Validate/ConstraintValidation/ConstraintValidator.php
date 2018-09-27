@@ -8,7 +8,7 @@
 namespace MilesAsylum\Slurp\Validate\ConstraintValidation;
 
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
-use MilesAsylum\Slurp\Validate\Violation;
+use MilesAsylum\Slurp\Validate\FieldViolation;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface as SymfonyValidator;
@@ -51,7 +51,7 @@ class ConstraintValidator implements ValidatorInterface
 
             /** @var ConstraintViolationInterface $constraintViolation */
             foreach ($constraintViolations as $constraintViolation) {
-                $violations[] = new Violation($recordId, $field, $value, $constraintViolation->getMessage());
+                $violations[] = new FieldViolation($recordId, $field, $value, $constraintViolation->getMessage());
             }
         }
 

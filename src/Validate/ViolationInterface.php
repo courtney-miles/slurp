@@ -11,9 +11,5 @@ interface ViolationInterface
 {
     public function getRecordId(): int;
 
-    public function getField(): string;
-
-    public function getValue();
-
     public function getMessage(): string;
 }

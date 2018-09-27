@@ -7,7 +7,7 @@
 
 namespace MilesAsylum\Slurp;
 
-use MilesAsylum\Slurp\Validate\Violation;
+use MilesAsylum\Slurp\Validate\ViolationInterface;
 
 class SlurpPayload
 {
@@ -22,7 +22,7 @@ class SlurpPayload
     protected $record = [];
 
     /**
-     * @var Violation[]
+     * @var ViolationInterface[]
      */
     protected $violations = [];
 
@@ -91,7 +91,7 @@ class SlurpPayload
     }
 
     /**
-     * @return Violation[]
+     * @return ViolationInterface[]
      */
     public function getViolations(): array
     {
@@ -120,7 +120,7 @@ class SlurpPayload
         }
     }
 
-    public function addViolation(Violation $violation): void
+    public function addViolation(ViolationInterface $violation): void
     {
         $this->violations[] = $violation;
     }
