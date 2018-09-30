@@ -8,10 +8,8 @@
 namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SchemaTransformer;
 
 use Carbon\Carbon;
-use frictionlessdata\tableschema\Fields\BaseField;
 use frictionlessdata\tableschema\Fields\DateField;
 use frictionlessdata\tableschema\Fields\DatetimeField;
-use frictionlessdata\tableschema\Fields\StringField;
 use frictionlessdata\tableschema\Fields\TimeField;
 use frictionlessdata\tableschema\Schema;
 use MilesAsylum\Slurp\Transform\Exception\TransformationException;

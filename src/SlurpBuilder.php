@@ -8,15 +8,11 @@
 namespace MilesAsylum\Slurp;
 
 use frictionlessdata\tableschema\Schema;
-use League\Pipeline\InterruptibleProcessor;
 use League\Pipeline\PipelineBuilder;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
-use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
-use MilesAsylum\Slurp\Stage\InvokeExtractionPipeline;
 use MilesAsylum\Slurp\Stage\LoadStage;
-use MilesAsylum\Slurp\SlurpFactory;
 use MilesAsylum\Slurp\Stage\StageInterface;
 use MilesAsylum\Slurp\Stage\StageObserverInterface;
 use MilesAsylum\Slurp\Stage\TransformationStage;
@@ -29,7 +25,6 @@ use MilesAsylum\Slurp\Validate\FieldViolation;
 use MilesAsylum\Slurp\Validate\RecordViolation;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Validation;
 
 class SlurpBuilder
 {

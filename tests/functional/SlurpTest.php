@@ -11,7 +11,6 @@ use League\Csv\Reader;
 use MilesAsylum\Slurp\Extract\CsvFileExtractor\CsvFileExtractor;
 use MilesAsylum\Slurp\PHPUnit\MySQLTestHelper;
 use MilesAsylum\Slurp\SlurpBuilder;
-use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Stage\StageObserverInterface;
 use MilesAsylum\Slurp\Stage\ValidationStage;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\StrCase;

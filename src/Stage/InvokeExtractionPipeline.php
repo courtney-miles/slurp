@@ -11,7 +11,6 @@ use League\Pipeline\Pipeline;
 use League\Pipeline\PipelineInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\Validate\RecordViolation;
 
 class InvokeExtractionPipeline implements OuterProcessStageInterface
 {
