@@ -11,6 +11,7 @@ use League\Pipeline\Pipeline;
 use League\Pipeline\PipelineInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
+use MilesAsylum\Slurp\Validate\RecordViolation;
 
 class InvokeExtractionPipeline implements OuterProcessStageInterface
 {
@@ -19,9 +20,20 @@ class InvokeExtractionPipeline implements OuterProcessStageInterface
      */
     private $innerPipeline;
 
-    public function __construct(PipelineInterface $innerPipeline)
+    /**
+     * @var array
+     */
+    private $violationAbortTypes = [];
+
+    /**
+     * InvokeExtractionPipeline constructor.
+     * @param PipelineInterface $innerPipeline
+     * @param array $violationAbortTypes Violation types that should cause extraction to abort.
+     */
+    public function __construct(PipelineInterface $innerPipeline, array $violationAbortTypes = [])
     {
         $this->innerPipeline = $innerPipeline;
+        $this->violationAbortTypes = $violationAbortTypes;
     }
 
     public function __invoke(Slurp $slurp): Slurp
@@ -32,6 +44,12 @@ class InvokeExtractionPipeline implements OuterProcessStageInterface
             $payload->setRecord($values);
 
             ($this->innerPipeline)($payload);
+
+            foreach ($this->violationAbortTypes as $abortType) {
+                if ($payload->hasViolations($abortType)) {
+                    break 2;
+                }
+            }
         }
 
         return $slurp;

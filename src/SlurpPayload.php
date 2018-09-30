@@ -125,9 +125,23 @@ class SlurpPayload
         $this->violations[] = $violation;
     }
 
-    public function hasViolations(): bool
+    public function hasViolations(?string $classType = null): bool
     {
-        return !empty($this->violations);
+        if (empty($this->violations)) {
+            return false;
+        }
+
+        if (!empty($this->violations) && $classType == null) {
+            return true;
+        }
+
+        foreach ($this->violations as $violation) {
+            if ($violation instanceof $classType) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

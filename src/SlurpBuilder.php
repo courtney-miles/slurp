@@ -8,6 +8,7 @@
 namespace MilesAsylum\Slurp;
 
 use frictionlessdata\tableschema\Schema;
+use League\Pipeline\InterruptibleProcessor;
 use League\Pipeline\PipelineBuilder;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
@@ -24,6 +25,8 @@ use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
+use MilesAsylum\Slurp\Validate\FieldViolation;
+use MilesAsylum\Slurp\Validate\RecordViolation;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validation;
@@ -107,6 +110,8 @@ class SlurpBuilder
      * @var StageObserverInterface[]
      */
     protected $loadObservers = [];
+
+    protected $violationAbortTypes = [];
 
     public function __construct(
         PipelineBuilder $innerPipelineBuilder,
@@ -201,6 +206,16 @@ class SlurpBuilder
             $batchSize,
             $preCommitDml
         );
+    }
+
+    public function abortOnRecordViolation()
+    {
+        $this->violationAbortTypes[RecordViolation::class] = true;
+    }
+
+    public function abortOnFieldViolation()
+    {
+        $this->violationAbortTypes[FieldViolation::class] = true;
     }
 
     public function addAllStagesObserver(StageObserverInterface $observer): self

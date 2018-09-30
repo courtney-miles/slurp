@@ -22,6 +22,7 @@ use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
+use MilesAsylum\Slurp\Validate\RecordViolation;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -163,6 +164,17 @@ class SlurpFactoryTest extends TestCase
             InvokeExtractionPipeline::class,
             $this->factory->createInvokeExtractionPipeline(
                 \Mockery::mock(PipelineInterface::class)
+            )
+        );
+    }
+
+    public function testCreateInvokeExtractionPipelineWithViolationAbortTypes()
+    {
+        $this->assertInstanceOf(
+            InvokeExtractionPipeline::class,
+            $this->factory->createInvokeExtractionPipeline(
+                \Mockery::mock(PipelineInterface::class),
+                [RecordViolation::class]
             )
         );
     }

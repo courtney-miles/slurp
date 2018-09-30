@@ -12,6 +12,7 @@ use MilesAsylum\Slurp\Extract\ExtractorInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Stage\InvokeExtractionPipeline;
+use MilesAsylum\Slurp\Validate\RecordViolation;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -71,6 +72,30 @@ class InvokeExtractionPipelineTest extends TestCase
             )->times(count($rows));
 
         $this->assertSame($this->mockSlurp, ($this->stage)($this->mockSlurp));
+    }
+
+    public function testAbortOnViolationType()
+    {
+        $rows = [['foo', 123], ['bar', 234]];
+        $mockExtractor = \Mockery::mock(ExtractorInterface::class);
+        $this->stubExtractorContent($mockExtractor, $rows);
+        $this->mockSlurp->shouldReceive('getExtractor')->andReturn($mockExtractor);
+
+        $this->mockPipeline->shouldReceive('__invoke')
+            ->withArgs(
+                function ($payload) use ($rows) {
+                    if (!$payload instanceof SlurpPayload) {
+                        return false;
+                    }
+
+                    $payload->addViolation(\Mockery::mock(RecordViolation::class));
+
+                    return true;
+                }
+            )->once();
+
+        $stage = new InvokeExtractionPipeline($this->mockPipeline, [RecordViolation::class]);
+        ($stage)($this->mockSlurp);
     }
 
     protected function stubExtractorContent(MockInterface $mockExtractor, array $rowValues)

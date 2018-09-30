@@ -123,9 +123,9 @@ class SlurpFactory
         );
     }
 
-    public function createInvokeExtractionPipeline(PipelineInterface $innerPipeline)
+    public function createInvokeExtractionPipeline(PipelineInterface $innerPipeline, array $violationAbortTypes = [])
     {
-        return new InvokeExtractionPipeline($innerPipeline);
+        return new InvokeExtractionPipeline($innerPipeline, $violationAbortTypes);
     }
 
     public function createSlurp(PipelineInterface $pipeline)

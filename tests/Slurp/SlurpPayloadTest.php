@@ -10,6 +10,7 @@ namespace MilesAsylum\Slurp\Tests\Slurp;
 use MilesAsylum\Slurp\PHPUnit\StubValidatorTrait;
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Validate\FieldViolation;
+use MilesAsylum\Slurp\Validate\RecordViolation;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
@@ -89,6 +90,26 @@ class SlurpPayloadTest extends TestCase
         $this->assertFalse($payload->hasViolations());
         $this->assertfalse($payload->fieldHasViolation('bar'));
         $this->assertSame([], $payload->getViolations());
+    }
+
+    public function testHasViolationOfType()
+    {
+        $payload = new SlurpPayload();
+
+        $mockViolation = \Mockery::mock(FieldViolation::class);
+        $payload->addViolations([$mockViolation]);
+
+        $this->assertTrue($payload->hasViolations(FieldViolation::class));
+    }
+
+    public function testDoesNotHaveViolationOfType()
+    {
+        $payload = new SlurpPayload();
+
+        $mockViolation = \Mockery::mock(FieldViolation::class);
+        $payload->addViolations([$mockViolation]);
+
+        $this->assertFalse($payload->hasViolations(RecordViolation::class));
     }
 
     public function testAddFirstViolations()

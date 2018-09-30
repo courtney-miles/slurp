@@ -27,6 +27,8 @@ use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
+use MilesAsylum\Slurp\Validate\FieldViolation;
+use MilesAsylum\Slurp\Validate\RecordViolation;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\Mock;
@@ -68,7 +70,25 @@ class SlurpBuilderTest extends TestCase
      */
     protected $mockTransformer;
 
+    /**
+     * @var Slurp|MockInterface
+     */
     protected $mockSlurp;
+
+    /**
+     * @var PipelineInterface|MockInterface
+     */
+    protected $mockInnerPipeline;
+
+    /**
+     * @var PipelineInterface|MockInterface
+     */
+    protected $mockOuterPipeline;
+
+    /**
+     * @var InvokeExtractionPipeline|MockInterface
+     */
+    protected $mockInvokeExtractionPipeline;
 
     public function setUp()
     {
@@ -81,29 +101,29 @@ class SlurpBuilderTest extends TestCase
         $this->mockConstraintValidator = \Mockery::mock(ConstraintValidator::class);
         $this->mockTransformer = \Mockery::mock(Transformer::class);
 
-        $mockInnerPipeline = \Mockery::mock(PipelineInterface::class);
-        $mockOuterPipeline = \Mockery::mock(PipelineInterface::class);
-        $mockInvokeExtractionPipeline = \Mockery::mock(InvokeExtractionPipeline::class);
+        $this->mockInnerPipeline = \Mockery::mock(PipelineInterface::class);
+        $this->mockOuterPipeline = \Mockery::mock(PipelineInterface::class);
+        $this->mockInvokeExtractionPipeline = \Mockery::mock(InvokeExtractionPipeline::class);
 
         $this->mockInnerPipelineBuilder->shouldReceive('add')
             ->byDefault();
         $this->mockInnerPipelineBuilder->shouldReceive('build')
-            ->andReturn($mockInnerPipeline)
+            ->andReturn($this->mockInnerPipeline)
             ->byDefault();
 
         $this->mockFactory->shouldReceive('createInvokeExtractionPipeline')
-            ->with($mockInnerPipeline)
-            ->andReturn($mockInvokeExtractionPipeline)
+            ->with($this->mockInnerPipeline)
+            ->andReturn($this->mockInvokeExtractionPipeline)
             ->byDefault();
 
         $this->mockOuterPipelineBuilder->shouldReceive('add')
             ->byDefault();
         $this->mockOuterPipelineBuilder->shouldReceive('build')
-            ->andReturn($mockOuterPipeline)
+            ->andReturn($this->mockOuterPipeline)
             ->byDefault();
 
         $this->mockFactory->shouldReceive('createSlurp')
-            ->with($mockOuterPipeline)
+            ->with($this->mockOuterPipeline)
             ->andReturn($this->mockSlurp)
             ->byDefault();
 
@@ -344,6 +364,39 @@ class SlurpBuilderTest extends TestCase
                 $mockPreCommitDml
             )
         );
+    }
+
+    /**
+     * @dataProvider getViolationAbortTypesTestData
+     * @param array $abortTypes
+     */
+    public function testSetViolationAbortTypes(array $abortTypes)
+    {
+        $this->mockFactory->shouldReceive('createInvokeExtractionPipeline')
+            ->with($this->mockInnerPipeline, $abortTypes)
+            ->andReturn($this->mockInvokeExtractionPipeline);
+
+        foreach ($abortTypes as $type) {
+            switch ($type) {
+                case RecordViolation::class:
+                    $this->builder->abortOnRecordViolation();
+                    break;
+                case FieldViolation::class:
+                    $this->builder->abortOnFieldViolation();
+                    break;
+            }
+        }
+
+        $this->builder->build();
+    }
+
+    public function getViolationAbortTypesTestData()
+    {
+        return [
+            [[RecordViolation::class]],
+            [[FieldViolation::class]],
+            [[RecordViolation::class, FieldViolation::class]]
+        ];
     }
 
     public function testAddLoadObserver()
