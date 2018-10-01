@@ -22,6 +22,11 @@ class Slurp
      */
     private $extractor;
 
+    /**
+     * @var bool
+     */
+    private $aborted = false;
+
     public function __construct(PipelineInterface $pipeline)
     {
         $this->pipeline = $pipeline;
@@ -37,5 +42,15 @@ class Slurp
     public function getExtractor(): ?ExtractorInterface
     {
         return $this->extractor;
+    }
+
+    public function abort()
+    {
+        $this->aborted = true;
+    }
+
+    public function isAborted()
+    {
+        return $this->aborted;
     }
 }

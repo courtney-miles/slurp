@@ -12,6 +12,8 @@ use MilesAsylum\Slurp\Extract\ExtractorInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Stage\InvokeExtractionPipeline;
+use MilesAsylum\Slurp\Stage\OuterStageInterface;
+use MilesAsylum\Slurp\Stage\OuterStageObserverInterface;
 use MilesAsylum\Slurp\Validate\RecordViolation;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -98,9 +100,61 @@ class InvokeExtractionPipelineTest extends TestCase
         ($stage)($this->mockSlurp);
     }
 
+    public function testObserverNotification()
+    {
+        $rows = [['foo', 123], ['bar', 234]];
+        $mockExtractor = \Mockery::mock(ExtractorInterface::class);
+        $this->stubExtractorContent($mockExtractor, $rows);
+        $this->mockSlurp->shouldReceive('getExtractor')->andReturn($mockExtractor);
+        $this->mockPipeline->shouldReceive('__invoke');
+
+        $notifiedStates = [];
+
+        $watchStates = function ($state) use (&$notifiedStates) {
+            $notifiedStates[] = $state;
+        };
+
+        $observer = $this->createObserver($watchStates);
+
+        $this->stage->attachObserver($observer);
+
+        ($this->stage)($this->mockSlurp);
+
+        $this->assertSame(
+            [
+                InvokeExtractionPipeline::STATE_BEGIN,
+                InvokeExtractionPipeline::STATE_RECORD_PROCESSED,
+                InvokeExtractionPipeline::STATE_RECORD_PROCESSED,
+                InvokeExtractionPipeline::STATE_END,
+            ],
+            $notifiedStates
+        );
+    }
+
+
     protected function stubExtractorContent(MockInterface $mockExtractor, array $rowValues)
     {
         $mockExtractor->shouldReceive('getIterator')
             ->andReturn(new \ArrayObject($rowValues));
+    }
+
+    protected function createObserver(callable $watchStates)
+    {
+        return new class($watchStates) implements OuterStageObserverInterface {
+            /**
+             * @var callable
+             */
+            private $watch;
+
+            public function __construct(callable $watch)
+            {
+                $this->watch = $watch;
+            }
+
+            public function update(OuterStageInterface $stage): void
+            {
+                ($this->watch)($stage->getState());
+            }
+        };
     }
 }

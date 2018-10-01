@@ -19,11 +19,6 @@ class LoadStage extends AbstractStage
     private $loader;
 
     /**
-     * @var SlurpPayload
-     */
-    protected $payload;
-
-    /**
      * @var bool
      */
     protected $loadAborted = false;
@@ -51,14 +46,8 @@ class LoadStage extends AbstractStage
             $payload->setLoadAborted(true);
         }
 
-        $this->payload = $payload;
-        $this->notify();
+        $this->notify($payload);
 
         return $payload;
-    }
-
-    public function getPayload(): SlurpPayload
-    {
-        return $this->payload;
     }
 }

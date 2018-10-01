@@ -17,11 +17,6 @@ class TransformationStage extends AbstractStage
      */
     private $transformer;
 
-    /**
-     * @var SlurpPayload
-     */
-    protected $payload;
-
     public function __construct(TransformerInterface $transformer)
     {
         $this->transformer = $transformer;
@@ -35,14 +30,8 @@ class TransformationStage extends AbstractStage
             );
         }
 
-        $this->payload = $payload;
-        $this->notify();
+        $this->notify($payload);
 
         return $payload;
-    }
-
-    public function getPayload(): SlurpPayload
-    {
-        return $this->payload;
     }
 }

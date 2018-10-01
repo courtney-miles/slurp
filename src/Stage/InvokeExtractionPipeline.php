@@ -12,7 +12,7 @@ use League\Pipeline\PipelineInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
 
-class InvokeExtractionPipeline implements OuterProcessStageInterface
+class InvokeExtractionPipeline extends AbstractOuterStage
 {
     /**
      * @var Pipeline
@@ -23,6 +23,9 @@ class InvokeExtractionPipeline implements OuterProcessStageInterface
      * @var array
      */
     private $violationAbortTypes = [];
+
+    const STATE_RECORD_PROCESSED = 'record-processed';
+    const STATE_ABORTED = 'aborted';
 
     /**
      * InvokeExtractionPipeline constructor.
@@ -37,6 +40,8 @@ class InvokeExtractionPipeline implements OuterProcessStageInterface
 
     public function __invoke(Slurp $slurp): Slurp
     {
+        $this->notify(self::STATE_BEGIN);
+
         foreach ($slurp->getExtractor() as $id => $values) {
             $payload = new SlurpPayload();
             $payload->setRecordId($id);
@@ -44,12 +49,17 @@ class InvokeExtractionPipeline implements OuterProcessStageInterface
 
             ($this->innerPipeline)($payload);
 
+            $this->notify(self::STATE_RECORD_PROCESSED);
+
             foreach ($this->violationAbortTypes as $abortType) {
                 if ($payload->hasViolations($abortType)) {
+                    $this->notify(self::STATE_ABORTED);
                     break 2;
                 }
             }
         }
+
+        $this->notify(self::STATE_END);
 
         return $slurp;
     }

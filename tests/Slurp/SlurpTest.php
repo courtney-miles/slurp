@@ -20,6 +20,15 @@ class SlurpTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
+    public function testAbort()
+    {
+        $slurp = new Slurp(\Mockery::mock(Pipeline::class));
+
+        $this->assertFalse($slurp->isAborted());
+        $slurp->abort();
+        $this->assertTrue($slurp->isAborted());
+    }
+
     public function testProcess()
     {
         $mockExtractor = \Mockery::mock(ExtractorInterface::class);

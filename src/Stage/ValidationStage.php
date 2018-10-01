@@ -17,11 +17,6 @@ class ValidationStage extends AbstractStage
      */
     private $validator;
 
-    /**
-     * @var SlurpPayload
-     */
-    protected $payload;
-
     public function __construct(ValidatorInterface $validator)
     {
         $this->validator = $validator;
@@ -31,14 +26,8 @@ class ValidationStage extends AbstractStage
     {
         $payload->addViolations($this->validator->validateRecord($payload->getRecordId(), $payload->getRecord()));
 
-        $this->payload = $payload;
-        $this->notify();
+        $this->notify($payload);
 
         return $payload;
-    }
-
-    public function getPayload(): SlurpPayload
-    {
-        return $this->payload;
     }
 }

@@ -8,6 +8,7 @@
 namespace MilesAsylum\Slurp;
 
 use frictionlessdata\tableschema\Schema;
+use League\Pipeline\InterruptibleProcessor;
 use League\Pipeline\PipelineBuilder;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
@@ -278,7 +279,13 @@ class SlurpBuilder
             $this->outerPipelineBuilder->add($postExtractionStage);
         }
 
-        return $this->factory->createSlurp($this->outerPipelineBuilder->build());
+        return $this->factory->createSlurp($this->outerPipelineBuilder->build(
+            new InterruptibleProcessor(
+                function (Slurp $slurp) {
+                    return !$slurp->isAborted();
+                }
+            )
+        ));
     }
 
     protected function attachValidationObservers(ValidationStage $validationStage)

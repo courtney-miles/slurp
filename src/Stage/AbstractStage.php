@@ -7,6 +7,8 @@
 
 namespace MilesAsylum\Slurp\Stage;
 
+use MilesAsylum\Slurp\SlurpPayload;
+
 abstract class AbstractStage implements StageInterface
 {
     /**
@@ -14,15 +16,28 @@ abstract class AbstractStage implements StageInterface
      */
     protected $observers = [];
 
+    /**
+     * @var SlurpPayload
+     */
+    private $payload;
+
+
     public function attachObserver(StageObserverInterface $observer): void
     {
         $this->observers[spl_object_hash($observer)] = $observer;
     }
 
-    protected function notify(): void
+    protected function notify(SlurpPayload $payload): void
     {
+        $this->payload = $payload;
+
         foreach ($this->observers as $observer) {
             $observer->update($this);
         }
+    }
+
+    public function getPayload(): SlurpPayload
+    {
+        return $this->payload;
     }
 }

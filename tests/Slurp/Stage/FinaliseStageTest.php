@@ -10,6 +10,8 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Stage;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\Stage\FinaliseStage;
+use MilesAsylum\Slurp\Stage\OuterStageInterface;
+use MilesAsylum\Slurp\Stage\OuterStageObserverInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -41,7 +43,12 @@ class FinaliseStageTest extends TestCase
         $this->mockLoader->shouldReceive('isAborted')
             ->andReturn(false)
             ->byDefault();
+        $this->mockLoader->shouldReceive('finalise')
+            ->byDefault();
         $this->mockSlurp = \Mockery::mock(Slurp::class);
+        $this->mockSlurp->shouldReceive('isAborted')
+            ->andReturn(false)
+            ->byDefault();
 
         $this->stage = new FinaliseStage($this->mockLoader);
     }
@@ -54,11 +61,67 @@ class FinaliseStageTest extends TestCase
         $this->assertSame($this->mockSlurp, ($this->stage)($this->mockSlurp));
     }
 
-    public function testsDoNotFinaliseIfAborted()
+    public function testsDoNotFinaliseIfLoadAborted()
     {
         $this->mockLoader->shouldReceive('isAborted')
             ->andReturn(true);
         $this->mockLoader->shouldReceive('finalise')
             ->never();
+
+        ($this->stage)($this->mockSlurp);
+    }
+
+    public function testsDoNotFinaliseIfSlurpAborted()
+    {
+        $this->mockSlurp->shouldReceive('isAborted')
+            ->andReturn(true);
+        $this->mockLoader->shouldReceive('finalise')
+            ->never();
+
+        ($this->stage)($this->mockSlurp);
+    }
+
+    public function testObserverNotification()
+    {
+        $notifiedStates = [];
+
+        $watchStates = function ($state) use (&$notifiedStates) {
+            $notifiedStates[] = $state;
+        };
+
+        $observer = $this->createObserver($watchStates);
+
+        $this->stage->attachObserver($observer);
+
+        ($this->stage)($this->mockSlurp);
+
+        $this->assertSame(
+            [
+                FinaliseStage::STATE_BEGIN,
+                FinaliseStage::STATE_FINALISED,
+                FinaliseStage::STATE_END,
+            ],
+            $notifiedStates
+        );
+    }
+
+    protected function createObserver(callable $watchStates)
+    {
+        return new class($watchStates) implements OuterStageObserverInterface {
+            /**
+             * @var callable
+             */
+            private $watch;
+
+            public function __construct(callable $watch)
+            {
+                $this->watch = $watch;
+            }
+
+            public function update(OuterStageInterface $stage): void
+            {
+                ($this->watch)($stage->getState());
+            }
+        };
     }
 }
