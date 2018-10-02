@@ -7,9 +7,7 @@
 
 namespace MilesAsylum\Slurp\Extract\CsvFileExtractor;
 
-use MilesAsylum\Slurp\Extract\ExtractorInterface;
-
-class CsvMultiFileExtractor implements ExtractorInterface
+class CsvMultiFileExtractor implements CsvFileExtractorInterface
 {
     /**
      * @var CsvFileExtractor[]
@@ -32,6 +30,44 @@ class CsvMultiFileExtractor implements ExtractorInterface
         }
 
         return new static($extractors);
+    }
+
+    public function setDelimiter(string $delimiter): void
+    {
+        foreach ($this->extractors as $extractor) {
+            $extractor->setDelimiter($delimiter);
+        }
+    }
+
+    public function setEnclosure(string $enclosure): void
+    {
+        foreach ($this->extractors as $extractor) {
+            $extractor->setEnclosure($enclosure);
+        }
+    }
+
+    public function setEscape(string $escape): void
+    {
+        foreach ($this->extractors as $extractor) {
+            $extractor->setEscape($escape);
+        }
+    }
+
+    /**
+     * Loads the first row in the CSV file as the headers.
+     */
+    public function loadHeadersFromFile() : void
+    {
+        foreach ($this->extractors as $extractor) {
+            $extractor->loadHeadersFromFile();
+        }
+    }
+
+    public function setHeaders(array $headers): void
+    {
+        foreach ($this->extractors as $extractor) {
+            $extractor->setHeaders($headers);
+        }
     }
 
     public function getIterator()

@@ -14,7 +14,6 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
-
 /**
  * @covers \MilesAsylum\Slurp\Extract\CsvFileExtractor\CsvFileExtractor
  */
@@ -38,6 +37,36 @@ class CsvFileExtractorTest extends TestCase
 
         $this->mockReader = \Mockery::mock(Reader::class);
         $this->csvExtractor = new CsvFileExtractor($this->mockReader);
+    }
+
+    public function testSetDelimiter()
+    {
+        $delimiter = '!';
+        $this->mockReader->shouldReceive('setDelimiter')
+            ->with($delimiter)
+            ->once();
+
+        $this->csvExtractor->setDelimiter($delimiter);
+    }
+
+    public function testSetEnclosure()
+    {
+        $enclosure = '!';
+        $this->mockReader->shouldReceive('setEnclosure')
+            ->with($enclosure)
+            ->once();
+
+        $this->csvExtractor->setEnclosure($enclosure);
+    }
+
+    public function testSetEscape()
+    {
+        $escape = '!';
+        $this->mockReader->shouldReceive('setEscape')
+            ->with($escape)
+            ->once();
+
+        $this->csvExtractor->setEscape($escape);
     }
 
     public function testNoHeaders()

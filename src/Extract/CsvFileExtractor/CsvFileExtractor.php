@@ -9,9 +9,8 @@ namespace MilesAsylum\Slurp\Extract\CsvFileExtractor;
 
 use CallbackFilterIterator;
 use League\Csv\Reader;
-use MilesAsylum\Slurp\Extract\ExtractorInterface;
 
-class CsvFileExtractor implements ExtractorInterface
+class CsvFileExtractor implements CsvFileExtractorInterface
 {
     /**
      * @var Reader
@@ -27,26 +26,53 @@ class CsvFileExtractor implements ExtractorInterface
         $this->csvReader = $csvReader;
     }
 
-    public static function createFromPath(string $path)
+    public static function createFromPath(string $path): self
     {
         return new static(Reader::createFromPath($path));
     }
 
     /**
+     * @param string $delimiter
+     * @throws \League\Csv\Exception
+     */
+    public function setDelimiter(string $delimiter): void
+    {
+        $this->csvReader->setDelimiter($delimiter);
+    }
+
+    /**
+     * @param string $enclosure
+     * @throws \League\Csv\Exception
+     */
+    public function setEnclosure(string $enclosure): void
+    {
+        $this->csvReader->setEnclosure($enclosure);
+    }
+
+    /**
+     * @param string $escape
+     * @throws \League\Csv\Exception
+     */
+    public function setEscape(string $escape): void
+    {
+        $this->csvReader->setEscape($escape);
+    }
+
+    /**
      * Loads the first row in the CSV file as the headers.
      */
-    public function loadHeadersFromFile() : void
+    public function loadHeadersFromFile(): void
     {
         $this->headers = $this->csvReader->fetchOne();
         $this->headerOffset = 0;
     }
 
-    public function setHeaders(array $headers) : void
+    public function setHeaders(array $headers): void
     {
         $this->headers = $headers;
     }
 
-    public function getIterator() : \Iterator
+    public function getIterator(): \Iterator
     {
         return $this->prepareRecords($this->csvReader->getRecords(), $this->headers);
     }
