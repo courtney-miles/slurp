@@ -12,7 +12,7 @@ use League\Pipeline\PipelineInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
 
-class InvokeExtractionPipeline extends AbstractOuterStage
+class EltInvokePipelineStage extends AbstractOuterStage
 {
     /**
      * @var Pipeline

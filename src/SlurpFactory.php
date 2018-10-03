@@ -14,8 +14,8 @@ use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
-use MilesAsylum\Slurp\Stage\FinaliseStage;
-use MilesAsylum\Slurp\Stage\InvokeExtractionPipeline;
+use MilesAsylum\Slurp\Stage\EtlFinaliseStage;
+use MilesAsylum\Slurp\Stage\EltInvokePipelineStage;
 use MilesAsylum\Slurp\Stage\LoadStage;
 use MilesAsylum\Slurp\Stage\TransformationStage;
 use MilesAsylum\Slurp\Stage\ValidationStage;
@@ -44,9 +44,9 @@ class SlurpFactory
         return new LoadStage($loader);
     }
 
-    public function createFinaliseStage(LoaderInterface $loader): FinaliseStage
+    public function createEltFinaliseStage(LoaderInterface $loader): EtlFinaliseStage
     {
-        return new FinaliseStage($loader);
+        return new EtlFinaliseStage($loader);
     }
 
     /**
@@ -123,9 +123,9 @@ class SlurpFactory
         );
     }
 
-    public function createInvokeExtractionPipeline(PipelineInterface $innerPipeline, array $violationAbortTypes = [])
+    public function createEtlInvokePipelineStage(PipelineInterface $innerPipeline, array $violationAbortTypes = [])
     {
-        return new InvokeExtractionPipeline($innerPipeline, $violationAbortTypes);
+        return new EltInvokePipelineStage($innerPipeline, $violationAbortTypes);
     }
 
     public function createSlurp(PipelineInterface $pipeline)

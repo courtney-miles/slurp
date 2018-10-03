@@ -11,7 +11,7 @@ namespace MilesAsylum\Slurp\Stage;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
 
-class FinaliseStage extends AbstractOuterStage
+class EtlFinaliseStage extends AbstractOuterStage
 {
     /**
      * @var LoaderInterface

@@ -13,8 +13,8 @@ use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpFactory;
-use MilesAsylum\Slurp\Stage\FinaliseStage;
-use MilesAsylum\Slurp\Stage\InvokeExtractionPipeline;
+use MilesAsylum\Slurp\Stage\EtlFinaliseStage;
+use MilesAsylum\Slurp\Stage\EltInvokePipelineStage;
 use MilesAsylum\Slurp\Stage\LoadStage;
 use MilesAsylum\Slurp\Stage\TransformationStage;
 use MilesAsylum\Slurp\Stage\ValidationStage;
@@ -128,8 +128,8 @@ class SlurpFactoryTest extends TestCase
     public function testCreateFinaliseLoadStage()
     {
         $this->assertInstanceOf(
-            FinaliseStage::class,
-            $this->factory->createFinaliseStage(
+            EtlFinaliseStage::class,
+            $this->factory->createEltFinaliseStage(
                 \Mockery::mock(LoaderInterface::class)
             )
         );
@@ -161,8 +161,8 @@ class SlurpFactoryTest extends TestCase
     public function testCreateInvokeExtractionPipeline()
     {
         $this->assertInstanceOf(
-            InvokeExtractionPipeline::class,
-            $this->factory->createInvokeExtractionPipeline(
+            EltInvokePipelineStage::class,
+            $this->factory->createEtlInvokePipelineStage(
                 \Mockery::mock(PipelineInterface::class)
             )
         );
@@ -171,8 +171,8 @@ class SlurpFactoryTest extends TestCase
     public function testCreateInvokeExtractionPipelineWithViolationAbortTypes()
     {
         $this->assertInstanceOf(
-            InvokeExtractionPipeline::class,
-            $this->factory->createInvokeExtractionPipeline(
+            EltInvokePipelineStage::class,
+            $this->factory->createEtlInvokePipelineStage(
                 \Mockery::mock(PipelineInterface::class),
                 [RecordViolation::class]
             )

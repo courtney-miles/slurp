@@ -16,8 +16,8 @@ use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpBuilder;
 use MilesAsylum\Slurp\SlurpFactory;
-use MilesAsylum\Slurp\Stage\FinaliseStage;
-use MilesAsylum\Slurp\Stage\InvokeExtractionPipeline;
+use MilesAsylum\Slurp\Stage\EtlFinaliseStage;
+use MilesAsylum\Slurp\Stage\EltInvokePipelineStage;
 use MilesAsylum\Slurp\Stage\LoadStage;
 use MilesAsylum\Slurp\Stage\StageObserverInterface;
 use MilesAsylum\Slurp\Stage\TransformationStage;
@@ -84,7 +84,7 @@ class SlurpBuilderTest extends TestCase
     protected $mockOuterPipeline;
 
     /**
-     * @var InvokeExtractionPipeline|MockInterface
+     * @var EltInvokePipelineStage|MockInterface
      */
     protected $mockInvokeExtractionPipeline;
 
@@ -101,7 +101,7 @@ class SlurpBuilderTest extends TestCase
 
         $this->mockInnerPipeline = \Mockery::mock(PipelineInterface::class);
         $this->mockOuterPipeline = \Mockery::mock(PipelineInterface::class);
-        $this->mockInvokeExtractionPipeline = \Mockery::mock(InvokeExtractionPipeline::class);
+        $this->mockInvokeExtractionPipeline = \Mockery::mock(EltInvokePipelineStage::class);
 
         $this->mockInnerPipelineBuilder->shouldReceive('add')
             ->byDefault();
@@ -109,7 +109,7 @@ class SlurpBuilderTest extends TestCase
             ->andReturn($this->mockInnerPipeline)
             ->byDefault();
 
-        $this->mockFactory->shouldReceive('createInvokeExtractionPipeline')
+        $this->mockFactory->shouldReceive('createEtlInvokePipelineStage')
             ->with($this->mockInnerPipeline)
             ->andReturn($this->mockInvokeExtractionPipeline)
             ->byDefault();
@@ -313,12 +313,12 @@ class SlurpBuilderTest extends TestCase
         $mockLoader = \Mockery::mock(LoaderInterface::class);
 
         $mockLoadStage = \Mockery::mock(LoadStage::class);
-        $mockFinaliseStage = \Mockery::mock(FinaliseStage::class);
+        $mockFinaliseStage = \Mockery::mock(EtlFinaliseStage::class);
 
         $this->mockFactory->shouldReceive('createLoadStage')
             ->with($mockLoader)
             ->andReturn($mockLoadStage);
-        $this->mockFactory->shouldReceive('createFinaliseStage')
+        $this->mockFactory->shouldReceive('createEltFinaliseStage')
             ->with($mockLoader)
             ->andReturn($mockFinaliseStage);
 
@@ -402,12 +402,12 @@ class SlurpBuilderTest extends TestCase
         $mockObserver = \Mockery::mock(StageObserverInterface::class);
         $mockLoader = \Mockery::mock(LoaderInterface::class);
         $mockLoadStage = \Mockery::mock(LoadStage::class);
-        $mockFinaliseStage = \Mockery::mock(FinaliseStage::class);
+        $mockFinaliseStage = \Mockery::mock(EtlFinaliseStage::class);
 
         $this->mockFactory->shouldReceive('createLoadStage')
             ->with($mockLoader)
             ->andReturn($mockLoadStage);
-        $this->mockFactory->shouldReceive('createFinaliseStage')
+        $this->mockFactory->shouldReceive('createEltFinaliseStage')
             ->with($mockLoader)
             ->andReturn($mockFinaliseStage);
         $mockLoadStage->shouldReceive('attachObserver')

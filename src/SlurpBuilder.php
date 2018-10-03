@@ -13,7 +13,10 @@ use League\Pipeline\PipelineBuilder;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
+use MilesAsylum\Slurp\Stage\EltInvokePipelineStage;
+use MilesAsylum\Slurp\Stage\EtlFinaliseStage;
 use MilesAsylum\Slurp\Stage\LoadStage;
+use MilesAsylum\Slurp\Stage\OuterStageObserverInterface;
 use MilesAsylum\Slurp\Stage\StageInterface;
 use MilesAsylum\Slurp\Stage\StageObserverInterface;
 use MilesAsylum\Slurp\Stage\TransformationStage;
@@ -59,9 +62,10 @@ class SlurpBuilder
      */
     protected $loadStages = [];
 
-    protected $preExtractionStages = [];
-
-    protected $finaliseStages = [];
+    /**
+     * @var EtlFinaliseStage[]
+     */
+    protected $etlFinaliseStages = [];
 
     /**
      * @var SchemaValidator
@@ -91,21 +95,27 @@ class SlurpBuilder
     /**
      * @var StageObserverInterface[]
      */
-    protected $extractionObservers = [];
-
-    /**
-     * @var StageObserverInterface[]
-     */
     protected $validationObservers = [];
 
     /**
      * @var StageObserverInterface[]
      */
     protected $transformationObservers = [];
+
     /**
      * @var StageObserverInterface[]
      */
     protected $loadObservers = [];
+
+    /**
+     * @var OuterStageObserverInterface[]
+     */
+    protected $etlInvokeObservers = [];
+
+    /**
+     * @var OuterStageObserverInterface[]
+     */
+    protected $etlFinaliseObservers = [];
 
     protected $violationAbortTypes = [];
 
@@ -183,7 +193,7 @@ class SlurpBuilder
     public function addLoader(LoaderInterface $loader): self
     {
         $this->loadStages[] = $this->factory->createLoadStage($loader);
-        $this->finaliseStages[] = $this->factory->createFinaliseStage($loader);
+        $this->etlFinaliseStages[] = $this->factory->createEltFinaliseStage($loader);
 
         return $this;
     }
@@ -242,6 +252,20 @@ class SlurpBuilder
         return $this;
     }
 
+    public function addEltInvokeObserver(OuterStageObserverInterface $observer): self
+    {
+        $this->etlInvokeObservers[] = $observer;
+
+        return $this;
+    }
+
+    public function addEltFinaliseObserver(OuterStageObserverInterface $observer): self
+    {
+        $this->etlFinaliseObservers[] = $observer;
+
+        return $this;
+    }
+
     public function build(): Slurp
     {
         if (isset($this->schemaValidator)) {
@@ -271,12 +295,14 @@ class SlurpBuilder
             $this->innerPipelineBuilder->add($loadStage);
         }
 
-        $this->outerPipelineBuilder->add(
-            $this->factory->createInvokeExtractionPipeline($this->innerPipelineBuilder->build())
-        );
+        $invokeStage = $this->factory->createEtlInvokePipelineStage($this->innerPipelineBuilder->build());
+        $this->attachEtlInvokePipelineObservers($invokeStage);
 
-        foreach ($this->finaliseStages as $postExtractionStage) {
-            $this->outerPipelineBuilder->add($postExtractionStage);
+        $this->outerPipelineBuilder->add($invokeStage);
+
+        foreach ($this->etlFinaliseStages as $etlFinaliseStage) {
+            $this->attachEtlFinaliseObservers($etlFinaliseStage);
+            $this->outerPipelineBuilder->add($etlFinaliseStage);
         }
 
         return $this->factory->createSlurp($this->outerPipelineBuilder->build(
@@ -286,6 +312,20 @@ class SlurpBuilder
                 }
             )
         ));
+    }
+
+    protected function attachEtlInvokePipelineObservers(EltInvokePipelineStage $extractionPipeline)
+    {
+        foreach ($this->etlInvokeObservers as $observer) {
+            $extractionPipeline->attachObserver($observer);
+        }
+    }
+
+    protected function attachEtlFinaliseObservers(EtlFinaliseStage $etlFinalise)
+    {
+        foreach ($this->etlFinaliseObservers as $observer) {
+            $etlFinalise->attachObserver($observer);
+        }
     }
 
     protected function attachValidationObservers(ValidationStage $validationStage)
