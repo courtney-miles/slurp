@@ -5,8 +5,7 @@
  * Time: 8:36 AM
  */
 
-namespace MilesAsylum\Slurp\Stage;
-
+namespace MilesAsylum\Slurp\OuterStage;
 
 interface OuterStageObserverInterface
 {

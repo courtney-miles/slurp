@@ -11,9 +11,9 @@ use League\Pipeline\Pipeline;
 use MilesAsylum\Slurp\Extract\ExtractorInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\Stage\EltInvokePipelineStage;
-use MilesAsylum\Slurp\Stage\OuterStageInterface;
-use MilesAsylum\Slurp\Stage\OuterStageObserverInterface;
+use MilesAsylum\Slurp\OuterStage\InvokePipelineStage;
+use MilesAsylum\Slurp\OuterStage\OuterStageInterface;
+use MilesAsylum\Slurp\OuterStage\OuterStageObserverInterface;
 use MilesAsylum\Slurp\Validate\RecordViolation;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -24,7 +24,7 @@ class InvokeExtractionPipelineTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     /**
-     * @var EltInvokePipelineStage
+     * @var InvokePipelineStage
      */
     protected $stage;
 
@@ -45,7 +45,7 @@ class InvokeExtractionPipelineTest extends TestCase
         $this->mockPipeline = \Mockery::mock(Pipeline::class);
         $this->mockSlurp = \Mockery::mock(Slurp::class);
 
-        $this->stage = new EltInvokePipelineStage($this->mockPipeline);
+        $this->stage = new InvokePipelineStage($this->mockPipeline);
     }
 
     public function testIterateExtractionOnInvoke()
@@ -96,7 +96,7 @@ class InvokeExtractionPipelineTest extends TestCase
                 }
             )->once();
 
-        $stage = new EltInvokePipelineStage($this->mockPipeline, [RecordViolation::class]);
+        $stage = new InvokePipelineStage($this->mockPipeline, [RecordViolation::class]);
         ($stage)($this->mockSlurp);
     }
 
@@ -122,10 +122,10 @@ class InvokeExtractionPipelineTest extends TestCase
 
         $this->assertSame(
             [
-                EltInvokePipelineStage::STATE_BEGIN,
-                EltInvokePipelineStage::STATE_RECORD_PROCESSED,
-                EltInvokePipelineStage::STATE_RECORD_PROCESSED,
-                EltInvokePipelineStage::STATE_END,
+                InvokePipelineStage::STATE_BEGIN,
+                InvokePipelineStage::STATE_RECORD_PROCESSED,
+                InvokePipelineStage::STATE_RECORD_PROCESSED,
+                InvokePipelineStage::STATE_END,
             ],
             $notifiedStates
         );

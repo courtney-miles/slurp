@@ -16,12 +16,12 @@ use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpBuilder;
 use MilesAsylum\Slurp\SlurpFactory;
-use MilesAsylum\Slurp\Stage\EtlFinaliseStage;
-use MilesAsylum\Slurp\Stage\EltInvokePipelineStage;
-use MilesAsylum\Slurp\Stage\LoadStage;
-use MilesAsylum\Slurp\Stage\StageObserverInterface;
-use MilesAsylum\Slurp\Stage\TransformationStage;
-use MilesAsylum\Slurp\Stage\ValidationStage;
+use MilesAsylum\Slurp\OuterStage\FinaliseStage;
+use MilesAsylum\Slurp\OuterStage\InvokePipelineStage;
+use MilesAsylum\Slurp\InnerStage\LoadStage;
+use MilesAsylum\Slurp\InnerStage\StageObserverInterface;
+use MilesAsylum\Slurp\InnerStage\TransformationStage;
+use MilesAsylum\Slurp\InnerStage\ValidationStage;
 use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
@@ -84,7 +84,7 @@ class SlurpBuilderTest extends TestCase
     protected $mockOuterPipeline;
 
     /**
-     * @var EltInvokePipelineStage|MockInterface
+     * @var InvokePipelineStage|MockInterface
      */
     protected $mockInvokeExtractionPipeline;
 
@@ -101,7 +101,7 @@ class SlurpBuilderTest extends TestCase
 
         $this->mockInnerPipeline = \Mockery::mock(PipelineInterface::class);
         $this->mockOuterPipeline = \Mockery::mock(PipelineInterface::class);
-        $this->mockInvokeExtractionPipeline = \Mockery::mock(EltInvokePipelineStage::class);
+        $this->mockInvokeExtractionPipeline = \Mockery::mock(InvokePipelineStage::class);
 
         $this->mockInnerPipelineBuilder->shouldReceive('add')
             ->byDefault();
@@ -313,7 +313,7 @@ class SlurpBuilderTest extends TestCase
         $mockLoader = \Mockery::mock(LoaderInterface::class);
 
         $mockLoadStage = \Mockery::mock(LoadStage::class);
-        $mockFinaliseStage = \Mockery::mock(EtlFinaliseStage::class);
+        $mockFinaliseStage = \Mockery::mock(FinaliseStage::class);
 
         $this->mockFactory->shouldReceive('createLoadStage')
             ->with($mockLoader)
@@ -402,7 +402,7 @@ class SlurpBuilderTest extends TestCase
         $mockObserver = \Mockery::mock(StageObserverInterface::class);
         $mockLoader = \Mockery::mock(LoaderInterface::class);
         $mockLoadStage = \Mockery::mock(LoadStage::class);
-        $mockFinaliseStage = \Mockery::mock(EtlFinaliseStage::class);
+        $mockFinaliseStage = \Mockery::mock(FinaliseStage::class);
 
         $this->mockFactory->shouldReceive('createLoadStage')
             ->with($mockLoader)

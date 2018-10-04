@@ -13,14 +13,14 @@ use League\Pipeline\PipelineBuilder;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
-use MilesAsylum\Slurp\Stage\EltInvokePipelineStage;
-use MilesAsylum\Slurp\Stage\EtlFinaliseStage;
-use MilesAsylum\Slurp\Stage\LoadStage;
-use MilesAsylum\Slurp\Stage\OuterStageObserverInterface;
-use MilesAsylum\Slurp\Stage\StageInterface;
-use MilesAsylum\Slurp\Stage\StageObserverInterface;
-use MilesAsylum\Slurp\Stage\TransformationStage;
-use MilesAsylum\Slurp\Stage\ValidationStage;
+use MilesAsylum\Slurp\OuterStage\InvokePipelineStage;
+use MilesAsylum\Slurp\OuterStage\FinaliseStage;
+use MilesAsylum\Slurp\InnerStage\LoadStage;
+use MilesAsylum\Slurp\OuterStage\OuterStageObserverInterface;
+use MilesAsylum\Slurp\InnerStage\StageInterface;
+use MilesAsylum\Slurp\InnerStage\StageObserverInterface;
+use MilesAsylum\Slurp\InnerStage\TransformationStage;
+use MilesAsylum\Slurp\InnerStage\ValidationStage;
 use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
@@ -63,7 +63,7 @@ class SlurpBuilder
     protected $loadStages = [];
 
     /**
-     * @var EtlFinaliseStage[]
+     * @var FinaliseStage[]
      */
     protected $etlFinaliseStages = [];
 
@@ -314,14 +314,14 @@ class SlurpBuilder
         ));
     }
 
-    protected function attachEtlInvokePipelineObservers(EltInvokePipelineStage $extractionPipeline)
+    protected function attachEtlInvokePipelineObservers(InvokePipelineStage $extractionPipeline)
     {
         foreach ($this->etlInvokeObservers as $observer) {
             $extractionPipeline->attachObserver($observer);
         }
     }
 
-    protected function attachEtlFinaliseObservers(EtlFinaliseStage $etlFinalise)
+    protected function attachEtlFinaliseObservers(FinaliseStage $etlFinalise)
     {
         foreach ($this->etlFinaliseObservers as $observer) {
             $etlFinalise->attachObserver($observer);

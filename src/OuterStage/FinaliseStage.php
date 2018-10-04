@@ -5,13 +5,12 @@
  * Time: 11:25 AM
  */
 
-namespace MilesAsylum\Slurp\Stage;
-
+namespace MilesAsylum\Slurp\OuterStage;
 
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
 
-class EtlFinaliseStage extends AbstractOuterStage
+class FinaliseStage extends AbstractOuterStage
 {
     /**
      * @var LoaderInterface

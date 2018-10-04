@@ -9,9 +9,9 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Stage;
 
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
-use MilesAsylum\Slurp\Stage\EtlFinaliseStage;
-use MilesAsylum\Slurp\Stage\OuterStageInterface;
-use MilesAsylum\Slurp\Stage\OuterStageObserverInterface;
+use MilesAsylum\Slurp\OuterStage\FinaliseStage;
+use MilesAsylum\Slurp\OuterStage\OuterStageInterface;
+use MilesAsylum\Slurp\OuterStage\OuterStageObserverInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +21,7 @@ class FinaliseStageTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     /**
-     * @var EtlFinaliseStage
+     * @var FinaliseStage
      */
     protected $stage;
 
@@ -50,7 +50,7 @@ class FinaliseStageTest extends TestCase
             ->andReturn(false)
             ->byDefault();
 
-        $this->stage = new EtlFinaliseStage($this->mockLoader);
+        $this->stage = new FinaliseStage($this->mockLoader);
     }
 
     public function testFinaliseLoadOnInvoke()
@@ -97,9 +97,9 @@ class FinaliseStageTest extends TestCase
 
         $this->assertSame(
             [
-                EtlFinaliseStage::STATE_BEGIN,
-                EtlFinaliseStage::STATE_FINALISED,
-                EtlFinaliseStage::STATE_END,
+                FinaliseStage::STATE_BEGIN,
+                FinaliseStage::STATE_FINALISED,
+                FinaliseStage::STATE_END,
             ],
             $notifiedStates
         );

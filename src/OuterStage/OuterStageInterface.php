@@ -5,8 +5,9 @@
  * Time: 11:46 PM
  */
 
-namespace MilesAsylum\Slurp\Stage;
+namespace MilesAsylum\Slurp\OuterStage;
 
+use MilesAsylum\Slurp\OuterStage\OuterStageObserverInterface;
 use MilesAsylum\Slurp\Slurp;
 
 interface OuterStageInterface

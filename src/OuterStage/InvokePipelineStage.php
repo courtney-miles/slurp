@@ -5,14 +5,14 @@
  * Time: 11:39 AM
  */
 
-namespace MilesAsylum\Slurp\Stage;
+namespace MilesAsylum\Slurp\OuterStage;
 
 use League\Pipeline\Pipeline;
 use League\Pipeline\PipelineInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
 
-class EltInvokePipelineStage extends AbstractOuterStage
+class InvokePipelineStage extends AbstractOuterStage
 {
     /**
      * @var Pipeline

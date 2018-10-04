@@ -9,7 +9,7 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Stage;
 
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\Stage\LoadStage;
+use MilesAsylum\Slurp\InnerStage\LoadStage;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;

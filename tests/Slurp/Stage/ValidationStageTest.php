@@ -8,8 +8,8 @@
 namespace MilesAsylum\Slurp\Tests\Slurp\Stage;
 
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\Stage\StageObserverInterface;
-use MilesAsylum\Slurp\Stage\ValidationStage;
+use MilesAsylum\Slurp\InnerStage\StageObserverInterface;
+use MilesAsylum\Slurp\InnerStage\ValidationStage;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;

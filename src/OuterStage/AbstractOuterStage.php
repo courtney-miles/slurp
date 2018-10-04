@@ -5,7 +5,7 @@
  * Time: 8:41 AM
  */
 
-namespace MilesAsylum\Slurp\Stage;
+namespace MilesAsylum\Slurp\OuterStage;
 
 abstract class AbstractOuterStage implements OuterStageInterface
 {

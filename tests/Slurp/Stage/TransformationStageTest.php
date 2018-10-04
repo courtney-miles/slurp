@@ -8,14 +8,14 @@
 namespace MilesAsylum\Slurp\Tests\Slurp\Stage;
 
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\Stage\TransformationStage;
+use MilesAsylum\Slurp\InnerStage\TransformationStage;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \MilesAsylum\Slurp\Stage\TransformationStage
+ * @covers \MilesAsylum\Slurp\InnerStage\TransformationStage
  */
 class TransformationStageTest extends TestCase
 {
