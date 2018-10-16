@@ -50,14 +50,14 @@ class SlurpBuilder
     private $factory;
 
     /**
-     * @var ValidationStage[]
+     * @var ValidationStage
      */
-    protected $validationStages = [];
+    protected $validationStage;
 
     /**
-     * @var TransformationStage[]
+     * @var TransformationStage
      */
-    protected $transformationStages = [];
+    protected $transformationStage;
 
     /**
      * @var FiltrationStage
@@ -187,7 +187,7 @@ class SlurpBuilder
     {
         if (!isset($this->constraintValidator)) {
             $this->constraintValidator = $this->factory->createConstraintValidator();
-            $this->validationStages[] = $this->factory->createValidationStage($this->constraintValidator);
+            $this->validationStage = $this->factory->createValidationStage($this->constraintValidator);
         }
 
         $this->constraintValidator->setFieldConstraints($field, $constraint);
@@ -199,7 +199,7 @@ class SlurpBuilder
     {
         if (!isset($this->transformer)) {
             $this->transformer = $this->factory->createTransformer();
-            $this->transformationStages[] = $this->factory->createTransformationStage($this->transformer);
+            $this->transformationStage = $this->factory->createTransformationStage($this->transformer);
         }
 
         $this->transformer->addFieldChange($field, $change);
@@ -316,14 +316,14 @@ class SlurpBuilder
             $this->innerPipelineBuilder->add($ts);
         }
 
-        foreach ($this->validationStages as $validationStage) {
-            $this->attachValidationObservers($validationStage);
-            $this->innerPipelineBuilder->add($validationStage);
+        if (isset($this->validationStage)) {
+            $this->attachValidationObservers($this->validationStage);
+            $this->innerPipelineBuilder->add($this->validationStage);
         }
 
-        foreach ($this->transformationStages as $transformationStage) {
-            $this->attachTransformationObservers($transformationStage);
-            $this->innerPipelineBuilder->add($transformationStage);
+        if (isset($this->transformationStage)) {
+            $this->attachTransformationObservers($this->transformationStage);
+            $this->innerPipelineBuilder->add($this->transformationStage);
         }
 
         if (isset($this->filtrationStage)) {
