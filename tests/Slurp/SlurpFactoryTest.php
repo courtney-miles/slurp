@@ -9,8 +9,11 @@ namespace MilesAsylum\Slurp\Tests\Slurp;
 
 use frictionlessdata\tableschema\Schema;
 use League\Pipeline\PipelineInterface;
+use MilesAsylum\Slurp\Filter\ConstraintFiltration\ConstraintFilter;
+use MilesAsylum\Slurp\InnerStage\InnerProcessor;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\LoaderInterface;
+use MilesAsylum\Slurp\OuterStage\OuterProcessor;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpFactory;
 use MilesAsylum\Slurp\OuterStage\FinaliseStage;
@@ -83,6 +86,14 @@ class SlurpFactoryTest extends TestCase
         $this->assertInstanceOf(
             Transformer::class,
             $this->factory->createTransformer()
+        );
+    }
+
+    public function testCreateConstraintFilter()
+    {
+        $this->assertInstanceOf(
+            ConstraintFilter::class,
+            $this->factory->createConstraintFilter()
         );
     }
 
@@ -176,6 +187,22 @@ class SlurpFactoryTest extends TestCase
                 \Mockery::mock(PipelineInterface::class),
                 [RecordViolation::class]
             )
+        );
+    }
+
+    public function testCreateInnerProcess()
+    {
+        $this->assertInstanceOf(
+            InnerProcessor::class,
+            $this->factory->createInnerProcessor()
+        );
+    }
+
+    public function testCreateOuterProcess()
+    {
+        $this->assertInstanceOf(
+            OuterProcessor::class,
+            $this->factory->createOuterProcessor()
         );
     }
 }

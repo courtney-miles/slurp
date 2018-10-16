@@ -10,6 +10,10 @@ namespace MilesAsylum\Slurp;
 use frictionlessdata\tableschema\Schema;
 use League\Pipeline\PipelineInterface;
 use MilesAsylum\Slurp\Exception\FactoryException;
+use MilesAsylum\Slurp\Filter\ConstraintFiltration\ConstraintFilter;
+use MilesAsylum\Slurp\Filter\FilterInterface;
+use MilesAsylum\Slurp\InnerStage\FiltrationStage;
+use MilesAsylum\Slurp\InnerStage\InnerProcessor;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
@@ -19,6 +23,7 @@ use MilesAsylum\Slurp\OuterStage\InvokePipelineStage;
 use MilesAsylum\Slurp\InnerStage\LoadStage;
 use MilesAsylum\Slurp\InnerStage\TransformationStage;
 use MilesAsylum\Slurp\InnerStage\ValidationStage;
+use MilesAsylum\Slurp\OuterStage\OuterProcessor;
 use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
@@ -37,6 +42,11 @@ class SlurpFactory
     public function createTransformationStage(TransformerInterface $transformer): TransformationStage
     {
         return new TransformationStage($transformer);
+    }
+
+    public function createFiltrationStage(FilterInterface $filter): FiltrationStage
+    {
+        return new FiltrationStage($filter);
     }
 
     public function createLoadStage(LoaderInterface $loader): LoadStage
@@ -92,6 +102,13 @@ class SlurpFactory
         );
     }
 
+    public function createConstraintFilter()
+    {
+        return new ConstraintFilter(
+            Validation::createValidator()
+        );
+    }
+
     public function createSchemaValidator(Schema $tableSchema): SchemaValidator
     {
         return new SchemaValidator($tableSchema);
@@ -123,13 +140,25 @@ class SlurpFactory
         );
     }
 
-    public function createEtlInvokePipelineStage(PipelineInterface $innerPipeline, array $violationAbortTypes = [])
-    {
+    public function createEtlInvokePipelineStage(
+        PipelineInterface $innerPipeline,
+        array $violationAbortTypes = []
+    ): InvokePipelineStage {
         return new InvokePipelineStage($innerPipeline, $violationAbortTypes);
     }
 
-    public function createSlurp(PipelineInterface $pipeline)
+    public function createSlurp(PipelineInterface $pipeline): Slurp
     {
         return new Slurp($pipeline);
+    }
+
+    public function createInnerProcessor(): InnerProcessor
+    {
+        return new InnerProcessor();
+    }
+
+    public function createOuterProcessor(): OuterProcessor
+    {
+        return new OuterProcessor();
     }
 }

@@ -5,7 +5,7 @@
  * Time: 12:21 PM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\Stage;
+namespace MilesAsylum\Slurp\Tests\Slurp\OuterStage;
 
 use League\Pipeline\Pipeline;
 use MilesAsylum\Slurp\Extract\ExtractorInterface;

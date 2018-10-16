@@ -26,6 +26,11 @@ class SlurpPayload
      */
     protected $violations = [];
 
+    /**
+     * @var bool
+     */
+    protected $filtered = false;
+
     protected $loadAborted = false;
 
     /**
@@ -142,6 +147,22 @@ class SlurpPayload
         }
 
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFiltered(): bool
+    {
+        return $this->filtered;
+    }
+
+    /**
+     * @param bool $filtered
+     */
+    public function setFiltered(bool $filtered): void
+    {
+        $this->filtered = $filtered;
     }
 
     /**

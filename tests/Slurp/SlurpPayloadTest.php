@@ -152,4 +152,13 @@ class SlurpPayloadTest extends TestCase
         $payload->setLoadAborted(true);
         $this->assertTrue($payload->isLoadAborted());
     }
+
+    public function testSetFiltered()
+    {
+        $payload = new SlurpPayload();
+        $this->assertFalse($payload->isFiltered());
+
+        $payload->setFiltered(true);
+        $this->assertTrue($payload->isFiltered());
+    }
 }

@@ -5,7 +5,7 @@
  * Time: 10:43 PM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\Stage;
+namespace MilesAsylum\Slurp\Tests\Slurp\InnerStage;
 
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\SlurpPayload;

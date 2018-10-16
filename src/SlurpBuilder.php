@@ -10,6 +10,8 @@ namespace MilesAsylum\Slurp;
 use frictionlessdata\tableschema\Schema;
 use League\Pipeline\InterruptibleProcessor;
 use League\Pipeline\PipelineBuilder;
+use MilesAsylum\Slurp\Filter\ConstraintFiltration\ConstraintFilter;
+use MilesAsylum\Slurp\InnerStage\FiltrationStage;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
@@ -58,6 +60,11 @@ class SlurpBuilder
     protected $transformationStages = [];
 
     /**
+     * @var FiltrationStage
+     */
+    protected $filtrationStage;
+
+    /**
      * @var LoadStage[]
      */
     protected $loadStages = [];
@@ -88,6 +95,11 @@ class SlurpBuilder
     protected $transformer;
 
     /**
+     * @var ConstraintFilter
+     */
+    protected $constraintFilter;
+
+    /**
      * @var StageObserverInterface[]
      */
     protected $allStageObservers = [];
@@ -101,6 +113,11 @@ class SlurpBuilder
      * @var StageObserverInterface[]
      */
     protected $transformationObservers = [];
+
+    /**
+     * @var StageObserverInterface[]
+     */
+    protected $filtrationObservers = [];
 
     /**
      * @var StageObserverInterface[]
@@ -122,11 +139,11 @@ class SlurpBuilder
     public function __construct(
         PipelineBuilder $innerPipelineBuilder,
         PipelineBuilder $outerPipelineBuilder,
-        SlurpFactory $stageFactory
+        SlurpFactory $slurpFactory
     ) {
         $this->innerPipelineBuilder = $innerPipelineBuilder;
         $this->outerPipelineBuilder = $outerPipelineBuilder;
-        $this->factory = $stageFactory;
+        $this->factory = $slurpFactory;
     }
 
     public static function create(): self
@@ -190,6 +207,18 @@ class SlurpBuilder
         return $this;
     }
 
+    public function addFiltrationConstraint(string $field, Constraint $constraint): self
+    {
+        if (!isset($this->constraintFilter)) {
+            $this->constraintFilter = $this->factory->createConstraintFilter();
+            $this->filtrationStage = $this->factory->createFiltrationStage($this->constraintFilter);
+        }
+
+        $this->constraintFilter->setFieldConstraints($field, $constraint);
+
+        return $this;
+    }
+
     public function addLoader(LoaderInterface $loader): self
     {
         $this->loadStages[] = $this->factory->createLoadStage($loader);
@@ -245,6 +274,13 @@ class SlurpBuilder
         return $this;
     }
 
+    public function addFiltrationObserver(StageObserverInterface $observer): self
+    {
+        $this->filtrationObservers[] = $observer;
+
+        return $this;
+    }
+
     public function addLoadObserver(StageObserverInterface $observer): self
     {
         $this->loadObservers[] = $observer;
@@ -290,12 +326,21 @@ class SlurpBuilder
             $this->innerPipelineBuilder->add($transformationStage);
         }
 
+        if (isset($this->filtrationStage)) {
+            $this->attachFiltrationObservers($this->filtrationStage);
+            $this->innerPipelineBuilder->add($this->filtrationStage);
+        }
+
         foreach ($this->loadStages as $loadStage) {
             $this->attachLoadObservers($loadStage);
             $this->innerPipelineBuilder->add($loadStage);
         }
 
-        $invokeStage = $this->factory->createEtlInvokePipelineStage($this->innerPipelineBuilder->build());
+        $invokeStage = $this->factory->createEtlInvokePipelineStage(
+            $this->innerPipelineBuilder->build(
+                $this->factory->createInnerProcessor()
+            )
+        );
         $this->attachEtlInvokePipelineObservers($invokeStage);
 
         $this->outerPipelineBuilder->add($invokeStage);
@@ -305,13 +350,11 @@ class SlurpBuilder
             $this->outerPipelineBuilder->add($etlFinaliseStage);
         }
 
-        return $this->factory->createSlurp($this->outerPipelineBuilder->build(
-            new InterruptibleProcessor(
-                function (Slurp $slurp) {
-                    return !$slurp->isAborted();
-                }
+        return $this->factory->createSlurp(
+            $this->outerPipelineBuilder->build(
+                $this->factory->createOuterProcessor()
             )
-        ));
+        );
     }
 
     protected function attachEtlInvokePipelineObservers(InvokePipelineStage $extractionPipeline)
@@ -344,6 +387,15 @@ class SlurpBuilder
         }
 
         $this->attachAllStageObservers($transformationStage);
+    }
+
+    protected function attachFiltrationObservers(FiltrationStage $filtrationStage)
+    {
+        foreach ($this->filtrationObservers as $observer) {
+            $filtrationStage->attachObserver($observer);
+        }
+
+        $this->attachAllStageObservers($filtrationStage);
     }
 
     protected function attachLoadObservers(LoadStage $loadStage)

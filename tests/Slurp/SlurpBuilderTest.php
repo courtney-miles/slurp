@@ -10,9 +10,13 @@ namespace MilesAsylum\Slurp\Tests\Slurp;
 use frictionlessdata\tableschema\Schema;
 use League\Pipeline\PipelineBuilder;
 use League\Pipeline\PipelineInterface;
+use MilesAsylum\Slurp\Filter\ConstraintFiltration\ConstraintFilter;
+use MilesAsylum\Slurp\InnerStage\FiltrationStage;
+use MilesAsylum\Slurp\InnerStage\InnerProcessor;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
+use MilesAsylum\Slurp\OuterStage\OuterProcessor;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpBuilder;
 use MilesAsylum\Slurp\SlurpFactory;
@@ -69,6 +73,11 @@ class SlurpBuilderTest extends TestCase
     protected $mockTransformer;
 
     /**
+     * @var ConstraintFilter|MockInterface
+     */
+    protected $mockConstraintFilter;
+
+    /**
      * @var Slurp|MockInterface
      */
     protected $mockSlurp;
@@ -88,6 +97,16 @@ class SlurpBuilderTest extends TestCase
      */
     protected $mockInvokeExtractionPipeline;
 
+    /**
+     * @var OuterProcessor|MockInterface
+     */
+    protected $mockOuterProcessor;
+
+    /**
+     * @var InnerProcessor|MockInterface
+     */
+    protected $mockInnerProcessor;
+
     public function setUp()
     {
         parent::setUp();
@@ -98,10 +117,13 @@ class SlurpBuilderTest extends TestCase
         $this->mockSlurp = \Mockery::mock(Slurp::class);
         $this->mockConstraintValidator = \Mockery::mock(ConstraintValidator::class);
         $this->mockTransformer = \Mockery::mock(Transformer::class);
+        $this->mockConstraintFilter = \Mockery::mock(ConstraintFilter::class);
 
         $this->mockInnerPipeline = \Mockery::mock(PipelineInterface::class);
         $this->mockOuterPipeline = \Mockery::mock(PipelineInterface::class);
         $this->mockInvokeExtractionPipeline = \Mockery::mock(InvokePipelineStage::class);
+        $this->mockOuterProcessor = \Mockery::mock(OuterProcessor::class);
+        $this->mockInnerProcessor = \Mockery::mock(InnerProcessor::class);
 
         $this->mockInnerPipelineBuilder->shouldReceive('add')
             ->byDefault();
@@ -130,6 +152,15 @@ class SlurpBuilderTest extends TestCase
             ->byDefault();
         $this->mockFactory->shouldReceive('createTransformer')
             ->andReturn($this->mockTransformer)
+            ->byDefault();
+        $this->mockFactory->shouldReceive('createConstraintFilter')
+            ->andReturn($this->mockConstraintFilter)
+            ->byDefault();
+        $this->mockFactory->shouldReceive('createOuterProcessor')
+            ->andReturn($this->mockOuterProcessor)
+            ->byDefault();
+        $this->mockFactory->shouldReceive('createInnerProcessor')
+            ->andReturn($this->mockInnerProcessor)
             ->byDefault();
 
         $this->builder = new SlurpBuilder(
@@ -305,6 +336,59 @@ class SlurpBuilderTest extends TestCase
 
         $this->builder->addTransformationChange('foo', $mockChangeOne);
         $this->builder->addTransformationChange('foo', $mockChangeTwo);
+        $this->builder->build();
+    }
+
+    public function testAddFiltrationConstraint()
+    {
+        $mockConstraint = \Mockery::mock(Constraint::class);
+        $mockFiltrationStage = \Mockery::mock(FiltrationStage::class);
+
+        $this->mockConstraintFilter->shouldReceive('setFieldConstraints')
+            ->with('foo', $mockConstraint)
+            ->once();
+        $this->mockFactory->shouldReceive('createFiltrationStage')
+            ->with($this->mockConstraintFilter)
+            ->andReturn($mockFiltrationStage);
+        $this->mockInnerPipelineBuilder->shouldReceive('add')
+            ->with($mockFiltrationStage)
+            ->once();
+
+        $this->builder->addFiltrationConstraint(
+            'foo',
+            $mockConstraint
+        );
+        $this->builder->build();
+    }
+
+    public function testAddMultipleFilterConstraints()
+    {
+        $mockConstraintOne = \Mockery::mock(Constraint::class);
+        $mockConstraintTwo = \Mockery::mock(Constraint::class);
+        $mockFiltrationStage = \Mockery::mock(FiltrationStage::class);
+
+        $this->mockFactory->shouldReceive('createConstraintFilter')
+            ->andReturn($this->mockConstraintFilter)
+            ->once();
+        $this->mockConstraintFilter->shouldReceive('setFieldConstraints')
+            ->with('foo', $mockConstraintOne);
+        $this->mockConstraintFilter->shouldReceive('setFieldConstraints')
+            ->with('foo', $mockConstraintTwo);
+        $this->mockFactory->shouldReceive('createFiltrationStage')
+            ->with($this->mockConstraintFilter)
+            ->andReturn($mockFiltrationStage)
+            ->once();
+        $this->mockInnerPipelineBuilder->shouldReceive('add')
+            ->with($mockFiltrationStage)
+            ->once();
+
+        $this->builder->addFiltrationConstraint(
+            'foo',
+            $mockConstraintOne
+        )->addFiltrationConstraint(
+            'foo',
+            $mockConstraintTwo
+        );
         $this->builder->build();
     }
 
