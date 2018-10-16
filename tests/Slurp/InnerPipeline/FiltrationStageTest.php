@@ -5,10 +5,10 @@
  * Time: 9:34 PM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\InnerStage;
+namespace MilesAsylum\Slurp\Tests\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\Filter\FilterInterface;
-use MilesAsylum\Slurp\InnerStage\FiltrationStage;
+use MilesAsylum\Slurp\InnerPipeline\FiltrationStage;
 use MilesAsylum\Slurp\SlurpPayload;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;

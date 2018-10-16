@@ -5,7 +5,7 @@
  * Time: 11:39 AM
  */
 
-namespace MilesAsylum\Slurp\OuterStage;
+namespace MilesAsylum\Slurp\OuterPipeline;
 
 use League\Pipeline\Pipeline;
 use League\Pipeline\PipelineInterface;

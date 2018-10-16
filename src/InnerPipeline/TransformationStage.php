@@ -5,7 +5,7 @@
  * Time: 10:15 PM
  */
 
-namespace MilesAsylum\Slurp\InnerStage;
+namespace MilesAsylum\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Transform\TransformerInterface;

@@ -5,15 +5,15 @@
  * Time: 12:21 PM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\OuterStage;
+namespace MilesAsylum\Slurp\Tests\Slurp\OuterPipeline;
 
 use League\Pipeline\Pipeline;
 use MilesAsylum\Slurp\Extract\ExtractorInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\OuterStage\InvokePipelineStage;
-use MilesAsylum\Slurp\OuterStage\OuterStageInterface;
-use MilesAsylum\Slurp\OuterStage\OuterStageObserverInterface;
+use MilesAsylum\Slurp\OuterPipeline\InvokePipelineStage;
+use MilesAsylum\Slurp\OuterPipeline\OuterStageInterface;
+use MilesAsylum\Slurp\OuterPipeline\OuterStageObserverInterface;
 use MilesAsylum\Slurp\Validate\RecordViolation;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;

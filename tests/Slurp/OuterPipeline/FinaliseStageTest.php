@@ -5,13 +5,13 @@
  * Time: 12:15 PM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\OuterStage;
+namespace MilesAsylum\Slurp\Tests\Slurp\OuterPipeline;
 
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
-use MilesAsylum\Slurp\OuterStage\FinaliseStage;
-use MilesAsylum\Slurp\OuterStage\OuterStageInterface;
-use MilesAsylum\Slurp\OuterStage\OuterStageObserverInterface;
+use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
+use MilesAsylum\Slurp\OuterPipeline\OuterStageInterface;
+use MilesAsylum\Slurp\OuterPipeline\OuterStageObserverInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;

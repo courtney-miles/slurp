@@ -5,11 +5,11 @@
  * Time: 10:43 PM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\InnerStage;
+namespace MilesAsylum\Slurp\Tests\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\InnerStage\LoadStage;
+use MilesAsylum\Slurp\InnerPipeline\LoadStage;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;

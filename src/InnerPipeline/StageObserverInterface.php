@@ -5,7 +5,7 @@
  * Time: 10:37 PM
  */
 
-namespace MilesAsylum\Slurp\InnerStage;
+namespace MilesAsylum\Slurp\InnerPipeline;
 
 interface StageObserverInterface
 {

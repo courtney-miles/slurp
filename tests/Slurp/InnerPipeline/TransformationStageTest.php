@@ -5,17 +5,17 @@
  * Time: 10:50 PM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\InnerStage;
+namespace MilesAsylum\Slurp\Tests\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\InnerStage\TransformationStage;
+use MilesAsylum\Slurp\InnerPipeline\TransformationStage;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \MilesAsylum\Slurp\InnerStage\TransformationStage
+ * @covers \MilesAsylum\Slurp\InnerPipeline\TransformationStage
  */
 class TransformationStageTest extends TestCase
 {

@@ -5,7 +5,7 @@
  * Time: 11:25 AM
  */
 
-namespace MilesAsylum\Slurp\OuterStage;
+namespace MilesAsylum\Slurp\OuterPipeline;
 
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;

@@ -5,7 +5,7 @@
  * Time: 9:45 PM
  */
 
-namespace MilesAsylum\Slurp\OuterStage;
+namespace MilesAsylum\Slurp\OuterPipeline;
 
 use League\Pipeline\InterruptibleProcessor;
 use MilesAsylum\Slurp\Slurp;

@@ -5,10 +5,10 @@
  * Time: 10:06 PM
  */
 
-namespace MilesAsylum\Slurp\Tests\Slurp\OuterStage;
+namespace MilesAsylum\Slurp\Tests\Slurp\OuterPipeline;
 
-use MilesAsylum\Slurp\OuterStage\OuterProcessor;
-use MilesAsylum\Slurp\OuterStage\OuterStageInterface;
+use MilesAsylum\Slurp\OuterPipeline\OuterProcessor;
+use MilesAsylum\Slurp\OuterPipeline\OuterStageInterface;
 use MilesAsylum\Slurp\Slurp;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
