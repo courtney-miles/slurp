@@ -124,6 +124,14 @@ class SlurpFactory
         return new SchemaTransformer($tableSchema);
     }
 
+    /**
+     * @param \PDO $pdo
+     * @param string $table
+     * @param array $fieldMappings Array key is the destination column and the array value is the source column.
+     * @param int $batchSize
+     * @param PreCommitDmlInterface|null $preCommitDml
+     * @return DatabaseLoader
+     */
     public function createDatabaseLoader(
         \PDO $pdo,
         string $table,

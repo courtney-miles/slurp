@@ -30,7 +30,7 @@ class DatabaseLoader implements LoaderInterface
     /**
      * @var array
      */
-    private $columnMapping;
+    private $fieldMapping;
     /**
      * @var string
      */
@@ -57,14 +57,14 @@ class DatabaseLoader implements LoaderInterface
     /**
      * DatabaseLoader constructor.
      * @param string $table
-     * @param array $columnMapping Array key is the destination column and the array value is the source column.
+     * @param array $fieldMapping Array key is the destination column and the array value is the source column.
      * @param LoaderFactory $dmlFactory
      * @param int $batchSize
      * @param PreCommitDmlInterface|null $preCommitDml
      */
     public function __construct(
         string $table,
-        array $columnMapping,
+        array $fieldMapping,
         LoaderFactory $dmlFactory,
         int $batchSize = 100,
         PreCommitDmlInterface $preCommitDml = null
@@ -72,7 +72,7 @@ class DatabaseLoader implements LoaderInterface
         $this->loaderFactory = $dmlFactory;
         $this->table = $table;
         $this->batchSize = $batchSize;
-        $this->columnMapping = $columnMapping;
+        $this->fieldMapping = $fieldMapping;
         $this->preCommitDml = $preCommitDml;
     }
 
@@ -106,12 +106,12 @@ class DatabaseLoader implements LoaderInterface
     {
         $this->stagedLoad = $this->loaderFactory->createStagedLoad(
             $this->table,
-            array_keys($this->columnMapping)
+            array_keys($this->fieldMapping)
         );
         $stagedTable = $this->stagedLoad->begin();
         $this->batchStmt = $this->loaderFactory->createBatchInsertManager(
             $stagedTable,
-            array_keys($this->columnMapping)
+            array_keys($this->fieldMapping)
         );
 
         $this->begun = true;
@@ -172,14 +172,14 @@ class DatabaseLoader implements LoaderInterface
 
     protected function mapColumnNames(array $values): array
     {
-        if (empty($this->columnMapping)) {
+        if (empty($this->fieldMapping)) {
             return $values;
         }
 
         $newValues = [];
 
         foreach ($values as $sourceCol => $value) {
-            foreach (array_keys($this->columnMapping, $sourceCol) as $destCol) {
+            foreach (array_keys($this->fieldMapping, $sourceCol) as $destCol) {
                 $newValues[$destCol] = $value;
             }
         }
