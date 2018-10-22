@@ -371,7 +371,8 @@ class SlurpBuilder
         $invokeStage = $this->factory->createEtlInvokePipelineStage(
             $this->innerPipelineBuilder->build(
                 $this->factory->createInnerProcessor()
-            )
+            ),
+            array_keys($this->violationAbortTypes)
         );
         $this->attachEtlInvokePipelineObservers($invokeStage);
 

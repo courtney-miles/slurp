@@ -475,9 +475,10 @@ class SlurpBuilderTest extends TestCase
      */
     public function testSetViolationAbortTypes(array $abortTypes)
     {
-        $this->mockFactory->shouldReceive('createInvokeExtractionPipeline')
+        $this->mockFactory->shouldReceive('createEtlInvokePipelineStage')
             ->with($this->mockInnerPipeline, $abortTypes)
-            ->andReturn($this->mockInvokeExtractionPipeline);
+            ->andReturn($this->mockInvokeExtractionPipeline)
+            ->once();
 
         foreach ($abortTypes as $type) {
             switch ($type) {
