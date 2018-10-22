@@ -155,10 +155,18 @@ class SlurpBuilder
         );
     }
 
-    public function setTableSchema(Schema $tableSchema): self
+    /**
+     * @param Schema $tableSchema
+     * @param bool $validateOnly True to use the schema to validate only, otherwise values validated and transformed.
+     * @return SlurpBuilder
+     */
+    public function setTableSchema(Schema $tableSchema, bool $validateOnly = false): self
     {
         $this->schemaValidator = $this->factory->createSchemaValidator($tableSchema);
-        $this->schemaTransformer = $this->factory->createSchemaTransformer($tableSchema);
+
+        if (!$validateOnly) {
+            $this->schemaTransformer = $this->factory->createSchemaTransformer($tableSchema);
+        }
 
         return $this;
     }

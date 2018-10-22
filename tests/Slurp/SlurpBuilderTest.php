@@ -218,6 +218,27 @@ class SlurpBuilderTest extends TestCase
         $this->builder->build();
     }
 
+    public function testSetTableSchemaValidateOnly()
+    {
+        $mockTableSchema = \Mockery::mock(Schema::class);
+        $mockValidationStage = \Mockery::mock(ValidationStage::class);
+        $mockSchemaValidator = \Mockery::mock(SchemaValidator::class);
+
+        $this->mockFactory->shouldReceive('createSchemaValidator')
+            ->with($mockTableSchema)
+            ->andReturn($mockSchemaValidator);
+        $this->mockFactory->shouldReceive('createValidationStage')
+            ->with($mockSchemaValidator)
+            ->andReturn($mockValidationStage);
+
+        $this->mockInnerPipelineBuilder->shouldReceive('add')
+            ->with($mockValidationStage)
+            ->once();
+
+        $this->builder->setTableSchema($mockTableSchema, true);
+        $this->builder->build();
+    }
+
     public function testCreateTableSchemaFromPath()
     {
         $path = '/foo/bar.json';
