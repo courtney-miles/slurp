@@ -12,10 +12,14 @@ use MilesAsylum\Slurp\Slurp;
 
 class OuterProcessor extends InterruptibleProcessor
 {
-    public function __construct()
+    public function __construct(callable $interrupt = null)
     {
         parent::__construct(
-            function (Slurp $slurp) {
+            function (Slurp $slurp) use ($interrupt) {
+                if ($interrupt !== null && $interrupt($slurp)) {
+                    $slurp->abort();
+                }
+
                 return !$slurp->isAborted();
             }
         );
