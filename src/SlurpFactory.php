@@ -165,8 +165,8 @@ class SlurpFactory
         return new InnerProcessor();
     }
 
-    public function createOuterProcessor(): OuterProcessor
+    public function createOuterProcessor(callable $interrupt = null): OuterProcessor
     {
-        return new OuterProcessor();
+        return new OuterProcessor($interrupt);
     }
 }

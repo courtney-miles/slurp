@@ -136,6 +136,11 @@ class SlurpBuilder
 
     protected $violationAbortTypes = [];
 
+    /**
+     * @var null|callable
+     */
+    protected $outerProcessInterrupt;
+
     public function __construct(
         PipelineBuilder $innerPipelineBuilder,
         PipelineBuilder $outerPipelineBuilder,
@@ -269,6 +274,17 @@ class SlurpBuilder
         $this->violationAbortTypes[FieldViolation::class] = true;
     }
 
+    /**
+     * Set a function to determine if the outer process should be aborted.
+     * @param callable $interrupt The function will be passed an instance of
+     * \MilesAsylum\Slurp\Slurp and should return true to abort the process,
+     * otherwise false.
+     */
+    public function setOuterProcessInterrupt(callable $interrupt)
+    {
+        $this->outerProcessInterrupt = $interrupt;
+    }
+
     public function addAllStagesObserver(StageObserverInterface $observer): self
     {
         $this->allStageObservers[] = $observer;
@@ -368,7 +384,7 @@ class SlurpBuilder
 
         return $this->factory->createSlurp(
             $this->outerPipelineBuilder->build(
-                $this->factory->createOuterProcessor()
+                $this->factory->createOuterProcessor($this->outerProcessInterrupt)
             )
         );
     }
