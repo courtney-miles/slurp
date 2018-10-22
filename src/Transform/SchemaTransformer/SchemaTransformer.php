@@ -76,7 +76,7 @@ class SchemaTransformer implements TransformerInterface
         foreach ($record as $fieldName => $value) {
             $field = $this->getField($fieldName);
 
-            if ($field === null) {
+            if ($field === null || $value === null) {
                 continue;
             }
 

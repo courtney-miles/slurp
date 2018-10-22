@@ -85,8 +85,11 @@ class SchemaTransformerTest extends TestCase
     {
         return [
             [TimeField::class, [12, 23, 34], '12:23:34'],
+            [TimeField::class, null, null],
             [DateField::class, new Carbon('2018-02-01'), '2018-02-01'],
-            [DatetimeField::class, new Carbon('2018-02-01 12:23:34'), '2018-02-01 12:23:34']
+            [DateField::class, null, null],
+            [DatetimeField::class, new Carbon('2018-02-01 12:23:34'), '2018-02-01 12:23:34'],
+            [DatetimeField::class, null, null],
         ];
     }
 
