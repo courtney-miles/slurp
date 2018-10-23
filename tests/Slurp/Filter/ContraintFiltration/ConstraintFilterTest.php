@@ -41,7 +41,7 @@ class ConstraintFilterTest extends TestCase
         $mockConstraint = \Mockery::mock(Constraint::class);
         $this->mockValidator->shouldReceive('validate')
             ->with(234, $mockConstraint)
-            ->andReturn([true]); // ... any non-empty array to satisfy the test.
+            ->andReturn([]); // ... a empty array to satisfy the test.
         $this->filter->setFieldConstraints('bar', $mockConstraint);
 
         $this->assertTrue($this->filter->filterRecord($record));
@@ -54,7 +54,7 @@ class ConstraintFilterTest extends TestCase
         $mockConstraint = \Mockery::mock(Constraint::class);
         $this->mockValidator->shouldReceive('validate')
             ->with(234, $mockConstraint)
-            ->andReturn([]); // ... a empty array to satisfy the test.
+            ->andReturn([true]); // ... any non-empty array to satisfy the test.
         $this->filter->setFieldConstraints('bar', $mockConstraint);
 
         $this->assertFalse($this->filter->filterRecord($record));

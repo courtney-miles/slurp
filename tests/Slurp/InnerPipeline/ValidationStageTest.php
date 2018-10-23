@@ -67,6 +67,20 @@ class ValidationStageTest extends TestCase
         $this->assertSame($mockPayload, ($this->stage)($mockPayload));
     }
 
+    public function testDoNotValidateFiltered()
+    {
+        $mockPayload = $this->createMockPayload(123, ['bar']);
+        $mockPayload->shouldReceive('isFiltered')
+            ->andReturn(true);
+
+        $this->mockValidator->shouldReceive('validateRecord')
+            ->never();
+        $mockPayload->shouldReceive('addViolations')
+            ->never();
+
+        $this->assertSame($mockPayload, ($this->stage)($mockPayload));
+    }
+
     public function testNotifyObserverAfterValidate()
     {
         $mockObserver = \Mockery::mock(StageObserverInterface::class);
@@ -93,6 +107,9 @@ class ValidationStageTest extends TestCase
             ->andReturn($recordId);
         $mockPayload->shouldReceive('getRecord')
             ->andReturn($record);
+        $mockPayload->shouldReceive('isFiltered')
+            ->andReturn(false)
+            ->byDefault();
         $mockPayload->shouldReceive('addViolations')
             ->withAnyArgs()
             ->byDefault();

@@ -336,6 +336,11 @@ class SlurpBuilder
 
     public function build(): Slurp
     {
+        if (isset($this->filtrationStage)) {
+            $this->attachFiltrationObservers($this->filtrationStage);
+            $this->innerPipelineBuilder->add($this->filtrationStage);
+        }
+
         if (isset($this->schemaValidator)) {
             $vs = $this->factory->createValidationStage($this->schemaValidator);
             $this->attachValidationObservers($vs);
@@ -356,11 +361,6 @@ class SlurpBuilder
         if (isset($this->transformationStage)) {
             $this->attachTransformationObservers($this->transformationStage);
             $this->innerPipelineBuilder->add($this->transformationStage);
-        }
-
-        if (isset($this->filtrationStage)) {
-            $this->attachFiltrationObservers($this->filtrationStage);
-            $this->innerPipelineBuilder->add($this->filtrationStage);
         }
 
         foreach ($this->loadStages as $loadStage) {

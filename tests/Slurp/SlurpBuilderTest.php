@@ -132,7 +132,7 @@ class SlurpBuilderTest extends TestCase
             ->byDefault();
 
         $this->mockFactory->shouldReceive('createEtlInvokePipelineStage')
-            ->with($this->mockInnerPipeline)
+            ->with($this->mockInnerPipeline, [])
             ->andReturn($this->mockInvokeExtractionPipeline)
             ->byDefault();
 

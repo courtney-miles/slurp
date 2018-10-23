@@ -24,6 +24,10 @@ class ValidationStage extends AbstractStage
 
     public function __invoke(SlurpPayload $payload): SlurpPayload
     {
+        if ($payload->isFiltered()) {
+            return $payload;
+        }
+
         $payload->addViolations($this->validator->validateRecord($payload->getRecordId(), $payload->getRecord()));
 
         $this->notify($payload);
