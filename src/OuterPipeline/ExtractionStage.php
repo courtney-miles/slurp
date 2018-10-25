@@ -12,7 +12,7 @@ use League\Pipeline\PipelineInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
 
-class InvokePipelineStage extends AbstractOuterStage
+class ExtractionStage extends AbstractOuterStage
 {
     /**
      * @var Pipeline
@@ -20,9 +20,9 @@ class InvokePipelineStage extends AbstractOuterStage
     private $innerPipeline;
 
     /**
-     * @var array
+     * @var callable
      */
-    private $violationAbortTypes = [];
+    private $interrupt;
 
     const STATE_RECORD_PROCESSED = 'record-processed';
     const STATE_ABORTED = 'aborted';
@@ -30,12 +30,12 @@ class InvokePipelineStage extends AbstractOuterStage
     /**
      * InvokeExtractionPipeline constructor.
      * @param PipelineInterface $innerPipeline
-     * @param array $violationAbortTypes Violation types that should cause extraction to abort.
+     * @param callable|null $interrupt
      */
-    public function __construct(PipelineInterface $innerPipeline, array $violationAbortTypes = [])
+    public function __construct(PipelineInterface $innerPipeline, callable $interrupt = null)
     {
         $this->innerPipeline = $innerPipeline;
-        $this->violationAbortTypes = $violationAbortTypes;
+        $this->interrupt = $interrupt;
     }
 
     public function __invoke(Slurp $slurp): Slurp
@@ -51,11 +51,12 @@ class InvokePipelineStage extends AbstractOuterStage
 
             $this->notify(self::STATE_RECORD_PROCESSED);
 
-            foreach ($this->violationAbortTypes as $abortType) {
-                if ($payload->hasViolations($abortType)) {
-                    $this->notify(self::STATE_ABORTED);
-                    break 2;
-                }
+            $interrupt = $this->interrupt;
+
+            if ($interrupt !== null && $interrupt($payload)) {
+                $slurp->abort();
+                $this->notify(self::STATE_ABORTED);
+                break;
             }
         }
 

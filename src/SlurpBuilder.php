@@ -15,7 +15,7 @@ use MilesAsylum\Slurp\InnerPipeline\FiltrationStage;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
-use MilesAsylum\Slurp\OuterPipeline\InvokePipelineStage;
+use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
 use MilesAsylum\Slurp\InnerPipeline\LoadStage;
 use MilesAsylum\Slurp\OuterPipeline\OuterStageObserverInterface;
@@ -134,7 +134,10 @@ class SlurpBuilder
      */
     protected $etlFinaliseObservers = [];
 
-    protected $violationAbortTypes = [];
+    /**
+     * @var callable
+     */
+    protected $extractionInterrupt;
 
     /**
      * @var null|callable
@@ -264,14 +267,11 @@ class SlurpBuilder
         );
     }
 
-    public function abortOnRecordViolation()
+    public function setExtractionInterrupt(callable $interrupt): self
     {
-        $this->violationAbortTypes[RecordViolation::class] = true;
-    }
+        $this->extractionInterrupt = $interrupt;
 
-    public function abortOnFieldViolation()
-    {
-        $this->violationAbortTypes[FieldViolation::class] = true;
+        return $this;
     }
 
     /**
@@ -368,11 +368,11 @@ class SlurpBuilder
             $this->innerPipelineBuilder->add($loadStage);
         }
 
-        $invokeStage = $this->factory->createEtlInvokePipelineStage(
+        $invokeStage = $this->factory->createExtractionStage(
             $this->innerPipelineBuilder->build(
                 $this->factory->createInnerProcessor()
             ),
-            array_keys($this->violationAbortTypes)
+            $this->extractionInterrupt
         );
         $this->attachEtlInvokePipelineObservers($invokeStage);
 
@@ -385,12 +385,12 @@ class SlurpBuilder
 
         return $this->factory->createSlurp(
             $this->outerPipelineBuilder->build(
-                $this->factory->createOuterProcessor($this->outerProcessInterrupt)
+                $this->factory->createOuterProcessor()
             )
         );
     }
 
-    protected function attachEtlInvokePipelineObservers(InvokePipelineStage $extractionPipeline)
+    protected function attachEtlInvokePipelineObservers(ExtractionStage $extractionPipeline)
     {
         foreach ($this->etlInvokeObservers as $observer) {
             $extractionPipeline->attachObserver($observer);

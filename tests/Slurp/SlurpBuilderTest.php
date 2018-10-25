@@ -21,7 +21,7 @@ use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpBuilder;
 use MilesAsylum\Slurp\SlurpFactory;
 use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
-use MilesAsylum\Slurp\OuterPipeline\InvokePipelineStage;
+use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use MilesAsylum\Slurp\InnerPipeline\LoadStage;
 use MilesAsylum\Slurp\InnerPipeline\StageObserverInterface;
 use MilesAsylum\Slurp\InnerPipeline\TransformationStage;
@@ -93,7 +93,7 @@ class SlurpBuilderTest extends TestCase
     protected $mockOuterPipeline;
 
     /**
-     * @var InvokePipelineStage|MockInterface
+     * @var ExtractionStage|MockInterface
      */
     protected $mockInvokeExtractionPipeline;
 
@@ -121,7 +121,7 @@ class SlurpBuilderTest extends TestCase
 
         $this->mockInnerPipeline = \Mockery::mock(PipelineInterface::class);
         $this->mockOuterPipeline = \Mockery::mock(PipelineInterface::class);
-        $this->mockInvokeExtractionPipeline = \Mockery::mock(InvokePipelineStage::class);
+        $this->mockInvokeExtractionPipeline = \Mockery::mock(ExtractionStage::class);
         $this->mockOuterProcessor = \Mockery::mock(OuterProcessor::class);
         $this->mockInnerProcessor = \Mockery::mock(InnerProcessor::class);
 
@@ -131,8 +131,8 @@ class SlurpBuilderTest extends TestCase
             ->andReturn($this->mockInnerPipeline)
             ->byDefault();
 
-        $this->mockFactory->shouldReceive('createEtlInvokePipelineStage')
-            ->with($this->mockInnerPipeline, [])
+        $this->mockFactory->shouldReceive('createExtractionStage')
+            ->with($this->mockInnerPipeline, null)
             ->andReturn($this->mockInvokeExtractionPipeline)
             ->byDefault();
 
@@ -469,38 +469,18 @@ class SlurpBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider getViolationAbortTypesTestData
-     * @param array $abortTypes
-     */
-    public function testSetViolationAbortTypes(array $abortTypes)
+    public function testSetExtractionInterrupt()
     {
-        $this->mockFactory->shouldReceive('createEtlInvokePipelineStage')
-            ->with($this->mockInnerPipeline, $abortTypes)
+        $interrupt = function () {
+        };
+
+        $this->mockFactory->shouldReceive('createExtractionStage')
+            ->with($this->mockInnerPipeline, $interrupt)
             ->andReturn($this->mockInvokeExtractionPipeline)
             ->once();
 
-        foreach ($abortTypes as $type) {
-            switch ($type) {
-                case RecordViolation::class:
-                    $this->builder->abortOnRecordViolation();
-                    break;
-                case FieldViolation::class:
-                    $this->builder->abortOnFieldViolation();
-                    break;
-            }
-        }
-
+        $this->builder->setExtractionInterrupt($interrupt);
         $this->builder->build();
-    }
-
-    public function getViolationAbortTypesTestData()
-    {
-        return [
-            [[RecordViolation::class]],
-            [[FieldViolation::class]],
-            [[RecordViolation::class, FieldViolation::class]]
-        ];
     }
 
     public function testAddLoadObserver()

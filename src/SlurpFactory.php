@@ -19,7 +19,7 @@ use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
-use MilesAsylum\Slurp\OuterPipeline\InvokePipelineStage;
+use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use MilesAsylum\Slurp\InnerPipeline\LoadStage;
 use MilesAsylum\Slurp\InnerPipeline\TransformationStage;
 use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
@@ -148,11 +148,11 @@ class SlurpFactory
         );
     }
 
-    public function createEtlInvokePipelineStage(
+    public function createExtractionStage(
         PipelineInterface $innerPipeline,
-        array $violationAbortTypes = []
-    ): InvokePipelineStage {
-        return new InvokePipelineStage($innerPipeline, $violationAbortTypes);
+        callable $interrupt = null
+    ): ExtractionStage {
+        return new ExtractionStage($innerPipeline, $interrupt);
     }
 
     public function createSlurp(PipelineInterface $pipeline): Slurp
@@ -165,8 +165,8 @@ class SlurpFactory
         return new InnerProcessor();
     }
 
-    public function createOuterProcessor(callable $interrupt = null): OuterProcessor
+    public function createOuterProcessor(): OuterProcessor
     {
-        return new OuterProcessor($interrupt);
+        return new OuterProcessor();
     }
 }

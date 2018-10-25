@@ -72,38 +72,6 @@ class OuterProcessorTest extends TestCase
         $this->assertSame($mockSlurp, $this->processor->process($mockSlurp, $mockStageOne, $mockStageTwo));
     }
 
-    public function testInterruptOnCallback()
-    {
-        $processor = new OuterProcessor(function () {
-            return true;
-        });
-        $abort = false;
-
-        $mockSlurp = \Mockery::mock(Slurp::class);
-        $mockSlurp->shouldReceive('abort')
-            ->withArgs(function () use (&$abort) {
-                $abort = true;
-                return true;
-            })->once();
-        $mockSlurp->shouldReceive('isAborted')
-            ->andReturnUsing(function () use (&$abort) {
-                return $abort;
-            });
-
-        $mockStageOne = $this->createMockStage();
-        $mockStageOne->shouldReceive('__invoke')
-            ->withArgs(function (Slurp $slurp) use (&$abort) {
-                $abort = true;
-                return true;
-            })->andReturn($mockSlurp);
-
-        $mockStageTwo = $this->createMockStage();
-        $mockStageTwo->shouldReceive('__invoke')
-            ->never();
-
-        $this->assertSame($mockSlurp, $processor->process($mockSlurp, $mockStageOne, $mockStageTwo));
-    }
-
     /**
      * @return MockInterface|OuterStageInterface
      */

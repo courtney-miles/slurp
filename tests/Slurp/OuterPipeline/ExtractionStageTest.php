@@ -11,7 +11,7 @@ use League\Pipeline\Pipeline;
 use MilesAsylum\Slurp\Extract\ExtractorInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\OuterPipeline\InvokePipelineStage;
+use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use MilesAsylum\Slurp\OuterPipeline\OuterStageInterface;
 use MilesAsylum\Slurp\OuterPipeline\OuterStageObserverInterface;
 use MilesAsylum\Slurp\Validate\RecordViolation;
@@ -19,12 +19,12 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
-class InvokeExtractionPipelineTest extends TestCase
+class ExtractionStageTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
     /**
-     * @var InvokePipelineStage
+     * @var ExtractionStage
      */
     protected $stage;
 
@@ -45,7 +45,7 @@ class InvokeExtractionPipelineTest extends TestCase
         $this->mockPipeline = \Mockery::mock(Pipeline::class);
         $this->mockSlurp = \Mockery::mock(Slurp::class);
 
-        $this->stage = new InvokePipelineStage($this->mockPipeline);
+        $this->stage = new ExtractionStage($this->mockPipeline);
     }
 
     public function testIterateExtractionOnInvoke()
@@ -76,27 +76,22 @@ class InvokeExtractionPipelineTest extends TestCase
         $this->assertSame($this->mockSlurp, ($this->stage)($this->mockSlurp));
     }
 
-    public function testAbortOnViolationType()
+    public function testAbortOnInterrupt()
     {
         $rows = [['foo', 123], ['bar', 234]];
+        $interrupt = function (SlurpPayload $payload) {
+            return true;
+        };
         $mockExtractor = \Mockery::mock(ExtractorInterface::class);
         $this->stubExtractorContent($mockExtractor, $rows);
         $this->mockSlurp->shouldReceive('getExtractor')->andReturn($mockExtractor);
+        $this->mockSlurp->shouldReceive('abort')->once();
 
         $this->mockPipeline->shouldReceive('__invoke')
-            ->withArgs(
-                function ($payload) use ($rows) {
-                    if (!$payload instanceof SlurpPayload) {
-                        return false;
-                    }
+            ->with(\Mockery::type(SlurpPayload::class))
+            ->once();
 
-                    $payload->addViolation(\Mockery::mock(RecordViolation::class));
-
-                    return true;
-                }
-            )->once();
-
-        $stage = new InvokePipelineStage($this->mockPipeline, [RecordViolation::class]);
+        $stage = new ExtractionStage($this->mockPipeline, $interrupt);
         ($stage)($this->mockSlurp);
     }
 
@@ -122,10 +117,10 @@ class InvokeExtractionPipelineTest extends TestCase
 
         $this->assertSame(
             [
-                InvokePipelineStage::STATE_BEGIN,
-                InvokePipelineStage::STATE_RECORD_PROCESSED,
-                InvokePipelineStage::STATE_RECORD_PROCESSED,
-                InvokePipelineStage::STATE_END,
+                ExtractionStage::STATE_BEGIN,
+                ExtractionStage::STATE_RECORD_PROCESSED,
+                ExtractionStage::STATE_RECORD_PROCESSED,
+                ExtractionStage::STATE_END,
             ],
             $notifiedStates
         );

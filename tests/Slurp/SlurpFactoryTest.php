@@ -17,7 +17,7 @@ use MilesAsylum\Slurp\OuterPipeline\OuterProcessor;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpFactory;
 use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
-use MilesAsylum\Slurp\OuterPipeline\InvokePipelineStage;
+use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use MilesAsylum\Slurp\InnerPipeline\LoadStage;
 use MilesAsylum\Slurp\InnerPipeline\TransformationStage;
 use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
@@ -172,8 +172,8 @@ class SlurpFactoryTest extends TestCase
     public function testCreateInvokeExtractionPipeline()
     {
         $this->assertInstanceOf(
-            InvokePipelineStage::class,
-            $this->factory->createEtlInvokePipelineStage(
+            ExtractionStage::class,
+            $this->factory->createExtractionStage(
                 \Mockery::mock(PipelineInterface::class)
             )
         );
@@ -182,10 +182,9 @@ class SlurpFactoryTest extends TestCase
     public function testCreateInvokeExtractionPipelineWithViolationAbortTypes()
     {
         $this->assertInstanceOf(
-            InvokePipelineStage::class,
-            $this->factory->createEtlInvokePipelineStage(
-                \Mockery::mock(PipelineInterface::class),
-                [RecordViolation::class]
+            ExtractionStage::class,
+            $this->factory->createExtractionStage(
+                \Mockery::mock(PipelineInterface::class)
             )
         );
     }
