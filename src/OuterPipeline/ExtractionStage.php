@@ -53,7 +53,7 @@ class ExtractionStage extends AbstractOuterStage
 
             $interrupt = $this->interrupt;
 
-            if ($interrupt !== null && $interrupt($payload)) {
+            if ($interrupt !== null && $interrupt($slurp, $payload)) {
                 $slurp->abort();
                 $this->notify(self::STATE_ABORTED);
                 break;
