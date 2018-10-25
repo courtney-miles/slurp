@@ -8,27 +8,24 @@
 namespace MilesAsylum\Slurp;
 
 use frictionlessdata\tableschema\Schema;
-use League\Pipeline\InterruptibleProcessor;
 use League\Pipeline\PipelineBuilder;
 use MilesAsylum\Slurp\Filter\ConstraintFiltration\ConstraintFilter;
 use MilesAsylum\Slurp\InnerPipeline\FiltrationStage;
+use MilesAsylum\Slurp\InnerPipeline\LoadStage;
+use MilesAsylum\Slurp\InnerPipeline\StageInterface;
+use MilesAsylum\Slurp\InnerPipeline\StageObserverInterface;
+use MilesAsylum\Slurp\InnerPipeline\TransformationStage;
+use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
-use MilesAsylum\Slurp\InnerPipeline\LoadStage;
 use MilesAsylum\Slurp\OuterPipeline\OuterStageObserverInterface;
-use MilesAsylum\Slurp\InnerPipeline\StageInterface;
-use MilesAsylum\Slurp\InnerPipeline\StageObserverInterface;
-use MilesAsylum\Slurp\InnerPipeline\TransformationStage;
-use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
 use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
-use MilesAsylum\Slurp\Validate\FieldViolation;
-use MilesAsylum\Slurp\Validate\RecordViolation;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use Symfony\Component\Validator\Constraint;
 
@@ -138,11 +135,6 @@ class SlurpBuilder
      * @var callable
      */
     protected $extractionInterrupt;
-
-    /**
-     * @var null|callable
-     */
-    protected $outerProcessInterrupt;
 
     public function __construct(
         PipelineBuilder $innerPipelineBuilder,
@@ -272,17 +264,6 @@ class SlurpBuilder
         $this->extractionInterrupt = $interrupt;
 
         return $this;
-    }
-
-    /**
-     * Set a function to determine if the outer process should be aborted.
-     * @param callable $interrupt The function will be passed an instance of
-     * \MilesAsylum\Slurp\Slurp and should return true to abort the process,
-     * otherwise false.
-     */
-    public function setOuterProcessInterrupt(callable $interrupt)
-    {
-        $this->outerProcessInterrupt = $interrupt;
     }
 
     public function addAllStagesObserver(StageObserverInterface $observer): self
