@@ -124,7 +124,7 @@ class SlurpBuilder
     /**
      * @var OuterStageObserverInterface[]
      */
-    protected $etlInvokeObservers = [];
+    protected $extractionObservers = [];
 
     /**
      * @var OuterStageObserverInterface[]
@@ -301,9 +301,9 @@ class SlurpBuilder
         return $this;
     }
 
-    public function addEltInvokeObserver(OuterStageObserverInterface $observer): self
+    public function addExtractionObserver(OuterStageObserverInterface $observer): self
     {
-        $this->etlInvokeObservers[] = $observer;
+        $this->extractionObservers[] = $observer;
 
         return $this;
     }
@@ -373,7 +373,7 @@ class SlurpBuilder
 
     protected function attachEtlInvokePipelineObservers(ExtractionStage $extractionPipeline)
     {
-        foreach ($this->etlInvokeObservers as $observer) {
+        foreach ($this->extractionObservers as $observer) {
             $extractionPipeline->attachObserver($observer);
         }
     }
