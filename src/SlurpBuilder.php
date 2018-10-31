@@ -69,7 +69,17 @@ class SlurpBuilder
     /**
      * @var FinaliseStage[]
      */
-    protected $etlFinaliseStages = [];
+    protected $finaliseStages = [];
+
+    /**
+     * @var Schema
+     */
+    protected $tableSchema;
+
+    /**
+     * @var bool
+     */
+    protected $schemaValidationOnly = false;
 
     /**
      * @var SchemaValidator
@@ -129,7 +139,7 @@ class SlurpBuilder
     /**
      * @var OuterStageObserverInterface[]
      */
-    protected $etlFinaliseObservers = [];
+    protected $finaliseObservers = [];
 
     /**
      * @var callable
@@ -157,16 +167,22 @@ class SlurpBuilder
 
     /**
      * @param Schema $tableSchema
-     * @param bool $validateOnly True to use the schema to validate only, otherwise values validated and transformed.
      * @return SlurpBuilder
      */
-    public function setTableSchema(Schema $tableSchema, bool $validateOnly = false): self
+    public function setTableSchema(Schema $tableSchema): self
     {
-        $this->schemaValidator = $this->factory->createSchemaValidator($tableSchema);
+        $this->tableSchema = $tableSchema;
 
-        if (!$validateOnly) {
-            $this->schemaTransformer = $this->factory->createSchemaTransformer($tableSchema);
-        }
+        return $this;
+    }
+
+    /**
+     * @param $validateOnly
+     * @return SlurpBuilder
+     */
+    public function setSchemaValidationOnly($validateOnly): self
+    {
+        $this->schemaValidationOnly = $validateOnly;
 
         return $this;
     }
@@ -230,7 +246,7 @@ class SlurpBuilder
     public function addLoader(LoaderInterface $loader): self
     {
         $this->loadStages[] = $this->factory->createLoadStage($loader);
-        $this->etlFinaliseStages[] = $this->factory->createEltFinaliseStage($loader);
+        $this->finaliseStages[] = $this->factory->createEltFinaliseStage($loader);
 
         return $this;
     }
@@ -247,7 +263,7 @@ class SlurpBuilder
         \PDO $pdo,
         string $table,
         array $fieldMappings,
-        int $batchSize,
+        int $batchSize = 100,
         PreCommitDmlInterface $preCommitDml = null
     ): DatabaseLoader {
         return $this->factory->createDatabaseLoader(
@@ -308,9 +324,9 @@ class SlurpBuilder
         return $this;
     }
 
-    public function addEltFinaliseObserver(OuterStageObserverInterface $observer): self
+    public function addFinaliseObserver(OuterStageObserverInterface $observer): self
     {
-        $this->etlFinaliseObservers[] = $observer;
+        $this->finaliseObservers[] = $observer;
 
         return $this;
     }
@@ -322,16 +338,20 @@ class SlurpBuilder
             $this->innerPipelineBuilder->add($this->filtrationStage);
         }
 
-        if (isset($this->schemaValidator)) {
-            $vs = $this->factory->createValidationStage($this->schemaValidator);
+        if (isset($this->tableSchema)) {
+            $vs = $this->factory->createValidationStage(
+                $this->factory->createSchemaValidator($this->tableSchema)
+            );
             $this->attachValidationObservers($vs);
             $this->innerPipelineBuilder->add($vs);
-        }
 
-        if (isset($this->schemaTransformer)) {
-            $ts = $this->factory->createTransformationStage($this->schemaTransformer);
-            $this->attachTransformationObservers($ts);
-            $this->innerPipelineBuilder->add($ts);
+            if (!$this->schemaValidationOnly) {
+                $ts = $this->factory->createTransformationStage(
+                    $this->factory->createSchemaTransformer($this->tableSchema)
+                );
+                $this->attachTransformationObservers($ts);
+                $this->innerPipelineBuilder->add($ts);
+            }
         }
 
         if (isset($this->validationStage)) {
@@ -355,12 +375,12 @@ class SlurpBuilder
             ),
             $this->extractionInterrupt
         );
-        $this->attachEtlInvokePipelineObservers($invokeStage);
+        $this->attachExtractionObservers($invokeStage);
 
         $this->outerPipelineBuilder->add($invokeStage);
 
-        foreach ($this->etlFinaliseStages as $etlFinaliseStage) {
-            $this->attachEtlFinaliseObservers($etlFinaliseStage);
+        foreach ($this->finaliseStages as $etlFinaliseStage) {
+            $this->attachFinaliseObservers($etlFinaliseStage);
             $this->outerPipelineBuilder->add($etlFinaliseStage);
         }
 
@@ -371,16 +391,16 @@ class SlurpBuilder
         );
     }
 
-    protected function attachEtlInvokePipelineObservers(ExtractionStage $extractionPipeline)
+    protected function attachExtractionObservers(ExtractionStage $extractionPipeline)
     {
         foreach ($this->extractionObservers as $observer) {
             $extractionPipeline->attachObserver($observer);
         }
     }
 
-    protected function attachEtlFinaliseObservers(FinaliseStage $etlFinalise)
+    protected function attachFinaliseObservers(FinaliseStage $etlFinalise)
     {
-        foreach ($this->etlFinaliseObservers as $observer) {
+        foreach ($this->finaliseObservers as $observer) {
             $etlFinalise->attachObserver($observer);
         }
     }

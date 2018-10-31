@@ -28,6 +28,9 @@ class FinaliseStage extends AbstractOuterStage
     {
         $this->notify(self::STATE_BEGIN);
 
+        // Note that the OuterProcessor will not call this stage if aborted.
+        // This logic is a precaution where it may be used with another
+        // processor.
         if (!$slurp->isAborted() && !$this->loader->isAborted()) {
             $this->loader->finalise();
             $this->notify(self::STATE_FINALISED);

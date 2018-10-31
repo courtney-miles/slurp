@@ -136,7 +136,7 @@ class SlurpFactory
         \PDO $pdo,
         string $table,
         array $fieldMappings,
-        int $batchSize,
+        int $batchSize = 100,
         PreCommitDmlInterface $preCommitDml = null
     ): DatabaseLoader {
         return new DatabaseLoader(
