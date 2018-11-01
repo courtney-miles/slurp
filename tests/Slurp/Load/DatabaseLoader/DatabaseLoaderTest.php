@@ -11,7 +11,7 @@ use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsertManager;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\DatabaseLoaderException;
 use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
-use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
+use MilesAsylum\Slurp\Load\DatabaseLoader\DmlStmtInterface;
 use MilesAsylum\Slurp\Load\DatabaseLoader\StagedLoad;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -146,7 +146,7 @@ class DatabaseLoaderTest extends TestCase
 
     public function testCallPreCommitDmlOnFinalise()
     {
-        $mockPreCommitDml = \Mockery::mock(PreCommitDmlInterface::class);
+        $mockPreCommitDml = \Mockery::mock(DmlStmtInterface::class);
 
         $mockPreCommitDml->shouldReceive('execute')
             ->once();

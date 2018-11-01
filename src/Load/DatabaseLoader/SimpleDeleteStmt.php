@@ -8,7 +8,7 @@
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
 
-class PreCommitSimpleDelete implements PreCommitDmlInterface
+class SimpleDeleteStmt implements DmlStmtInterface
 {
     /**
      * @var \PDO

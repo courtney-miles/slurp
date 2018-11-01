@@ -14,7 +14,7 @@ use MilesAsylum\Slurp\Filter\ConstraintFiltration\ConstraintFilter;
 use MilesAsylum\Slurp\InnerPipeline\FiltrationStage;
 use MilesAsylum\Slurp\InnerPipeline\InnerProcessor;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
-use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
+use MilesAsylum\Slurp\Load\DatabaseLoader\DmlStmtInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\OuterPipeline\OuterProcessor;
 use MilesAsylum\Slurp\Slurp;
@@ -444,7 +444,7 @@ class SlurpBuilderTest extends TestCase
         $table = 'foo';
         $fieldMappings = [];
         $batchSize = 10;
-        $mockPreCommitDml = \Mockery::mock(PreCommitDmlInterface::class);
+        $mockPreCommitStmt = \Mockery::mock(DmlStmtInterface::class);
 
         $mockDbLoader = \Mockery::mock(DatabaseLoader::class);
 
@@ -454,7 +454,7 @@ class SlurpBuilderTest extends TestCase
                 $table,
                 $fieldMappings,
                 $batchSize,
-                $mockPreCommitDml
+                $mockPreCommitStmt
             )->andReturn($mockDbLoader);
 
         $this->assertSame(
@@ -464,7 +464,7 @@ class SlurpBuilderTest extends TestCase
                 $table,
                 $fieldMappings,
                 $batchSize,
-                $mockPreCommitDml
+                $mockPreCommitStmt
             )
         );
     }

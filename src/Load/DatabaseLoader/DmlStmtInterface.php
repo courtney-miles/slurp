@@ -11,7 +11,7 @@ namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 /**
  * This class can been used to run a DML statement immediately prior to committing the loaded records.
  */
-interface PreCommitDmlInterface
+interface DmlStmtInterface
 {
     /**
      * @return int The number of affected rows.

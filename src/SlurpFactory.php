@@ -16,7 +16,7 @@ use MilesAsylum\Slurp\InnerPipeline\FiltrationStage;
 use MilesAsylum\Slurp\InnerPipeline\InnerProcessor;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
-use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitDmlInterface;
+use MilesAsylum\Slurp\Load\DatabaseLoader\DmlStmtInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
 use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
@@ -129,7 +129,7 @@ class SlurpFactory
      * @param string $table
      * @param array $fieldMappings Array key is the destination column and the array value is the source column.
      * @param int $batchSize
-     * @param PreCommitDmlInterface|null $preCommitDml
+     * @param DmlStmtInterface|null $preCommitStmt
      * @return DatabaseLoader
      */
     public function createDatabaseLoader(
@@ -137,14 +137,14 @@ class SlurpFactory
         string $table,
         array $fieldMappings,
         int $batchSize = 100,
-        PreCommitDmlInterface $preCommitDml = null
+        DmlStmtInterface $preCommitStmt = null
     ): DatabaseLoader {
         return new DatabaseLoader(
             $table,
             $fieldMappings,
             new LoaderFactory($pdo),
             $batchSize,
-            $preCommitDml
+            $preCommitStmt
         );
     }
 

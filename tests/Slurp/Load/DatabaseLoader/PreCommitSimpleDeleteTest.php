@@ -7,7 +7,7 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
-use MilesAsylum\Slurp\Load\DatabaseLoader\PreCommitSimpleDelete;
+use MilesAsylum\Slurp\Load\DatabaseLoader\SimpleDeleteStmt;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -53,7 +53,7 @@ SQL;
         $this->mockDelStmt->shouldReceive('rowCount')
             ->andReturn($affectedRows);
 
-        $delete = new PreCommitSimpleDelete($this->mockPdo, $table);
+        $delete = new SimpleDeleteStmt($this->mockPdo, $table);
 
         $this->assertSame($affectedRows, $delete->execute());
     }
@@ -78,7 +78,7 @@ SQL;
         $this->mockDelStmt->shouldReceive('rowCount')
             ->andReturn($affectedRows);
 
-        $delete = new PreCommitSimpleDelete($this->mockPdo, $table, $conditions);
+        $delete = new SimpleDeleteStmt($this->mockPdo, $table, $conditions);
 
         $this->assertSame($affectedRows, $delete->execute());
     }
