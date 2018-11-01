@@ -17,6 +17,7 @@ use MilesAsylum\Slurp\InnerPipeline\InnerProcessor;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DmlStmtInterface;
+use MilesAsylum\Slurp\Load\DatabaseLoader\SimpleDeleteStmt;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
 use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
@@ -168,5 +169,10 @@ class SlurpFactory
     public function createOuterProcessor(): OuterProcessor
     {
         return new OuterProcessor();
+    }
+
+    public function createSimpleDeleteStmt(\PDO $pdo, string $table, array $conditions = []): SimpleDeleteStmt
+    {
+        return new SimpleDeleteStmt($pdo, $table, $conditions);
     }
 }
