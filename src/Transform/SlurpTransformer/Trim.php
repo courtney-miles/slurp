@@ -37,6 +37,15 @@ class Trim extends Change
         $this->fromRight = $fromRight;
     }
 
+    public static function createFromOptions(array $options = []): self
+    {
+        $defaultOptions = ['fromLeft' => true, 'fromRight' => true, 'chars' => " \t\n\r\0\x0B"];
+
+        $options = array_merge($defaultOptions, array_intersect_key($options, $defaultOptions));
+
+        return new self(...array_values($options));
+    }
+
     /**
      * @return string
      */

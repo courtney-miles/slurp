@@ -22,18 +22,18 @@ class DateTimeFormatTransformer extends AbstractChangeTransformer
             throw UnexpectedTypeException::createUnexpected($value, 'string');
         }
 
-        $value = \DateTime::createFromFormat($change->getFormatFrom(), $value);
+        $value = \DateTime::createFromFormat($change->getFromFormat(), $value);
 
         if ($value === false) {
             throw new InvalidArgumentException(
                 sprintf(
                     'The date value %s was not able to be converted from the format %s',
                     $value,
-                    $change->getFormatFrom()
+                    $change->getFromFormat()
                 )
             );
         }
 
-        return $value->format($change->getFormatTo());
+        return $value->format($change->getToFormat());
     }
 }

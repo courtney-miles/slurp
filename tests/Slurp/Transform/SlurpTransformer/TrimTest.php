@@ -13,9 +13,14 @@ use PHPUnit\Framework\TestCase;
 
 class TrimTest extends TestCase
 {
+    protected const FROM_RIGHT_DEFAULT = true;
+    protected const FROM_LEFT_DEFAULT = true;
+    protected const CHARS_DEFAULT = " \t\n\r\0\x0B";
+
     public function testDefaultFromRight()
     {
-        $this->assertTrue(
+        $this->assertSame(
+            self::FROM_RIGHT_DEFAULT,
             (new Trim())->fromRight()
         );
     }
@@ -29,7 +34,8 @@ class TrimTest extends TestCase
 
     public function testDefaultFromLeft()
     {
-        $this->assertTrue(
+        $this->assertSame(
+            self::FROM_LEFT_DEFAULT,
             (new Trim())->fromLeft()
         );
     }
@@ -44,7 +50,7 @@ class TrimTest extends TestCase
     public function testDefaultChars()
     {
         $this->assertSame(
-            " \t\n\r\0\x0B",
+            self::CHARS_DEFAULT,
             (new Trim())->getChars()
         );
     }
@@ -63,5 +69,25 @@ class TrimTest extends TestCase
             TrimTransformer::class,
             (new Trim())->transformedBy()
         );
+    }
+
+    public function testCreateFromOptionsAllDefaults()
+    {
+        $change = Trim::createFromOptions([]);
+
+        $this->assertSame(self::FROM_RIGHT_DEFAULT, $change->fromRight());
+        $this->assertSame(self::FROM_LEFT_DEFAULT, $change->fromLeft());
+        $this->assertSame(self::CHARS_DEFAULT, $change->getChars());
+    }
+
+    public function testCreateFromOptions()
+    {
+        $options = ['fromRight' => false, 'fromLeft' => false, 'chars' => '#$%'];
+
+        $change = Trim::createFromOptions($options);
+
+        $this->assertSame($options['fromRight'], $change->fromRight());
+        $this->assertSame($options['fromLeft'], $change->fromLeft());
+        $this->assertSame($options['chars'], $change->getChars());
     }
 }

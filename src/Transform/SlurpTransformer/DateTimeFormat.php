@@ -7,32 +7,45 @@
 
 namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
+use MilesAsylum\Slurp\Transform\SlurpTransformer\Exception\MissingRequiredOptionException;
+
 class DateTimeFormat extends Change
 {
-    private $formatFrom;
+    private $fromFormat;
 
-    private $formatTo;
+    private $toFormat;
 
-    public function __construct($formatFrom, $formatTo)
+    public function __construct($fromFormat, $toFormat)
     {
-        $this->formatFrom = $formatFrom;
-        $this->formatTo = $formatTo;
+        $this->fromFormat = $fromFormat;
+        $this->toFormat = $toFormat;
+    }
+
+    public static function createFromOptions(array $options = []): self
+    {
+        $reqOptions = ['fromFormat', 'toFormat'];
+
+        if ($missingOptions = array_diff($reqOptions, array_keys($options))) {
+            throw MissingRequiredOptionException::createMissingOptions(self::class, $missingOptions);
+        }
+
+        return new self($options['fromFormat'], $options['toFormat']);
     }
 
     /**
      * @return string
      */
-    public function getFormatFrom(): string
+    public function getFromFormat(): string
     {
-        return $this->formatFrom;
+        return $this->fromFormat;
     }
 
     /**
      * @return string
      */
-    public function getFormatTo(): string
+    public function getToFormat(): string
     {
-        return $this->formatTo;
+        return $this->toFormat;
     }
 
     /**

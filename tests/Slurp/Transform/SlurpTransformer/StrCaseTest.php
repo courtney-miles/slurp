@@ -7,6 +7,7 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SlurpTransformer;
 
+use MilesAsylum\Slurp\Transform\SlurpTransformer\Exception\MissingRequiredOptionException;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\StrCase;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\StrCaseTransformer;
 use PHPUnit\Framework\TestCase;
@@ -27,5 +28,19 @@ class StrCaseTest extends TestCase
             StrCaseTransformer::class,
             (new StrCase(StrCase::CASE_LOWER))->transformedBy()
         );
+    }
+
+    public function testCreateFromOptions()
+    {
+        $change = StrCase::createFromOptions(['caseChange' => 'upper']);
+
+        $this->assertSame('upper', $change->getCaseChange());
+    }
+
+    public function testExceptionOnMissingRequiredOption()
+    {
+        $this->expectException(MissingRequiredOptionException::class);
+
+        StrCase::createFromOptions([]);
     }
 }

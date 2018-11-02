@@ -7,6 +7,8 @@
 
 namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
+use MilesAsylum\Slurp\Transform\SlurpTransformer\Exception\MissingRequiredOptionException;
+
 class StrCase extends Change
 {
     /**
@@ -20,6 +22,17 @@ class StrCase extends Change
     public function __construct(string $caseChange)
     {
         $this->caseChange = $caseChange;
+    }
+
+    public static function createFromOptions(array $options = []): self
+    {
+        $reqOptions = ['caseChange'];
+
+        if ($missingOptions = array_diff($reqOptions, array_keys($options))) {
+            throw MissingRequiredOptionException::createMissingOptions(self::class, $missingOptions);
+        }
+
+        return new self($options['caseChange']);
     }
 
     public function transformedBy(): string
