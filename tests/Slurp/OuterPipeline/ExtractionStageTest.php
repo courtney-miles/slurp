@@ -79,7 +79,7 @@ class ExtractionStageTest extends TestCase
     public function testAbortOnInterrupt()
     {
         $rows = [['foo', 123], ['bar', 234]];
-        $interrupt = function (SlurpPayload $payload) {
+        $interrupt = function (Slurp $slurp, SlurpPayload $payload) {
             return true;
         };
         $mockExtractor = \Mockery::mock(ExtractorInterface::class);

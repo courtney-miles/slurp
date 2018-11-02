@@ -79,7 +79,7 @@ class SlurpBuilder
     /**
      * @var bool
      */
-    protected $schemaValidationOnly = false;
+    protected $tableSchemaValidateOnly = false;
 
     /**
      * @var SchemaValidator
@@ -167,22 +167,13 @@ class SlurpBuilder
 
     /**
      * @param Schema $tableSchema
+     * @param bool $validateOnly
      * @return SlurpBuilder
      */
-    public function setTableSchema(Schema $tableSchema): self
+    public function setTableSchema(Schema $tableSchema, bool $validateOnly = false): self
     {
         $this->tableSchema = $tableSchema;
-
-        return $this;
-    }
-
-    /**
-     * @param $validateOnly
-     * @return SlurpBuilder
-     */
-    public function setSchemaValidationOnly($validateOnly): self
-    {
-        $this->schemaValidationOnly = $validateOnly;
+        $this->tableSchemaValidateOnly = $validateOnly;
 
         return $this;
     }
@@ -345,7 +336,7 @@ class SlurpBuilder
             $this->attachValidationObservers($vs);
             $this->innerPipelineBuilder->add($vs);
 
-            if (!$this->schemaValidationOnly) {
+            if (!$this->tableSchemaValidateOnly) {
                 $ts = $this->factory->createTransformationStage(
                     $this->factory->createSchemaTransformer($this->tableSchema)
                 );
