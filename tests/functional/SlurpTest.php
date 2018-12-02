@@ -13,6 +13,7 @@ use MilesAsylum\Slurp\PHPUnit\MySQLTestHelper;
 use MilesAsylum\Slurp\SlurpBuilder;
 use MilesAsylum\Slurp\InnerPipeline\StageObserverInterface;
 use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
+use MilesAsylum\Slurp\Transform\SlurpTransformer\CallbackChange;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\StrCase;
 use MilesAsylum\Slurp\Validate\RecordViolation;
 use PHPUnit\DbUnit\Database\Connection;
@@ -121,7 +122,11 @@ SQL
         $sb = SlurpBuilder::create();
         $sb->addTransformationChange(
             '_name_',
-            new StrCase(StrCase::CASE_UPPER)
+            new CallbackChange(
+                function ($value) {
+                    return strtoupper($value);
+                }
+            )
         )->addLoader(
             $sb->createDatabaseLoader(
                 self::$pdo,
