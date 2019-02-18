@@ -12,21 +12,18 @@ use League\Pipeline\PipelineBuilder;
 use MilesAsylum\Slurp\Filter\ConstraintFiltration\ConstraintFilter;
 use MilesAsylum\Slurp\InnerPipeline\FiltrationStage;
 use MilesAsylum\Slurp\InnerPipeline\LoadStage;
-use MilesAsylum\Slurp\InnerPipeline\StageInterface;
-use MilesAsylum\Slurp\InnerPipeline\StageObserverInterface;
 use MilesAsylum\Slurp\InnerPipeline\TransformationStage;
 use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DmlStmtInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
-use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
-use MilesAsylum\Slurp\OuterPipeline\OuterStageObserverInterface;
 use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Validator\Constraint;
 
 class SlurpBuilder
@@ -107,39 +104,9 @@ class SlurpBuilder
     protected $constraintFilter;
 
     /**
-     * @var StageObserverInterface[]
+     * @var EventDispatcherInterface
      */
-    protected $allStageObservers = [];
-
-    /**
-     * @var StageObserverInterface[]
-     */
-    protected $validationObservers = [];
-
-    /**
-     * @var StageObserverInterface[]
-     */
-    protected $transformationObservers = [];
-
-    /**
-     * @var StageObserverInterface[]
-     */
-    protected $filtrationObservers = [];
-
-    /**
-     * @var StageObserverInterface[]
-     */
-    protected $loadObservers = [];
-
-    /**
-     * @var OuterStageObserverInterface[]
-     */
-    protected $extractionObservers = [];
-
-    /**
-     * @var OuterStageObserverInterface[]
-     */
-    protected $finaliseObservers = [];
+    protected $eventDispatcher;
 
     /**
      * @var callable
@@ -273,51 +240,9 @@ class SlurpBuilder
         return $this;
     }
 
-    public function addAllStagesObserver(StageObserverInterface $observer): self
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher)
     {
-        $this->allStageObservers[] = $observer;
-
-        return $this;
-    }
-
-    public function addValidationObserver(StageObserverInterface $observer): self
-    {
-        $this->validationObservers[] = $observer;
-
-        return $this;
-    }
-
-    public function addTransformationObserver(StageObserverInterface $observer): self
-    {
-        $this->transformationObservers[] = $observer;
-
-        return $this;
-    }
-
-    public function addFiltrationObserver(StageObserverInterface $observer): self
-    {
-        $this->filtrationObservers[] = $observer;
-
-        return $this;
-    }
-
-    public function addLoadObserver(StageObserverInterface $observer): self
-    {
-        $this->loadObservers[] = $observer;
-
-        return $this;
-    }
-
-    public function addExtractionObserver(OuterStageObserverInterface $observer): self
-    {
-        $this->extractionObservers[] = $observer;
-
-        return $this;
-    }
-
-    public function addFinaliseObserver(OuterStageObserverInterface $observer): self
-    {
-        $this->finaliseObservers[] = $observer;
+        $this->eventDispatcher = $dispatcher;
 
         return $this;
     }
@@ -325,38 +250,58 @@ class SlurpBuilder
     public function build(): Slurp
     {
         if (isset($this->filtrationStage)) {
-            $this->attachFiltrationObservers($this->filtrationStage);
+            if (isset($this->eventDispatcher)) {
+                $this->filtrationStage->setEventDispatcher($this->eventDispatcher);
+            }
+
             $this->innerPipelineBuilder->add($this->filtrationStage);
         }
 
         if (isset($this->tableSchema)) {
-            $vs = $this->factory->createValidationStage(
+            $validationStage = $this->factory->createValidationStage(
                 $this->factory->createSchemaValidator($this->tableSchema)
             );
-            $this->attachValidationObservers($vs);
-            $this->innerPipelineBuilder->add($vs);
+
+            if (isset($this->eventDispatcher)) {
+                $validationStage->setEventDispatcher($this->eventDispatcher);
+            }
+
+            $this->innerPipelineBuilder->add($validationStage);
 
             if (!$this->tableSchemaValidateOnly) {
-                $ts = $this->factory->createTransformationStage(
+                $transformationStage = $this->factory->createTransformationStage(
                     $this->factory->createSchemaTransformer($this->tableSchema)
                 );
-                $this->attachTransformationObservers($ts);
-                $this->innerPipelineBuilder->add($ts);
+
+                if (isset($this->eventDispatcher)) {
+                    $transformationStage->setEventDispatcher($this->eventDispatcher);
+                }
+
+                $this->innerPipelineBuilder->add($transformationStage);
             }
         }
 
         if (isset($this->validationStage)) {
-            $this->attachValidationObservers($this->validationStage);
+            if (isset($this->eventDispatcher)) {
+                $this->validationStage->setEventDispatcher($this->eventDispatcher);
+            }
+
             $this->innerPipelineBuilder->add($this->validationStage);
         }
 
         if (isset($this->transformationStage)) {
-            $this->attachTransformationObservers($this->transformationStage);
+            if (isset($this->eventDispatcher)) {
+                $this->transformationStage->setEventDispatcher($this->eventDispatcher);
+            }
+
             $this->innerPipelineBuilder->add($this->transformationStage);
         }
 
         foreach ($this->loadStages as $loadStage) {
-            $this->attachLoadObservers($loadStage);
+            if (isset($this->eventDispatcher)) {
+                $loadStage->setEventDispatcher($this->eventDispatcher);
+            }
+
             $this->innerPipelineBuilder->add($loadStage);
         }
 
@@ -366,12 +311,18 @@ class SlurpBuilder
             ),
             $this->extractionInterrupt
         );
-        $this->attachExtractionObservers($invokeStage);
+
+        if (isset($this->eventDispatcher)) {
+            $invokeStage->setEventDispatcher($this->eventDispatcher);
+        }
 
         $this->outerPipelineBuilder->add($invokeStage);
 
         foreach ($this->finaliseStages as $etlFinaliseStage) {
-            $this->attachFinaliseObservers($etlFinaliseStage);
+            if (isset($this->eventDispatcher)) {
+                $etlFinaliseStage->setEventDispatcher($this->eventDispatcher);
+            }
+
             $this->outerPipelineBuilder->add($etlFinaliseStage);
         }
 
@@ -380,62 +331,5 @@ class SlurpBuilder
                 $this->factory->createOuterProcessor()
             )
         );
-    }
-
-    protected function attachExtractionObservers(ExtractionStage $extractionPipeline)
-    {
-        foreach ($this->extractionObservers as $observer) {
-            $extractionPipeline->attachObserver($observer);
-        }
-    }
-
-    protected function attachFinaliseObservers(FinaliseStage $etlFinalise)
-    {
-        foreach ($this->finaliseObservers as $observer) {
-            $etlFinalise->attachObserver($observer);
-        }
-    }
-
-    protected function attachValidationObservers(ValidationStage $validationStage)
-    {
-        foreach ($this->validationObservers as $observer) {
-            $validationStage->attachObserver($observer);
-        }
-
-        $this->attachAllStageObservers($validationStage);
-    }
-
-    protected function attachTransformationObservers(TransformationStage $transformationStage)
-    {
-        foreach ($this->transformationObservers as $observer) {
-            $transformationStage->attachObserver($observer);
-        }
-
-        $this->attachAllStageObservers($transformationStage);
-    }
-
-    protected function attachFiltrationObservers(FiltrationStage $filtrationStage)
-    {
-        foreach ($this->filtrationObservers as $observer) {
-            $filtrationStage->attachObserver($observer);
-        }
-
-        $this->attachAllStageObservers($filtrationStage);
-    }
-
-    protected function attachLoadObservers(LoadStage $loadStage)
-    {
-        foreach ($this->loadObservers as $observer) {
-            $loadStage->attachObserver($observer);
-        }
-
-        $this->attachAllStageObservers($loadStage);
-    }
-
-    protected function attachAllStageObservers(StageInterface $stage)
-    {
-        foreach ($this->allStageObservers as $observer) {
-            $stage->attachObserver($observer);
-        }
     }
 }

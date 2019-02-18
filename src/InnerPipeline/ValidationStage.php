@@ -7,6 +7,7 @@
 
 namespace MilesAsylum\Slurp\InnerPipeline;
 
+use MilesAsylum\Slurp\Event\RecordValidatedEvent;
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
 
@@ -29,8 +30,7 @@ class ValidationStage extends AbstractStage
         }
 
         $payload->addViolations($this->validator->validateRecord($payload->getRecordId(), $payload->getRecord()));
-
-        $this->notify($payload);
+        $this->dispatch(RecordValidatedEvent::NAME, new RecordValidatedEvent($payload));
 
         return $payload;
     }

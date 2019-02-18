@@ -7,12 +7,15 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\InnerPipeline;
 
+use MilesAsylum\Slurp\Event\LoadAbortedEvent;
+use MilesAsylum\Slurp\Event\RecordLoadedEvent;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\InnerPipeline\LoadStage;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class LoadStageTest extends TestCase
 {
@@ -34,6 +37,7 @@ class LoadStageTest extends TestCase
 
         $this->mockLoader = \Mockery::mock(LoaderInterface::class);
         $this->mockLoader->shouldReceive('loadValues')->byDefault();
+        $this->mockLoader->shouldReceive('abort')->byDefault();
         $this->mockLoader->shouldReceive('hasBegun')
             ->andReturn(true)
             ->byDefault();
@@ -86,8 +90,6 @@ class LoadStageTest extends TestCase
         $mockViolatedPayload = $this->createMockPayload([], true);
         $mockPayload = $this->createMockPayload([], false);
 
-        $this->mockLoader->shouldReceive('abort');
-
         $this->mockLoader->shouldReceive('hasBegun')
             ->andReturn(false);
         $this->mockLoader->shouldReceive('begin')
@@ -107,7 +109,6 @@ class LoadStageTest extends TestCase
         $mockViolatedPayload = $this->createMockPayload([], true);
         $mockPayload = $this->createMockPayload([], false);
 
-        $this->mockLoader->shouldReceive('abort');
         $this->mockLoader->shouldReceive('loadValues')
             ->never();
         $mockViolatedPayload->shouldReceive('setLoadAborted');
@@ -115,6 +116,30 @@ class LoadStageTest extends TestCase
             ->once();
 
         ($this->stage)($mockViolatedPayload);
+        ($this->stage)($mockPayload);
+    }
+
+    public function testDispatchEventOnLoad()
+    {
+        $mockPayload = $this->createMockPayload(['foo'], false);
+        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher->shouldReceive('dispatch')
+            ->with(RecordLoadedEvent::NAME, \Mockery::type(RecordLoadedEvent::class))
+            ->once();
+        $this->stage->setEventDispatcher($mockDispatcher);
+
+        ($this->stage)($mockPayload);
+    }
+
+    public function testDispatchLoadAbortedEventOnInvalidRecord()
+    {
+        $mockPayload = $this->createMockPayload(['foo'], true);
+        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher->shouldReceive('dispatch')
+            ->with(LoadAbortedEvent::NAME, \Mockery::type(LoadAbortedEvent::class))
+            ->once();
+        $this->stage->setEventDispatcher($mockDispatcher);
+
         ($this->stage)($mockPayload);
     }
 
@@ -131,6 +156,7 @@ class LoadStageTest extends TestCase
             ->andReturn($values);
         $mockPayload->shouldReceive('hasViolations')
             ->andReturn($hasViolations);
+        $mockPayload->shouldReceive('setLoadAborted')->byDefault();
 
         return $mockPayload;
     }

@@ -8,12 +8,15 @@
 namespace MilesAsylum\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\SlurpPayload;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 interface StageInterface
 {
     public function __invoke(SlurpPayload $payload): SlurpPayload;
 
-    public function attachObserver(StageObserverInterface $observer): void;
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void;
 
     public function getPayload(): SlurpPayload;
+
+    public function getState(): ?string;
 }

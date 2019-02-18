@@ -7,21 +7,24 @@
 
 namespace MilesAsylum\Slurp\OuterPipeline;
 
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+
 abstract class AbstractOuterStage implements OuterStageInterface
 {
     /**
-     * @var OuterStageObserverInterface[]
+     * @var EventDispatcherInterface
      */
-    protected $observers = [];
+    protected $dispatcher;
 
     /**
      * @var string
      */
     private $state;
 
-    public function attachObserver(OuterStageObserverInterface $observer): void
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void
     {
-        $this->observers[spl_object_hash($observer)] = $observer;
+        $this->dispatcher = $dispatcher;
     }
 
     public function getState(): string
@@ -29,12 +32,10 @@ abstract class AbstractOuterStage implements OuterStageInterface
         return $this->state;
     }
 
-    protected function notify(string $state): void
+    protected function dispatch(string $eventName, Event $event): void
     {
-        $this->state = $state;
-
-        foreach ($this->observers as $observer) {
-            $observer->update($this);
+        if (isset($this->dispatcher)) {
+            $this->dispatcher->dispatch($eventName, $event);
         }
     }
 }

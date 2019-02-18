@@ -7,14 +7,14 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\OuterPipeline;
 
+use MilesAsylum\Slurp\Event\ExtractionFinalisedEvent;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
-use MilesAsylum\Slurp\OuterPipeline\OuterStageInterface;
-use MilesAsylum\Slurp\OuterPipeline\OuterStageObserverInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class FinaliseStageTest extends TestCase
 {
@@ -81,47 +81,15 @@ class FinaliseStageTest extends TestCase
         ($this->stage)($this->mockSlurp);
     }
 
-    public function testObserverNotification()
+    public function testFinalisationEventDispatched()
     {
-        $notifiedStates = [];
+        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher->shouldReceive('dispatch')
+            ->with(ExtractionFinalisedEvent::NAME, \Mockery::type(ExtractionFinalisedEvent::class))
+            ->once();
 
-        $watchStates = function ($state) use (&$notifiedStates) {
-            $notifiedStates[] = $state;
-        };
-
-        $observer = $this->createObserver($watchStates);
-
-        $this->stage->attachObserver($observer);
+        $this->stage->setEventDispatcher($mockDispatcher);
 
         ($this->stage)($this->mockSlurp);
-
-        $this->assertSame(
-            [
-                FinaliseStage::STATE_BEGIN,
-                FinaliseStage::STATE_FINALISED,
-                FinaliseStage::STATE_END,
-            ],
-            $notifiedStates
-        );
-    }
-
-    protected function createObserver(callable $watchStates)
-    {
-        return new class($watchStates) implements OuterStageObserverInterface {
-            /**
-             * @var callable
-             */
-            private $watch;
-
-            public function __construct(callable $watch)
-            {
-                $this->watch = $watch;
-            }
-
-            public function update(OuterStageInterface $stage): void
-            {
-                ($this->watch)($stage->getState());
-            }
-        };
     }
 }

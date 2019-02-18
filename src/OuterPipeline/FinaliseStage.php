@@ -7,6 +7,7 @@
 
 namespace MilesAsylum\Slurp\OuterPipeline;
 
+use MilesAsylum\Slurp\Event\ExtractionFinalisedEvent;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
 
@@ -17,8 +18,6 @@ class FinaliseStage extends AbstractOuterStage
      */
     private $loader;
 
-    const STATE_FINALISED = 'finalised';
-
     public function __construct(LoaderInterface $loader)
     {
         $this->loader = $loader;
@@ -26,17 +25,10 @@ class FinaliseStage extends AbstractOuterStage
 
     public function __invoke(Slurp $slurp): Slurp
     {
-        $this->notify(self::STATE_BEGIN);
-
-        // Note that the OuterProcessor will not call this stage if aborted.
-        // This logic is a precaution where it may be used with another
-        // processor.
         if (!$slurp->isAborted() && !$this->loader->isAborted()) {
             $this->loader->finalise();
-            $this->notify(self::STATE_FINALISED);
+            $this->dispatch(ExtractionFinalisedEvent::NAME, new ExtractionFinalisedEvent());
         }
-
-        $this->notify(self::STATE_END);
 
         return $slurp;
     }

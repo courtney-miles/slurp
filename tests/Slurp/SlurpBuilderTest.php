@@ -23,19 +23,18 @@ use MilesAsylum\Slurp\SlurpFactory;
 use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
 use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use MilesAsylum\Slurp\InnerPipeline\LoadStage;
-use MilesAsylum\Slurp\InnerPipeline\StageObserverInterface;
 use MilesAsylum\Slurp\InnerPipeline\TransformationStage;
 use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
 use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
-use MilesAsylum\Slurp\Validate\FieldViolation;
-use MilesAsylum\Slurp\Validate\RecordViolation;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\Mock;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Validator\Constraint;
 
 class SlurpBuilderTest extends TestCase
@@ -45,123 +44,78 @@ class SlurpBuilderTest extends TestCase
     /**
      * @var SlurpBuilder
      */
-    protected $builder;
+    private $builder;
 
     /**
      * @var PipelineBuilder|MockInterface
      */
-    protected $mockInnerPipelineBuilder;
+    private $mockInnerPipelineBuilder;
 
     /**
      * @var PipelineBuilder|MockInterface
      */
-    protected $mockOuterPipelineBuilder;
+    private $mockOuterPipelineBuilder;
 
     /**
      * @var SlurpFactory|MockInterface
      */
-    protected $mockFactory;
+    private $mockFactory;
 
     /**
      * @var ConstraintValidator|MockInterface
      */
-    protected $mockConstraintValidator;
+    private $mockConstraintValidator;
 
     /**
      * @var Transformer|MockInterface
      */
-    protected $mockTransformer;
+    private $mockTransformer;
 
     /**
      * @var ConstraintFilter|MockInterface
      */
-    protected $mockConstraintFilter;
-
-    /**
-     * @var Slurp|MockInterface
-     */
-    protected $mockSlurp;
+    private $mockConstraintFilter;
 
     /**
      * @var PipelineInterface|MockInterface
      */
-    protected $mockInnerPipeline;
+    private $mockInnerPipeline;
+
 
     /**
      * @var PipelineInterface|MockInterface
      */
-    protected $mockOuterPipeline;
+    private $mockOuterPipeline;
 
     /**
      * @var ExtractionStage|MockInterface
      */
-    protected $mockInvokeExtractionPipeline;
-
-    /**
-     * @var OuterProcessor|MockInterface
-     */
-    protected $mockOuterProcessor;
-
-    /**
-     * @var InnerProcessor|MockInterface
-     */
-    protected $mockInnerProcessor;
+    private $mockExtractionStage;
 
     public function setUp()
     {
         parent::setUp();
 
-        $this->mockInnerPipelineBuilder = \Mockery::mock(PipelineBuilder::class);
-        $this->mockOuterPipelineBuilder = \Mockery::mock(PipelineBuilder::class);
-        $this->mockFactory = \Mockery::mock(SlurpFactory::class);
-        $this->mockSlurp = \Mockery::mock(Slurp::class);
-        $this->mockConstraintValidator = \Mockery::mock(ConstraintValidator::class);
-        $this->mockTransformer = \Mockery::mock(Transformer::class);
-        $this->mockConstraintFilter = \Mockery::mock(ConstraintFilter::class);
+        $this->mockInnerPipeline = $this->createMockPipeline();
+        $this->mockOuterPipeline = $this->createMockPipeline();
+        $this->mockInnerPipelineBuilder = $this->createMockInnerPipelineBuilder($this->mockInnerPipeline);
+        $this->mockOuterPipelineBuilder = $this->createMockOuterPipelineBuilder($this->mockOuterPipeline);
+        $this->mockConstraintValidator = $this->createMockConstraintValidator();
+        $this->mockTransformer = $this->createMockTransformer();
+        $this->mockConstraintFilter = $this->createMockConstraintFilter();
+        $this->mockExtractionStage = $this->createMockExtractionStage();
 
-        $this->mockInnerPipeline = \Mockery::mock(PipelineInterface::class);
-        $this->mockOuterPipeline = \Mockery::mock(PipelineInterface::class);
-        $this->mockInvokeExtractionPipeline = \Mockery::mock(ExtractionStage::class);
-        $this->mockOuterProcessor = \Mockery::mock(OuterProcessor::class);
-        $this->mockInnerProcessor = \Mockery::mock(InnerProcessor::class);
-
-        $this->mockInnerPipelineBuilder->shouldReceive('add')
-            ->byDefault();
-        $this->mockInnerPipelineBuilder->shouldReceive('build')
-            ->andReturn($this->mockInnerPipeline)
-            ->byDefault();
-
-        $this->mockFactory->shouldReceive('createExtractionStage')
-            ->with($this->mockInnerPipeline, null)
-            ->andReturn($this->mockInvokeExtractionPipeline)
-            ->byDefault();
-
-        $this->mockOuterPipelineBuilder->shouldReceive('add')
-            ->byDefault();
-        $this->mockOuterPipelineBuilder->shouldReceive('build')
-            ->andReturn($this->mockOuterPipeline)
-            ->byDefault();
-
-        $this->mockFactory->shouldReceive('createSlurp')
-            ->with($this->mockOuterPipeline)
-            ->andReturn($this->mockSlurp)
-            ->byDefault();
-
-        $this->mockFactory->shouldReceive('createConstraintValidator')
-            ->andReturn($this->mockConstraintValidator)
-            ->byDefault();
-        $this->mockFactory->shouldReceive('createTransformer')
-            ->andReturn($this->mockTransformer)
-            ->byDefault();
-        $this->mockFactory->shouldReceive('createConstraintFilter')
-            ->andReturn($this->mockConstraintFilter)
-            ->byDefault();
-        $this->mockFactory->shouldReceive('createOuterProcessor')
-            ->andReturn($this->mockOuterProcessor)
-            ->byDefault();
-        $this->mockFactory->shouldReceive('createInnerProcessor')
-            ->andReturn($this->mockInnerProcessor)
-            ->byDefault();
+        $this->mockFactory = $this->createMockFactory(
+            $this->mockInnerPipeline,
+            $this->mockOuterPipeline,
+            $this->createMockSlurp(),
+            $this->mockExtractionStage,
+            $this->mockConstraintValidator,
+            $this->mockTransformer,
+            $this->mockConstraintFilter,
+            $this->createMockOuterProcessor(),
+            $this->createMockInnerProcessor()
+        );
 
         $this->builder = new SlurpBuilder(
             $this->mockInnerPipelineBuilder,
@@ -190,7 +144,7 @@ class SlurpBuilderTest extends TestCase
     {
         $mockTableSchema = \Mockery::mock(Schema::class);
         $mockValidationStage = \Mockery::mock(ValidationStage::class);
-        $mockTransformationStage = \Mockery::mock(TransformationStage::class);
+        $mockTransformationStage = $this->createMockTransformationStage();
         $mockSchemaValidator = \Mockery::mock(SchemaValidator::class);
         $mockSchemaTransformer = \Mockery::mock(SchemaTransformer::class);
 
@@ -417,7 +371,7 @@ class SlurpBuilderTest extends TestCase
     {
         $mockLoader = \Mockery::mock(LoaderInterface::class);
 
-        $mockLoadStage = \Mockery::mock(LoadStage::class);
+        $mockLoadStage = $this->createMockLoadStage();
         $mockFinaliseStage = \Mockery::mock(FinaliseStage::class);
 
         $this->mockFactory->shouldReceive('createLoadStage')
@@ -476,41 +430,39 @@ class SlurpBuilderTest extends TestCase
 
         $this->mockFactory->shouldReceive('createExtractionStage')
             ->with($this->mockInnerPipeline, $interrupt)
-            ->andReturn($this->mockInvokeExtractionPipeline)
+            ->andReturn($this->mockExtractionStage)
             ->once();
 
         $this->builder->setExtractionInterrupt($interrupt);
         $this->builder->build();
     }
 
-    public function testAddLoadObserver()
+    public function testSetEventDispatcherOnLoadStage()
     {
-        $mockObserver = \Mockery::mock(StageObserverInterface::class);
-        $mockLoader = \Mockery::mock(LoaderInterface::class);
-        $mockLoadStage = \Mockery::mock(LoadStage::class);
-        $mockFinaliseStage = \Mockery::mock(FinaliseStage::class);
+        $mockDispatcher = $this->createMockEventDispatcher();
+        $mockLoader = $this->createMockLoader();
+        $mockLoadStage = $this->createMockLoadStage();
 
         $this->mockFactory->shouldReceive('createLoadStage')
             ->with($mockLoader)
             ->andReturn($mockLoadStage);
         $this->mockFactory->shouldReceive('createEltFinaliseStage')
             ->with($mockLoader)
-            ->andReturn($mockFinaliseStage);
-        $mockLoadStage->shouldReceive('attachObserver')
-            ->with($mockObserver)
+            ->andReturn($this->createMockFinaliseStage());
+        $mockLoadStage->shouldReceive('setEventDispatcher')
+            ->with($mockDispatcher)
             ->once();
 
         $this->builder->addLoader($mockLoader)
-            ->addLoadObserver($mockObserver)
+            ->setEventDispatcher($mockDispatcher)
             ->build();
     }
 
-    public function testAddTransformationObserver()
+    public function testSetEventDispatcherOnTransformationStage()
     {
-        $mockObserver = \Mockery::mock(StageObserverInterface::class);
-        $mockChange = \Mockery::mock(Change::class);
-        $mockTransformer = \Mockery::mock(Transformer::class);
-        $mockTransformationStage = \Mockery::mock(TransformationStage::class);
+        $mockDispatcher = $this->createMockEventDispatcher();
+        $mockTransformer = $this->createMockTransformer();
+        $mockTransformationStage = $this->createMockTransformationStage();
 
         $mockTransformer->shouldIgnoreMissing();
         $this->mockFactory->shouldReceive('createTransformer')
@@ -518,22 +470,258 @@ class SlurpBuilderTest extends TestCase
         $this->mockFactory->shouldReceive('createTransformationStage')
             ->with($mockTransformer)
             ->andReturn($mockTransformationStage);
-        $mockTransformationStage->shouldReceive('attachObserver')
-            ->with($mockObserver)
+        $mockTransformationStage->shouldReceive('setEventDispatcher')
+            ->with($mockDispatcher)
             ->once();
 
-        $this->builder->addTransformationChange('foo', $mockChange)
-            ->addTransformationObserver($mockObserver)
+        $this->builder->addTransformationChange('foo', \Mockery::mock(Change::class))
+            ->setEventDispatcher($mockDispatcher)
             ->build();
     }
 
-    public function testAddValidationObserver()
+    public function testSetEventDispatcherOnValidationStage()
     {
-        $this->markTestIncomplete();
+        $mockDispatcher = $this->createMockEventDispatcher();
+        $mockValidationStage = $this->createMockValidationStage();
+        $mockValidationStage->shouldReceive('setEventDispatcher')
+            ->with($mockDispatcher)
+            ->once();
+
+        $this->mockFactory->shouldReceive('createValidationStage')
+            ->andReturn($mockValidationStage)
+            ->byDefault();
+
+        $this->builder->addValidationConstraint('foo', \Mockery::mock(Constraint::class))
+            ->setEventDispatcher($mockDispatcher)
+            ->build();
     }
 
-    public function testAddAllStagesObserver()
+    /**
+     * @return ValidationStage|MockInterface
+     */
+    protected function createMockValidationStage()
     {
-        $this->markTestIncomplete();
+        $mockValidationStage = \Mockery::mock(ValidationStage::class);
+
+        return $mockValidationStage;
+    }
+
+    /**
+     * @return LoaderInterface|MockInterface
+     */
+    protected function createMockLoader()
+    {
+        $mockLoader = \Mockery::mock(LoaderInterface::class);
+
+        return $mockLoader;
+    }
+
+    /**
+     * @return LoadStage|MockInterface
+     */
+    protected function createMockLoadStage()
+    {
+        $mockLoadStage = \Mockery::mock(LoadStage::class);
+
+        return $mockLoadStage;
+    }
+
+    /**
+     * @return TransformationStage|MockInterface
+     */
+    protected function createMockTransformationStage()
+    {
+        $mockTransformationStage = \Mockery::mock(TransformationStage::class);
+        $mockTransformationStage->shouldReceive('setEventDispatcher')->byDefault();
+
+        return $mockTransformationStage;
+    }
+
+    /**
+     * @param PipelineInterface $innerPipeline
+     * @param PipelineInterface $outerPipeline
+     * @param Slurp $slurp
+     * @param ExtractionStage $extractionStage
+     * @param ConstraintValidator $constraintValidator
+     * @param Transformer $transformer
+     * @param ConstraintFilter $constraintFilter
+     * @param OuterProcessor $outerProcessor
+     * @param InnerProcessor $innerProcessor
+     * @return SlurpFactory|MockInterface
+     */
+    protected function createMockFactory(
+        PipelineInterface $innerPipeline,
+        PipelineInterface $outerPipeline,
+        Slurp $slurp,
+        ExtractionStage $extractionStage,
+        ConstraintValidator $constraintValidator,
+        Transformer $transformer,
+        ConstraintFilter $constraintFilter,
+        OuterProcessor $outerProcessor,
+        InnerProcessor $innerProcessor
+    ) {
+        $mockFactory = \Mockery::mock(SlurpFactory::class);
+        $mockFactory->shouldReceive('createSlurp')
+            ->with($outerPipeline)
+            ->andReturn($slurp)
+            ->byDefault();
+        $mockFactory->shouldReceive('createExtractionStage')
+            ->with($innerPipeline, null)
+            ->andReturn($extractionStage)
+            ->byDefault();
+        $mockFactory->shouldReceive('createConstraintValidator')
+            ->andReturn($constraintValidator)
+            ->byDefault();
+        $mockFactory->shouldReceive('createTransformer')
+            ->andReturn($transformer)
+            ->byDefault();
+        $mockFactory->shouldReceive('createConstraintFilter')
+            ->andReturn($constraintFilter)
+            ->byDefault();
+        $mockFactory->shouldReceive('createOuterProcessor')
+            ->andReturn($outerProcessor)
+            ->byDefault();
+        $mockFactory->shouldReceive('createInnerProcessor')
+            ->andReturn($innerProcessor)
+            ->byDefault();
+
+        return $mockFactory;
+    }
+
+    /**
+     * @param PipelineInterface $innerPipeline
+     * @return PipelineBuilder|MockInterface
+     */
+    protected function createMockInnerPipelineBuilder(PipelineInterface $innerPipeline)
+    {
+        $mockInnerPipelineBuilder = \Mockery::mock(PipelineBuilder::class);
+        $mockInnerPipelineBuilder->shouldReceive('add')
+            ->byDefault();
+        $mockInnerPipelineBuilder->shouldReceive('build')
+            ->andReturn($innerPipeline)
+            ->byDefault();
+
+        return $mockInnerPipelineBuilder;
+    }
+
+    /**
+     * @return PipelineInterface|MockInterface
+     */
+    protected function createMockPipeline()
+    {
+        $mockPipeline = \Mockery::mock(PipelineInterface::class);
+
+        return $mockPipeline;
+    }
+
+    /**
+     * @param PipelineInterface $outerPipeline
+     * @return PipelineBuilder|MockInterface
+     */
+    protected function createMockOuterPipelineBuilder(PipelineInterface $outerPipeline)
+    {
+        $mockOuterPipelineBuilder = \Mockery::mock(PipelineBuilder::class);
+
+        $mockOuterPipelineBuilder->shouldReceive('add')
+            ->byDefault();
+        $mockOuterPipelineBuilder->shouldReceive('build')
+            ->andReturn($outerPipeline)
+            ->byDefault();
+
+        return $mockOuterPipelineBuilder;
+    }
+
+    /**
+     * @return ExtractionStage|MockInterface
+     */
+    protected function createMockExtractionStage()
+    {
+        $mockExtractionStage = \Mockery::mock(ExtractionStage::class);
+        $mockExtractionStage->shouldReceive('setEventDispatcher')
+            ->byDefault();
+
+        return $mockExtractionStage;
+    }
+
+    /**
+     * @return Slurp|MockInterface
+     */
+    protected function createMockSlurp()
+    {
+        $mockSlurp = \Mockery::mock(Slurp::class);
+
+        return $mockSlurp;
+    }
+
+    /**
+     * @return ConstraintValidator|MockInterface
+     */
+    protected function createMockConstraintValidator()
+    {
+        $mockConstraintValidator = \Mockery::mock(ConstraintValidator::class);
+        $mockConstraintValidator->shouldReceive('setFieldConstraints')
+            ->byDefault();
+
+        return $mockConstraintValidator;
+    }
+
+    /**
+     * @return Transformer|MockInterface
+     */
+    protected function createMockTransformer()
+    {
+        $mockTransformer = \Mockery::mock(Transformer::class);
+
+        return $mockTransformer;
+    }
+
+    /**
+     * @return ConstraintFilter|MockInterface
+     */
+    protected function createMockConstraintFilter()
+    {
+        $mockConstraintFilter = \Mockery::mock(ConstraintFilter::class);
+
+        return $mockConstraintFilter;
+    }
+
+    /**
+     * @return OuterProcessor|MockInterface
+     */
+    protected function createMockOuterProcessor()
+    {
+        $mockOuterProcessor = \Mockery::mock(OuterProcessor::class);
+
+        return $mockOuterProcessor;
+    }
+
+    /**
+     * @return InnerProcessor|MockInterface
+     */
+    protected function createMockInnerProcessor()
+    {
+        $mockInnerProcessor = \Mockery::mock(InnerProcessor::class);
+
+        return$mockInnerProcessor;
+    }
+
+    /**
+     * @return MockInterface|EventDispatcherInterface
+     */
+    protected function createMockEventDispatcher()
+    {
+        return \Mockery::mock(EventDispatcherInterface::class);
+    }
+
+    /**
+     * @return FinaliseStage|MockInterface
+     */
+    protected function createMockFinaliseStage()
+    {
+        $mockFinaliseStage = \Mockery::mock(FinaliseStage::class);
+        $mockFinaliseStage->shouldReceive('setEventDispatcher')
+            ->byDefault();
+
+        return $mockFinaliseStage;
     }
 }

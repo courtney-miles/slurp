@@ -7,6 +7,7 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\InnerPipeline;
 
+use MilesAsylum\Slurp\Event\RecordValidatedEvent;
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\InnerPipeline\StageObserverInterface;
 use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
@@ -14,6 +15,7 @@ use MilesAsylum\Slurp\Validate\ValidatorInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Validator\Constraint;
 
 class ValidationStageTest extends TestCase
@@ -81,16 +83,25 @@ class ValidationStageTest extends TestCase
         $this->assertSame($mockPayload, ($this->stage)($mockPayload));
     }
 
-    public function testNotifyObserverAfterValidate()
+    public function testDispatchEventOnValidatedRecord()
     {
-        $mockObserver = \Mockery::mock(StageObserverInterface::class);
-        $mockObserver->shouldReceive('update')
-            ->with($this->stage)
+        $mockPayload = $this->createMockPayload(213, []);
+        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher->shouldReceive('dispatch')
+            ->with(RecordValidatedEvent::NAME, \Mockery::type(RecordValidatedEvent::class))
             ->once();
 
-        $this->stage->attachObserver($mockObserver);
+        $this->stage->setEventDispatcher($mockDispatcher);
+        ($this->stage)($mockPayload);
+    }
 
-        $mockPayload = $this->createMockPayload(213, []);
+    public function testDoNotDispatchEventWhenFilteredAndNotValidated()
+    {
+        $mockPayload = $this->createMockPayload(213, [], true);
+        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher->shouldReceive('dispatch')->never();
+
+        $this->stage->setEventDispatcher($mockDispatcher);
 
         ($this->stage)($mockPayload);
     }
@@ -98,9 +109,10 @@ class ValidationStageTest extends TestCase
     /**
      * @param int $recordId
      * @param array $record
+     * @param bool $isFiltered
      * @return SlurpPayload|MockInterface
      */
-    public function createMockPayload(int $recordId, array $record)
+    public function createMockPayload(int $recordId, array $record, bool $isFiltered = false)
     {
         $mockPayload = \Mockery::mock(SlurpPayload::class);
         $mockPayload->shouldReceive('getRecordId')
@@ -108,7 +120,7 @@ class ValidationStageTest extends TestCase
         $mockPayload->shouldReceive('getRecord')
             ->andReturn($record);
         $mockPayload->shouldReceive('isFiltered')
-            ->andReturn(false)
+            ->andReturn($isFiltered)
             ->byDefault();
         $mockPayload->shouldReceive('addViolations')
             ->withAnyArgs()

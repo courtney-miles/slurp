@@ -9,6 +9,10 @@ namespace MilesAsylum\Slurp\OuterPipeline;
 
 use League\Pipeline\Pipeline;
 use League\Pipeline\PipelineInterface;
+use MilesAsylum\Slurp\Event\ExtractionAbortedEvent;
+use MilesAsylum\Slurp\Event\ExtractionEndedEvent;
+use MilesAsylum\Slurp\Event\ExtractionStartedEvent;
+use MilesAsylum\Slurp\Event\RecordProcessedEvent;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
 
@@ -24,9 +28,6 @@ class ExtractionStage extends AbstractOuterStage
      */
     private $interrupt;
 
-    const STATE_RECORD_PROCESSED = 'record-processed';
-    const STATE_ABORTED = 'aborted';
-
     /**
      * InvokeExtractionPipeline constructor.
      * @param PipelineInterface $innerPipeline
@@ -40,7 +41,7 @@ class ExtractionStage extends AbstractOuterStage
 
     public function __invoke(Slurp $slurp): Slurp
     {
-        $this->notify(self::STATE_BEGIN);
+        $this->dispatch(ExtractionStartedEvent::NAME, new ExtractionStartedEvent());
 
         foreach ($slurp->getExtractor() as $id => $values) {
             $payload = new SlurpPayload();
@@ -49,18 +50,18 @@ class ExtractionStage extends AbstractOuterStage
 
             ($this->innerPipeline)($payload);
 
-            $this->notify(self::STATE_RECORD_PROCESSED);
+            $this->dispatch(RecordProcessedEvent::NAME, new RecordProcessedEvent());
 
             $interrupt = $this->interrupt;
 
             if ($interrupt !== null && $interrupt($slurp, $payload)) {
                 $slurp->abort();
-                $this->notify(self::STATE_ABORTED);
+                $this->dispatch(ExtractionAbortedEvent::NAME, new ExtractionAbortedEvent());
                 break;
             }
         }
 
-        $this->notify(self::STATE_END);
+        $this->dispatch(ExtractionEndedEvent::NAME, new ExtractionEndedEvent());
 
         return $slurp;
     }

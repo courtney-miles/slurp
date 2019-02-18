@@ -8,6 +8,8 @@
 namespace MilesAsylum\Slurp\InnerPipeline;
 
 
+use MilesAsylum\Slurp\Event\LoadAbortedEvent;
+use MilesAsylum\Slurp\Event\RecordLoadedEvent;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\SlurpPayload;
 
@@ -39,14 +41,14 @@ class LoadStage extends AbstractStage
                 $this->loader->abort();
                 $this->loadAborted = true;
                 $payload->setLoadAborted($this->loadAborted);
+                $this->dispatch(LoadAbortedEvent::NAME, new LoadAbortedEvent());
             } else {
                 $this->loader->loadValues($payload->getRecord());
+                $this->dispatch(RecordLoadedEvent::NAME, new RecordLoadedEvent($payload));
             }
         } else {
             $payload->setLoadAborted(true);
         }
-
-        $this->notify($payload);
 
         return $payload;
     }

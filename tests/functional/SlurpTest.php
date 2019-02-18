@@ -8,6 +8,7 @@
 namespace MilesAsylum\Slurp\Tests\functional;
 
 use League\Csv\Reader;
+use MilesAsylum\Slurp\Event\RecordValidatedEvent;
 use MilesAsylum\Slurp\Extract\CsvFileExtractor\CsvFileExtractor;
 use MilesAsylum\Slurp\PHPUnit\MySQLTestHelper;
 use MilesAsylum\Slurp\SlurpBuilder;
@@ -20,6 +21,8 @@ use PHPUnit\DbUnit\Database\Connection;
 use PHPUnit\DbUnit\DataSet\IDataSet;
 use PHPUnit\DbUnit\TestCaseTrait;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class SlurpTest extends TestCase
 {
@@ -215,11 +218,17 @@ SQL
     public function testValidateAgainstSchemaWithMissingColumns()
     {
         $violations = [];
-        $mockObserver = \Mockery::mock(StageObserverInterface::class);
-        $mockObserver->shouldReceive('update')
-            ->withArgs(function (ValidationStage $stage) use (&$violations) {
-                $violations = array_merge($violations, $stage->getPayload()->getViolations());
-                return true;
+        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher->shouldReceive('dispatch')->byDefault();
+        $mockDispatcher->shouldReceive('dispatch')
+            ->withArgs(function (string $eventName, Event $event) use (&$violations) {
+                if ($eventName == RecordValidatedEvent::NAME) {
+                    /** @var RecordValidatedEvent $event */
+                    $violations = array_merge($violations, $event->getPayload()->getViolations());
+                    return true;
+                }
+
+                return false;
             });
 
         $cfe = CsvFileExtractor::createFromPath(__DIR__ . '/csv/missing-column.csv');
@@ -236,7 +245,7 @@ SQL
                    ]
                 ]
             )
-        )->addValidationObserver($mockObserver)
+        )->setEventDispatcher($mockDispatcher)
             ->build();
 
         $slurp->process($cfe);

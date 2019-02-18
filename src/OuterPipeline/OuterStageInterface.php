@@ -8,15 +8,13 @@
 namespace MilesAsylum\Slurp\OuterPipeline;
 
 use MilesAsylum\Slurp\Slurp;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 interface OuterStageInterface
 {
-    const STATE_BEGIN = 'begin';
-    const STATE_END = 'end';
-
     public function __invoke(Slurp $slurp): Slurp;
 
-    public function attachObserver(OuterStageObserverInterface $observer): void;
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void;
 
     public function getState(): string;
 }

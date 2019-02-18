@@ -7,6 +7,7 @@
 
 namespace MilesAsylum\Slurp\InnerPipeline;
 
+use MilesAsylum\Slurp\Event\RecordFilteredEvent;
 use MilesAsylum\Slurp\Filter\FilterInterface;
 use MilesAsylum\Slurp\SlurpPayload;
 
@@ -26,7 +27,9 @@ class FiltrationStage extends AbstractStage
     {
         $payload->setFiltered($this->filter->filterRecord($payload->getRecord()));
 
-        $this->notify($payload);
+        if ($payload->isFiltered()) {
+            $this->dispatch(RecordFilteredEvent::NAME, new RecordFilteredEvent($payload));
+        }
 
         return $payload;
     }

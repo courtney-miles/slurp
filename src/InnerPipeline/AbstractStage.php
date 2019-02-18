@@ -8,36 +8,46 @@
 namespace MilesAsylum\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\SlurpPayload;
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 abstract class AbstractStage implements StageInterface
 {
     /**
-     * @var StageObserverInterface[]
+     * @var EventDispatcherInterface
      */
-    protected $observers = [];
+    protected $dispatcher;
 
     /**
      * @var SlurpPayload
      */
     private $payload;
 
+    /**
+     * @var string
+     */
+    private $state;
 
-    public function attachObserver(StageObserverInterface $observer): void
+
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void
     {
-        $this->observers[spl_object_hash($observer)] = $observer;
+        $this->dispatcher = $dispatcher;
     }
 
-    protected function notify(SlurpPayload $payload): void
+    protected function dispatch(string $eventName, Event $event): void
     {
-        $this->payload = $payload;
-
-        foreach ($this->observers as $observer) {
-            $observer->update($this);
+        if (isset($this->dispatcher)) {
+            $this->dispatcher->dispatch($eventName, $event);
         }
     }
 
     public function getPayload(): SlurpPayload
     {
         return $this->payload;
+    }
+
+    public function getState(): ?string
+    {
+        return $this->state;
     }
 }

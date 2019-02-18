@@ -8,16 +8,19 @@
 namespace MilesAsylum\Slurp\Tests\Slurp\OuterPipeline;
 
 use League\Pipeline\Pipeline;
+use MilesAsylum\Slurp\Event\ExtractionEndedEvent;
+use MilesAsylum\Slurp\Event\ExtractionStartedEvent;
+use MilesAsylum\Slurp\Event\RecordProcessedEvent;
 use MilesAsylum\Slurp\Extract\ExtractorInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use MilesAsylum\Slurp\OuterPipeline\OuterStageInterface;
 use MilesAsylum\Slurp\OuterPipeline\OuterStageObserverInterface;
-use MilesAsylum\Slurp\Validate\RecordViolation;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class ExtractionStageTest extends TestCase
 {
@@ -95,35 +98,43 @@ class ExtractionStageTest extends TestCase
         ($stage)($this->mockSlurp);
     }
 
-    public function testObserverNotification()
+    public function testDispatchExtractionStartedAndEndedEvents()
+    {
+        $mockExtractor = \Mockery::mock(ExtractorInterface::class);
+        $this->stubExtractorContent($mockExtractor, []);
+        $this->mockSlurp->shouldReceive('getExtractor')->andReturn($mockExtractor);
+
+        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher->shouldReceive('dispatch')
+            ->with(ExtractionStartedEvent::NAME, \Mockery::type(ExtractionStartedEvent::class))
+            ->once();
+        $mockDispatcher->shouldReceive('dispatch')
+            ->with(ExtractionEndedEvent::NAME, \Mockery::type(ExtractionEndedEvent::class))
+            ->once();
+
+        $this->stage->setEventDispatcher($mockDispatcher);
+
+        ($this->stage)($this->mockSlurp);
+    }
+
+    public function testDispatchRecordProcessedEvent()
     {
         $rows = [['foo', 123], ['bar', 234]];
         $mockExtractor = \Mockery::mock(ExtractorInterface::class);
         $this->stubExtractorContent($mockExtractor, $rows);
+
         $this->mockSlurp->shouldReceive('getExtractor')->andReturn($mockExtractor);
         $this->mockPipeline->shouldReceive('__invoke');
 
-        $notifiedStates = [];
+        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher->shouldReceive('dispatch')->byDefault();
+        $mockDispatcher->shouldReceive('dispatch')
+            ->with(RecordProcessedEvent::NAME, \Mockery::type(RecordProcessedEvent::class))
+            ->twice();
 
-        $watchStates = function ($state) use (&$notifiedStates) {
-            $notifiedStates[] = $state;
-        };
-
-        $observer = $this->createObserver($watchStates);
-
-        $this->stage->attachObserver($observer);
+        $this->stage->setEventDispatcher($mockDispatcher);
 
         ($this->stage)($this->mockSlurp);
-
-        $this->assertSame(
-            [
-                ExtractionStage::STATE_BEGIN,
-                ExtractionStage::STATE_RECORD_PROCESSED,
-                ExtractionStage::STATE_RECORD_PROCESSED,
-                ExtractionStage::STATE_END,
-            ],
-            $notifiedStates
-        );
     }
 
 
@@ -131,25 +142,5 @@ class ExtractionStageTest extends TestCase
     {
         $mockExtractor->shouldReceive('getIterator')
             ->andReturn(new \ArrayObject($rowValues));
-    }
-
-    protected function createObserver(callable $watchStates)
-    {
-        return new class($watchStates) implements OuterStageObserverInterface {
-            /**
-             * @var callable
-             */
-            private $watch;
-
-            public function __construct(callable $watch)
-            {
-                $this->watch = $watch;
-            }
-
-            public function update(OuterStageInterface $stage): void
-            {
-                ($this->watch)($stage->getState());
-            }
-        };
     }
 }
