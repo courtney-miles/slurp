@@ -7,7 +7,8 @@
 
 namespace MilesAsylum\Slurp\Tests\Slurp\OuterPipeline;
 
-use MilesAsylum\Slurp\Event\ExtractionFinalisedEvent;
+use MilesAsylum\Slurp\Event\ExtractionFinalisationBeginEvent;
+use MilesAsylum\Slurp\Event\ExtractionFinalisationCompleteEvent;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
@@ -81,12 +82,19 @@ class FinaliseStageTest extends TestCase
         ($this->stage)($this->mockSlurp);
     }
 
-    public function testFinalisationEventDispatched()
+    public function testFinalisationEventsDispatched()
     {
         $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(ExtractionFinalisedEvent::NAME, \Mockery::type(ExtractionFinalisedEvent::class))
-            ->once();
+            ->with(
+                ExtractionFinalisationBeginEvent::NAME,
+                \Mockery::type(ExtractionFinalisationBeginEvent::class)
+            )->once();
+        $mockDispatcher->shouldReceive('dispatch')
+            ->with(
+                ExtractionFinalisationCompleteEvent::NAME,
+                \Mockery::type(ExtractionFinalisationCompleteEvent::class)
+            )->once();
 
         $this->stage->setEventDispatcher($mockDispatcher);
 

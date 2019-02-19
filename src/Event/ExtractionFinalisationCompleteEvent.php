@@ -9,7 +9,7 @@ namespace MilesAsylum\Slurp\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 
-class ExtractionFinalisedEvent extends Event
+class ExtractionFinalisationCompleteEvent extends Event
 {
-    public const NAME = 'slurp.extraction.finalised';
+    public const NAME = 'slurp.extraction.finalisation.complete';
 }

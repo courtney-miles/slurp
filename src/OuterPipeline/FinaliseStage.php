@@ -7,7 +7,8 @@
 
 namespace MilesAsylum\Slurp\OuterPipeline;
 
-use MilesAsylum\Slurp\Event\ExtractionFinalisedEvent;
+use MilesAsylum\Slurp\Event\ExtractionFinalisationBeginEvent;
+use MilesAsylum\Slurp\Event\ExtractionFinalisationCompleteEvent;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
 
@@ -26,8 +27,9 @@ class FinaliseStage extends AbstractOuterStage
     public function __invoke(Slurp $slurp): Slurp
     {
         if (!$slurp->isAborted() && !$this->loader->isAborted()) {
+            $this->dispatch(ExtractionFinalisationBeginEvent::NAME, new ExtractionFinalisationBeginEvent());
             $this->loader->finalise();
-            $this->dispatch(ExtractionFinalisedEvent::NAME, new ExtractionFinalisedEvent());
+            $this->dispatch(ExtractionFinalisationCompleteEvent::NAME, new ExtractionFinalisationCompleteEvent());
         }
 
         return $slurp;
