@@ -29,7 +29,7 @@ class DatabaseLoaderTest extends TestCase
     /**
      * @var BatchInsertManager|MockInterface
      */
-    protected $mockBatchStmt;
+    protected $mockBatchInsertManager;
 
     /**
      * @var StagedLoad|MockInterface
@@ -47,21 +47,12 @@ class DatabaseLoaderTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockBatchStmt = \Mockery::mock(BatchInsertManager::class);
-        $this->mockStagedLoad = \Mockery::mock(StagedLoad::class);
-        $this->mockStagedLoad->shouldReceive('begin')
-            ->byDefault();
-        $this->mockStagedLoad->shouldReceive('discard')
-            ->byDefault();
-        $this->mockLoaderFactory = \Mockery::mock(LoaderFactory::class);
-        $this->mockLoaderFactory->shouldReceive('createBatchInsertManager')
-            ->withAnyArgs()
-            ->andReturn($this->mockBatchStmt)
-            ->byDefault();
-        $this->mockLoaderFactory->shouldReceive('createStagedLoad')
-            ->withAnyArgs()
-            ->andReturn($this->mockStagedLoad)
-            ->byDefault();
+        $this->mockBatchInsertManager = $this->createMockBatchInsertManager();
+        $this->mockStagedLoad = $this->createMockStagedLoad();
+        $this->mockLoaderFactory = $this->createMockLoaderFactory(
+            $this->mockBatchInsertManager,
+            $this->mockStagedLoad
+        );
     }
 
     public function testBegin()
@@ -96,7 +87,7 @@ class DatabaseLoaderTest extends TestCase
             ['col1' => 345, 'col2' => 456],
         ];
 
-        $this->mockBatchStmt->shouldReceive('write')
+        $this->mockBatchInsertManager->shouldReceive('write')
             ->with($rows)
             ->once();
 
@@ -121,8 +112,8 @@ class DatabaseLoaderTest extends TestCase
             ['col1' => 567, 'col2' => 678],
         ];
 
-        $this->mockBatchStmt->shouldReceive('write')->byDefault();
-        $this->mockBatchStmt->shouldReceive('write')
+        $this->mockBatchInsertManager->shouldReceive('write')->byDefault();
+        $this->mockBatchInsertManager->shouldReceive('write')
             ->with([$rows[2]])
             ->once();
 
@@ -151,7 +142,7 @@ class DatabaseLoaderTest extends TestCase
         $mockPreCommitDml->shouldReceive('execute')
             ->once();
 
-        $this->mockBatchStmt->shouldReceive('write')->byDefault();
+        $this->mockBatchInsertManager->shouldReceive('write')->byDefault();
         $this->mockStagedLoad->shouldReceive('commit')->byDefault();
 
         $databaseLoader = new DatabaseLoader(
@@ -170,7 +161,7 @@ class DatabaseLoaderTest extends TestCase
     {
         $row = ['col1' => 123, 'col2' => 234];
 
-        $this->mockBatchStmt->shouldReceive('write')
+        $this->mockBatchInsertManager->shouldReceive('write')
             ->with([['col_one' => 123, 'col_two' => 234]])
             ->once();
 
@@ -183,6 +174,30 @@ class DatabaseLoaderTest extends TestCase
         $databaseLoader->begin();
 
         $databaseLoader->loadValues($row);
+    }
+
+    public function testCreateBatchInsertManager()
+    {
+        $table = '_tmp_tbl_foo';
+        $fieldMapping = ['col_a' => []];
+        $database = 'db_bar';
+
+        $this->mockLoaderFactory->shouldReceive('createBatchInsertManager')
+            ->with($table, array_keys($fieldMapping), $database)
+            ->andReturn($this->mockBatchInsertManager)
+            ->once();
+        $this->mockStagedLoad->shouldReceive('begin')
+            ->andReturn($table);
+
+        $databaseLoader = new DatabaseLoader(
+            'tbl_foo',
+            $fieldMapping,
+            $this->mockLoaderFactory,
+            1,
+            null,
+            $database
+        );
+        $databaseLoader->begin();
     }
 
     public function testExceptionWhenLoadBeforeBegin()
@@ -233,5 +248,51 @@ class DatabaseLoaderTest extends TestCase
         $databaseLoader->abort();
 
         $databaseLoader->finalise();
+    }
+
+    /**
+     * @param BatchInsertManager $batchInsertManager
+     * @param StagedLoad $stagedLoad
+     * @return LoaderFactory|MockInterface
+     */
+    protected function createMockLoaderFactory(
+        BatchInsertManager $batchInsertManager,
+        StagedLoad $stagedLoad
+    ): MockInterface {
+        $mockLoaderFactory = \Mockery::mock(LoaderFactory::class);
+        $mockLoaderFactory->shouldReceive('createBatchInsertManager')
+            ->withAnyArgs()
+            ->andReturn($batchInsertManager)
+            ->byDefault();
+        $mockLoaderFactory->shouldReceive('createStagedLoad')
+            ->withAnyArgs()
+            ->andReturn($stagedLoad)
+            ->byDefault();
+
+        return $mockLoaderFactory;
+    }
+
+    /**
+     * @return StagedLoad|MockInterface
+     */
+    protected function createMockStagedLoad(): MockInterface
+    {
+        $mockStagedLoad = \Mockery::mock(StagedLoad::class);
+        $mockStagedLoad->shouldReceive('begin')
+            ->byDefault();
+        $mockStagedLoad->shouldReceive('discard')
+            ->byDefault();
+
+        return $mockStagedLoad;
+    }
+
+    /**
+     * @return BatchInsertManager|MockInterface
+     */
+    protected function createMockBatchInsertManager(): MockInterface
+    {
+        $mockBatchInsertManager = \Mockery::mock(BatchInsertManager::class);
+
+        return $mockBatchInsertManager;
     }
 }

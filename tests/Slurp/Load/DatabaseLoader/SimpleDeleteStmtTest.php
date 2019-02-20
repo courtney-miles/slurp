@@ -12,7 +12,7 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
-class PreCommitSimpleDeleteTest extends TestCase
+class SimpleDeleteStmtTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
@@ -32,15 +32,22 @@ class PreCommitSimpleDeleteTest extends TestCase
 
         $this->mockPdo = \Mockery::mock(\PDO::class);
         $this->mockDelStmt = \Mockery::mock(\PDOStatement::class);
+        $this->mockDelStmt->shouldReceive('execute')
+            ->byDefault();
+        $this->mockDelStmt->shouldReceive('rowCount')
+            ->andReturn(0)
+            ->byDefault();
+        $this->mockPdo->shouldReceive('prepare')
+            ->andReturn($this->mockDelStmt)
+            ->byDefault();
     }
 
     public function testExecuteWithoutConditions()
     {
-        $affectedRows = 3;
         $table = 'my_tbl';
 
         $expectedQry = <<<SQL
-DELETE FROM `my_tbl`
+DELETE FROM `{$table}`
 SQL;
 
         $this->mockPdo->shouldReceive('prepare')
@@ -50,22 +57,35 @@ SQL;
         $this->mockDelStmt->shouldReceive('execute')
             ->with([])
             ->once();
-        $this->mockDelStmt->shouldReceive('rowCount')
-            ->andReturn($affectedRows);
 
-        $delete = new SimpleDeleteStmt($this->mockPdo, $table);
+        $deleteStmt = new SimpleDeleteStmt($this->mockPdo, $table);
+        $deleteStmt->execute();
+    }
 
-        $this->assertSame($affectedRows, $delete->execute());
+    public function testExecuteWithDatabase()
+    {
+        $database = 'my_db';
+        $table = 'my_tbl';
+
+        $expectedQry = <<<SQL
+DELETE FROM `{$database}`.`{$table}`
+SQL;
+
+        $this->mockPdo->shouldReceive('prepare')
+            ->with($expectedQry)
+            ->andReturn($this->mockDelStmt)
+            ->once();
+
+        (new SimpleDeleteStmt($this->mockPdo, $table, [], $database))->execute();
     }
 
     public function testExecuteWithConditions()
     {
-        $affectedRows = 3;
         $table = 'my_tbl';
         $conditions = ['col 1' => 123, 'col2' => 'abc'];
 
         $expectedQry = <<<SQL
-DELETE FROM `my_tbl` WHERE `col 1` = :col_1 AND `col2` = :col2
+DELETE FROM `{$table}` WHERE `col 1` = :col_1 AND `col2` = :col2
 SQL;
 
         $this->mockPdo->shouldReceive('prepare')
@@ -75,10 +95,18 @@ SQL;
         $this->mockDelStmt->shouldReceive('execute')
             ->with([':col_1' => 123, ':col2' => 'abc'])
             ->once();
+
+        (new SimpleDeleteStmt($this->mockPdo, $table, $conditions))->execute();
+    }
+
+    public function testExecuteReturnsAffectedRowCount()
+    {
+        $affectedRows = 3;
+
         $this->mockDelStmt->shouldReceive('rowCount')
             ->andReturn($affectedRows);
 
-        $delete = new SimpleDeleteStmt($this->mockPdo, $table, $conditions);
+        $delete = new SimpleDeleteStmt($this->mockPdo, 'foo');
 
         $this->assertSame($affectedRows, $delete->execute());
     }

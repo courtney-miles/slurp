@@ -33,7 +33,15 @@ class BatchInsertManagerTest extends TestCase
      */
     protected $mockQueryFactory;
 
-    protected $table = 'tbl_foo';
+    /**
+     * @var string
+     */
+    protected $database = 'db_foo';
+
+    /**
+     * @var string
+     */
+    protected $table = 'tbl_bar';
 
     protected $columns = ['col_1', 'col_2'];
 
@@ -48,7 +56,8 @@ class BatchInsertManagerTest extends TestCase
             $this->mockPdo,
             $this->table,
             $this->columns,
-            $this->mockQueryFactory
+            $this->mockQueryFactory,
+            $this->database
         );
     }
 
@@ -61,7 +70,7 @@ class BatchInsertManagerTest extends TestCase
         $dummyQuery = '__INSERT_UPDATE__';
 
         $this->mockQueryFactory->shouldReceive('createInsertQuery')
-            ->with($this->table, $this->columns, count($rows))
+            ->with($this->table, $this->columns, count($rows), $this->database)
             ->andReturn($dummyQuery);
 
         $mockStmt = \Mockery::mock(\PDOStatement::class);
@@ -89,7 +98,7 @@ class BatchInsertManagerTest extends TestCase
         $dummyQuery = '__INSERT_UPDATE__';
 
         $this->mockQueryFactory->shouldReceive('createInsertQuery')
-            ->with($this->table, $this->columns, count($rowsBatch1))
+            ->with($this->table, $this->columns, count($rowsBatch1), $this->database)
             ->andReturn($dummyQuery)
             ->once();
 

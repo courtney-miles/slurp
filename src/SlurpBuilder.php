@@ -215,6 +215,7 @@ class SlurpBuilder
      * @param array $fieldMappings Array key is the destination column and the array value is the source column.
      * @param int $batchSize
      * @param DmlStmtInterface|null $preCommitStmt
+     * @param string|null $database
      * @return DatabaseLoader
      */
     public function createDatabaseLoader(
@@ -222,14 +223,16 @@ class SlurpBuilder
         string $table,
         array $fieldMappings,
         int $batchSize = 100,
-        DmlStmtInterface $preCommitStmt = null
+        DmlStmtInterface $preCommitStmt = null,
+        string $database = null
     ): DatabaseLoader {
         return $this->factory->createDatabaseLoader(
             $pdo,
             $table,
             $fieldMappings,
             $batchSize,
-            $preCommitStmt
+            $preCommitStmt,
+            $database
         );
     }
 

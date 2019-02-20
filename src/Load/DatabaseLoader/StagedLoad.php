@@ -25,6 +25,7 @@ class StagedLoad
      * @var string
      */
     private $stageTable;
+
     /**
      * @var array
      */
@@ -32,12 +33,18 @@ class StagedLoad
 
     protected $hasBegun = false;
 
-    public function __construct(\PDO $pdo, string $table, array $columns)
+    /**
+     * @var string
+     */
+    private $database;
+
+    public function __construct(\PDO $pdo, string $table, array $columns, string $database = null)
     {
         $this->pdo = $pdo;
         $this->table = $table;
         $this->stageTable = "_{$table}_stage";
         $this->columns = $columns;
+        $this->database = $database;
     }
 
     /**
@@ -53,8 +60,8 @@ class StagedLoad
         }
 
         $this->hasBegun = true;
-        $this->dropTemporaryTable($this->stageTable);
-        $this->createTemporaryTable($this->table, $this->stageTable);
+        $this->dropTemporaryTable($this->stageTable, $this->database);
+        $this->createTemporaryTable($this->table, $this->stageTable, $this->database);
 
         return $this->stageTable;
     }
@@ -67,7 +74,7 @@ class StagedLoad
             );
         }
 
-        $this->dropTemporaryTable($this->stageTable);
+        $this->dropTemporaryTable($this->stageTable, $this->database);
         $this->hasBegun = false;
     }
 
@@ -79,6 +86,8 @@ class StagedLoad
             );
         }
 
+        $tickedTableRef = $this->createTickedTableRef($this->table, $this->database);
+        $tickedStageTable = $this->createTickedTableRef($this->stageTable, $this->database);
         $cols = '`' . implode('`, `', $this->columns) . '`';
 
         $updateValues = [];
@@ -90,30 +99,45 @@ class StagedLoad
         $updateValuesStr = implode(', ', $updateValues);
 
         $this->pdo->exec(<<<SQL
-INSERT INTO `{$this->table}` ({$cols})
-  SELECT {$cols} FROM `{$this->stageTable}`
+INSERT INTO {$tickedTableRef} ({$cols})
+  SELECT {$cols} FROM {$tickedStageTable}
   ON DUPLICATE KEY UPDATE {$updateValuesStr}
 SQL
         );
 
-        $this->dropTemporaryTable($this->stageTable);
+        $this->dropTemporaryTable($this->stageTable, $this->database);
 
         $this->hasBegun = false;
     }
 
-    protected function createTemporaryTable($likeName, $asName): void
+    protected function createTemporaryTable($likeTable, $asTable, string $database = null): void
     {
+        $tickedAsTable = $this->createTickedTableRef($asTable, $database);
+        $tickedLikeTable = $this->createTickedTableRef($likeTable, $database);
+
         $this->pdo->exec(<<<SQL
-CREATE TEMPORARY TABLE `{$asName}` LIKE `{$likeName}`
+CREATE TEMPORARY TABLE {$tickedAsTable} LIKE {$tickedLikeTable} 
 SQL
         );
     }
 
-    protected function dropTemporaryTable($name): void
+    protected function dropTemporaryTable(string $table, string $database = null): void
     {
+        $tickedTableRef = $this->createTickedTableRef($table, $database);
         $this->pdo->exec(<<<SQL
-DROP TEMPORARY TABLE IF EXISTS `{$name}`
+DROP TEMPORARY TABLE IF EXISTS {$tickedTableRef}
 SQL
         );
+    }
+
+    protected function createTickedTableRef(string $table, string $database = null): string
+    {
+        $tableRefTicked = "`{$table}`";
+
+        if (strlen($database)) {
+            $tableRefTicked = "`{$database}`." . $tableRefTicked;
+        }
+
+        return $tableRefTicked;
     }
 }

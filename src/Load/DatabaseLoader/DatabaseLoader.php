@@ -55,25 +55,33 @@ class DatabaseLoader implements LoaderInterface
     private $preCommitStmt;
 
     /**
+     * @var string|null
+     */
+    private $database;
+
+    /**
      * DatabaseLoader constructor.
      * @param string $table
      * @param array $fieldMapping Array key is the destination column and the array value is the source column.
      * @param LoaderFactory $dmlFactory
      * @param int $batchSize
      * @param DmlStmtInterface|null $preCommitStmt
+     * @param string|null $database
      */
     public function __construct(
         string $table,
         array $fieldMapping,
         LoaderFactory $dmlFactory,
         int $batchSize = 100,
-        DmlStmtInterface $preCommitStmt = null
+        DmlStmtInterface $preCommitStmt = null,
+        string $database = null
     ) {
         $this->loaderFactory = $dmlFactory;
         $this->table = $table;
         $this->batchSize = $batchSize;
         $this->fieldMapping = $fieldMapping;
         $this->preCommitStmt = $preCommitStmt;
+        $this->database = $database;
     }
 
     /**
@@ -111,7 +119,8 @@ class DatabaseLoader implements LoaderInterface
         $stagedTable = $this->stagedLoad->begin();
         $this->batchStmt = $this->loaderFactory->createBatchInsertManager(
             $stagedTable,
-            array_keys($this->fieldMapping)
+            array_keys($this->fieldMapping),
+            $this->database
         );
 
         $this->begun = true;

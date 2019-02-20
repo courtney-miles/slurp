@@ -53,7 +53,8 @@ class LoaderFactoryTest extends TestCase
             BatchInsertManager::class,
             $this->factory->createBatchInsertManager(
                 'foo',
-                ['col']
+                ['col'],
+                'bar'
             )
         );
     }

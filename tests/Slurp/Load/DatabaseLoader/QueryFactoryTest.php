@@ -26,6 +26,20 @@ SQL;
         );
     }
 
+    public function testCreateInsertQueryWithDatabase()
+    {
+        $queryFactory = new QueryFactory();
+
+        $expectedInsSql = <<<SQL
+INSERT INTO `bar`.`foo` (`col_alpha`, `col_beta`)
+  VALUES (?, ?)
+SQL;
+        $this->assertSame(
+            $expectedInsSql,
+            $queryFactory->createInsertQuery('foo', ['col_alpha', 'col_beta'], 1, 'bar')
+        );
+    }
+
     public function testCreateInsertQueryBatch()
     {
         $queryFactory = new QueryFactory();

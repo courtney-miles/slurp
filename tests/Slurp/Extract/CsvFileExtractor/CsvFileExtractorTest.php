@@ -89,10 +89,10 @@ class CsvFileExtractorTest extends TestCase
         $this->setUpMockReader($this->mockReader, $csvRows);
         $this->csvExtractor->loadHeadersFromFile();
 
-        foreach ($this->csvExtractor as $rowId => $row) {
-            $this->assertArrayHasKey($rowId, $csvRows);
-            $this->assertSame(array_combine($csvRows[0], $csvRows[$rowId]), $row);
-        }
+        $records = iterator_to_array($this->csvExtractor);
+
+        $this->assertCount(1, $records);
+        $this->assertSame(array_combine($csvRows[0], $csvRows[1]), reset($records));
     }
 
     public function testSetHeaders()

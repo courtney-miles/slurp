@@ -408,7 +408,8 @@ class SlurpBuilderTest extends TestCase
                 $table,
                 $fieldMappings,
                 $batchSize,
-                $mockPreCommitStmt
+                $mockPreCommitStmt,
+                null
             )->andReturn($mockDbLoader);
 
         $this->assertSame(

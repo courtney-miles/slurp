@@ -36,12 +36,23 @@ class BatchInsertManager implements BatchManagerInterface
      */
     private $preparedBatchStmts = [];
 
-    public function __construct(\PDO $pdo, string $table, array $columns, QueryFactory $queryFactory)
-    {
+    /**
+     * @var string
+     */
+    private $database;
+
+    public function __construct(
+        \PDO $pdo,
+        string $table,
+        array $columns,
+        QueryFactory $queryFactory,
+        string $database = null
+    ) {
         $this->pdo = $pdo;
         $this->table = $table;
         $this->columns = $columns;
         $this->queryFactory = $queryFactory;
+        $this->database = $database;
     }
 
     /**
@@ -64,7 +75,8 @@ class BatchInsertManager implements BatchManagerInterface
                 $this->queryFactory->createInsertQuery(
                     $this->table,
                     $this->columns,
-                    $count
+                    $count,
+                    $this->database
                 )
             );
         }

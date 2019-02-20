@@ -25,11 +25,17 @@ class SimpleDeleteStmt implements DmlStmtInterface
      */
     private $conditions;
 
-    public function __construct(\PDO $pdo, string $table, array $conditions = [])
+    /**
+     * @var string
+     */
+    private $database;
+
+    public function __construct(\PDO $pdo, string $table, array $conditions = [], string $database = null)
     {
         $this->pdo = $pdo;
         $this->table = $table;
         $this->conditions = $conditions;
+        $this->database = $database;
     }
 
     /**
@@ -39,6 +45,12 @@ class SimpleDeleteStmt implements DmlStmtInterface
     {
         $conditionsStr = null;
         $qryParams = [];
+
+        $tableRefTicked = "`{$this->table}`";
+
+        if (strlen($this->database)) {
+            $tableRefTicked = "`{$this->database}`." . $tableRefTicked;
+        }
 
         foreach ($this->conditions as $col => $value) {
             $valuePlaceholder = $this->colNameToPlaceholder($col);
@@ -51,10 +63,10 @@ class SimpleDeleteStmt implements DmlStmtInterface
         }
 
         if (!empty($conditions)) {
-            $conditionsStr = ' WHERE ' . implode(' AND ', $conditions);
+            $conditionsStr = 'WHERE ' . implode(' AND ', $conditions);
         }
 
-        $stmt = $this->pdo->prepare("DELETE FROM `{$this->table}`$conditionsStr");
+        $stmt = $this->pdo->prepare(trim("DELETE FROM {$tableRefTicked} {$conditionsStr}"));
         $stmt->execute($qryParams);
 
         return $stmt->rowCount();

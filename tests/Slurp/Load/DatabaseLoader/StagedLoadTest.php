@@ -18,58 +18,58 @@ class StagedLoadTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     /**
-     * @var StagedLoad
-     */
-    protected $stagedLoad;
-
-    /**
      * @var \PDO|MockInterface
      */
     protected $mockPdo;
-
-    protected $table = 'my_tbl';
-
-    protected $columns = ['col_a', 'col_b'];
 
     public function setUp()
     {
         parent::setUp();
 
         $this->mockPdo = \Mockery::mock(\PDO::class);
-
-        $this->stagedLoad = new StagedLoad(
-            $this->mockPdo,
-            $this->table,
-            $this->columns
-        );
     }
 
-    public function testBeginThenCommit()
-    {
+    /**
+     * @dataProvider getTableRefsForBeginCommitTest
+     * @param string $table
+     * @param string|null $database
+     * @param string $tickedTableRef
+     * @param string $tickedTempTableRef
+     * @throws DatabaseLoaderException
+     */
+    public function testBeginThenCommit(
+        string $table,
+        ?string $database,
+        string $tickedTableRef,
+        string $tickedTempTableRef
+    ) {
+        $columns = ['col_a', 'col_b'];
         $capturedSql = [];
 
         $expectedDropSql = <<<SQL
-DROP TEMPORARY TABLE IF EXISTS `_my_tbl_stage`
+DROP TEMPORARY TABLE IF EXISTS {$tickedTempTableRef}
 SQL;
         $expectedCreateSql = <<<SQL
-CREATE TEMPORARY TABLE `_my_tbl_stage` LIKE `my_tbl`
+CREATE TEMPORARY TABLE {$tickedTempTableRef} LIKE {$tickedTableRef}
 SQL;
         $expectedInsertSql = <<<SQL
-INSERT INTO `my_tbl` (`col_a`, `col_b`)
-  SELECT `col_a`, `col_b` FROM `_my_tbl_stage`
+INSERT INTO {$tickedTableRef} (`col_a`, `col_b`)
+  SELECT `col_a`, `col_b` FROM {$tickedTempTableRef}
   ON DUPLICATE KEY UPDATE `col_a` = VALUES(`col_a`), `col_b` = VALUES(`col_b`)
 SQL;
 
         $this->mockPdo->shouldReceive('exec')
             ->withArgs(
                 function ($sql) use (&$capturedSql) {
-                    $capturedSql[] = $sql;
+                    $capturedSql[] = trim($sql);
 
                     return true;
                 }
             );
 
-        $this->assertSame('_my_tbl_stage', $this->stagedLoad->begin());
+        $stagedLoad = $this->createStagedLoad($this->mockPdo, $table, $columns, $database);
+
+        $this->assertSame('_my_tbl_stage', $stagedLoad->begin());
 
         $this->assertSame(
             [$expectedDropSql, $expectedCreateSql],
@@ -78,7 +78,7 @@ SQL;
 
         $capturedSql = [];
 
-        $this->stagedLoad->commit();
+        $stagedLoad->commit();
 
         $this->assertSame(
             [$expectedInsertSql, $expectedDropSql],
@@ -86,9 +86,22 @@ SQL;
         );
     }
 
+    public function getTableRefsForBeginCommitTest()
+    {
+        return [
+            ['my_tbl', null, '`my_tbl`', '`_my_tbl_stage`'],
+            ['my_tbl', 'my_db', '`my_db`.`my_tbl`', '`my_db`.`_my_tbl_stage`'],
+        ];
+    }
+
     public function testExceptionIfCommitWhenNotBegun()
     {
         $this->expectException(DatabaseLoaderException::class);
-        $this->stagedLoad->commit();
+        $this->createStagedLoad($this->mockPdo, 'my_tbl', ['col_a'], null)->commit();
+    }
+
+    protected function createStagedLoad(\PDO $pdo, string $table, array $columns, string $database = null): StagedLoad
+    {
+        return new StagedLoad($pdo, $table, $columns, $database);
     }
 }
