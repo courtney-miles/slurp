@@ -174,8 +174,12 @@ class SlurpFactory
         return new OuterProcessor();
     }
 
-    public function createSimpleDeleteStmt(\PDO $pdo, string $table, array $conditions = []): SimpleDeleteStmt
-    {
-        return new SimpleDeleteStmt($pdo, $table, $conditions);
+    public function createSimpleDeleteStmt(
+        \PDO $pdo,
+        string $table,
+        array $conditions = [],
+        string $database = null
+    ): SimpleDeleteStmt {
+        return new SimpleDeleteStmt($pdo, $table, $conditions, $database);
     }
 }

@@ -12,6 +12,7 @@ use League\Pipeline\PipelineInterface;
 use MilesAsylum\Slurp\Filter\ConstraintFiltration\ConstraintFilter;
 use MilesAsylum\Slurp\InnerPipeline\InnerProcessor;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
+use MilesAsylum\Slurp\Load\DatabaseLoader\SimpleDeleteStmt;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\OuterPipeline\OuterProcessor;
 use MilesAsylum\Slurp\Slurp;
@@ -25,7 +26,6 @@ use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
-use MilesAsylum\Slurp\Validate\RecordViolation;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -202,6 +202,19 @@ class SlurpFactoryTest extends TestCase
         $this->assertInstanceOf(
             OuterProcessor::class,
             $this->factory->createOuterProcessor()
+        );
+    }
+
+    public function testCreateSimpleDeleteStmt()
+    {
+        $this->assertInstanceOf(
+            SimpleDeleteStmt::class,
+            $this->factory->createSimpleDeleteStmt(
+                \Mockery::mock(\PDO::class),
+                'my_tbl',
+                [],
+                'my_db'
+            )
         );
     }
 }
