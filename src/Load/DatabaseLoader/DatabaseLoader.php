@@ -114,7 +114,8 @@ class DatabaseLoader implements LoaderInterface
     {
         $this->stagedLoad = $this->loaderFactory->createStagedLoad(
             $this->table,
-            array_keys($this->fieldMapping)
+            array_keys($this->fieldMapping),
+            $this->database
         );
         $stagedTable = $this->stagedLoad->begin();
         $this->batchStmt = $this->loaderFactory->createBatchInsertManager(

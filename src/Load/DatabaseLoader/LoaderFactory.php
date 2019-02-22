@@ -24,9 +24,9 @@ class LoaderFactory
         return new BatchInsertManager($this->pdo, $table, $columns, $this->createQueryFactory(), $database);
     }
 
-    public function createStagedLoad(string $table, array $columns): StagedLoad
+    public function createStagedLoad(string $table, array $columns, string $database = null): StagedLoad
     {
-        return new StagedLoad($this->pdo, $table, $columns);
+        return new StagedLoad($this->pdo, $table, $columns, $database);
     }
 
     protected function createQueryFactory(): QueryFactory

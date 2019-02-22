@@ -42,7 +42,8 @@ class LoaderFactoryTest extends TestCase
             StagedLoad::class,
             $this->factory->createStagedLoad(
                 'foo',
-                ['col']
+                ['col'],
+                'bar'
             )
         );
     }
