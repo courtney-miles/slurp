@@ -26,7 +26,7 @@ class FinaliseStage extends AbstractOuterStage
 
     public function __invoke(Slurp $slurp): Slurp
     {
-        if (!$slurp->isAborted() && !$this->loader->isAborted()) {
+        if ($this->loader->hasBegun() && !$slurp->isAborted() && !$this->loader->isAborted()) {
             $this->dispatch(ExtractionFinalisationBeginEvent::NAME, new ExtractionFinalisationBeginEvent());
             $this->loader->finalise();
             $this->dispatch(ExtractionFinalisationCompleteEvent::NAME, new ExtractionFinalisationCompleteEvent());

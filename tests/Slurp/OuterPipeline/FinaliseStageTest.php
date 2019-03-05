@@ -40,17 +40,8 @@ class FinaliseStageTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockLoader = \Mockery::mock(LoaderInterface::class);
-        $this->mockLoader->shouldReceive('isAborted')
-            ->andReturn(false)
-            ->byDefault();
-        $this->mockLoader->shouldReceive('finalise')
-            ->byDefault();
-        $this->mockSlurp = \Mockery::mock(Slurp::class);
-        $this->mockSlurp->shouldReceive('isAborted')
-            ->andReturn(false)
-            ->byDefault();
-
+        $this->mockLoader = $this->createMockLoader();
+        $this->mockSlurp = $this->createMockSlurp();
         $this->stage = new FinaliseStage($this->mockLoader);
     }
 
@@ -60,6 +51,16 @@ class FinaliseStageTest extends TestCase
             ->once();
 
         $this->assertSame($this->mockSlurp, ($this->stage)($this->mockSlurp));
+    }
+
+    public function testsDoNotFinaliseIfNotBegun()
+    {
+        $this->mockLoader->shouldReceive('hasBegun')
+            ->andReturn(false);
+        $this->mockLoader->shouldReceive('finalise')
+            ->never();
+
+        ($this->stage)($this->mockSlurp);
     }
 
     public function testsDoNotFinaliseIfLoadAborted()
@@ -99,5 +100,36 @@ class FinaliseStageTest extends TestCase
         $this->stage->setEventDispatcher($mockDispatcher);
 
         ($this->stage)($this->mockSlurp);
+    }
+
+    /**
+     * @return MockInterface|LoaderInterface
+     */
+    protected function createMockLoader(): MockInterface
+    {
+        $mockLoader = \Mockery::mock(LoaderInterface::class);
+        $mockLoader->shouldReceive('hasBegun')
+            ->andReturn(true)
+            ->byDefault();
+        $mockLoader->shouldReceive('isAborted')
+            ->andReturn(false)
+            ->byDefault();
+        $mockLoader->shouldReceive('finalise')
+            ->byDefault();
+
+        return $mockLoader;
+    }
+
+    /**
+     * @return MockInterface|Slurp
+     */
+    protected function createMockSlurp(): MockInterface
+    {
+        $mockSlurp = \Mockery::mock(Slurp::class);
+        $mockSlurp->shouldReceive('isAborted')
+            ->andReturn(false)
+            ->byDefault();
+
+        return $mockSlurp;
     }
 }
