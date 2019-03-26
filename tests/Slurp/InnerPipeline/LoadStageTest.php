@@ -133,14 +133,29 @@ class LoadStageTest extends TestCase
 
     public function testDispatchLoadAbortedEventOnInvalidRecord()
     {
+        /** @var LoadAbortedEvent $event */
+        $event = null;
         $mockPayload = $this->createMockPayload(['foo'], true);
         $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(LoadAbortedEvent::NAME, \Mockery::type(LoadAbortedEvent::class))
-            ->once();
+            ->with(
+                LoadAbortedEvent::NAME,
+                \Mockery::on(
+                    function ($arg) use (&$event) {
+                        if (!$arg instanceof LoadAbortedEvent) {
+                            return false;
+                        }
+
+                        $event = $arg;
+
+                        return true;
+                    }
+                )
+            )->once();
         $this->stage->setEventDispatcher($mockDispatcher);
 
         ($this->stage)($mockPayload);
+        $this->assertSame($mockPayload, $event->getPayload());
     }
 
     /**

@@ -41,7 +41,7 @@ class LoadStage extends AbstractStage
                 $this->loader->abort();
                 $this->loadAborted = true;
                 $payload->setLoadAborted($this->loadAborted);
-                $this->dispatch(LoadAbortedEvent::NAME, new LoadAbortedEvent());
+                $this->dispatch(LoadAbortedEvent::NAME, new LoadAbortedEvent($payload));
             } else {
                 $this->loader->loadValues($payload->getRecord());
                 $this->dispatch(RecordLoadedEvent::NAME, new RecordLoadedEvent($payload));
