@@ -5,8 +5,11 @@
  * Time: 8:45 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp;
 
+use InvalidArgumentException;
 use MilesAsylum\Slurp\Validate\ViolationInterface;
 
 class SlurpPayload
@@ -71,7 +74,7 @@ class SlurpPayload
      */
     public function getFieldValue($name)
     {
-        return isset($this->record[$name]) ? $this->record[$name] : null;
+        return $this->record[$name] ?? null;
     }
 
     public function setFieldValue(string $name, $value): void
@@ -82,7 +85,7 @@ class SlurpPayload
     public function replaceFieldValue(string $name, $value): void
     {
         if (!$this->hasField($name)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Unable to replace value for $name. A value does not exists for $name."
             );
         }
@@ -136,7 +139,7 @@ class SlurpPayload
             return false;
         }
 
-        if (!empty($this->violations) && $classType == null) {
+        if (!empty($this->violations) && $classType === null) {
             return true;
         }
 

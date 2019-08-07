@@ -5,6 +5,8 @@
  * Time: 7:19 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Validate\ConstraintValidation;
 
 use MilesAsylum\Slurp\Validate\ValidatorInterface;

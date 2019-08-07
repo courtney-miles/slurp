@@ -5,6 +5,8 @@
  * Time: 7:58 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Extract\CsvFileExtractor;
 
 class CsvMultiFileExtractor implements CsvFileExtractorInterface
@@ -81,7 +83,7 @@ class CsvMultiFileExtractor implements CsvFileExtractorInterface
         return $iterator;
     }
 
-    protected function addExtractor(CsvFileExtractor $extractor)
+    protected function addExtractor(CsvFileExtractor $extractor): void
     {
         $this->extractors[] = $extractor;
     }

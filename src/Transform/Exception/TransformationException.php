@@ -5,12 +5,12 @@
  * Time: 6:58 PM
  */
 
-namespace MilesAsylum\Slurp\Transform\Exception;
+declare(strict_types=1);
 
+namespace MilesAsylum\Slurp\Transform\Exception;
 
 use MilesAsylum\Slurp\Exception\ExceptionInterface;
 
 class TransformationException extends \Exception implements ExceptionInterface
 {
-
 }

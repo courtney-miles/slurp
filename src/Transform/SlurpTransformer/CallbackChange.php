@@ -5,6 +5,8 @@
  * Time: 7:53 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
 class CallbackChange extends Change

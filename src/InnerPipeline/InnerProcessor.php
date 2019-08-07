@@ -5,6 +5,8 @@
  * Time: 9:57 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\InnerPipeline;
 
 use League\Pipeline\InterruptibleProcessor;
@@ -15,7 +17,7 @@ class InnerProcessor extends InterruptibleProcessor
     public function __construct()
     {
         parent::__construct(
-            function (SlurpPayload $payload) {
+            static function (SlurpPayload $payload) {
                 return !$payload->isFiltered();
             }
         );

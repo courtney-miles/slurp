@@ -5,11 +5,14 @@
  * Time: 6:36 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp;
 
 use League\Pipeline\Pipeline;
 use MilesAsylum\Slurp\Extract\ExtractorInterface;
 use MilesAsylum\Slurp\Slurp;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
@@ -20,19 +23,19 @@ class SlurpTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
-    public function testAbort()
+    public function testAbort(): void
     {
-        $slurp = new Slurp(\Mockery::mock(Pipeline::class));
+        $slurp = new Slurp(Mockery::mock(Pipeline::class));
 
         $this->assertFalse($slurp->isAborted());
         $slurp->abort();
         $this->assertTrue($slurp->isAborted());
     }
 
-    public function testProcess()
+    public function testProcess(): void
     {
-        $mockExtractor = \Mockery::mock(ExtractorInterface::class);
-        $mockPipeLine = \Mockery::spy(Pipeline::class);
+        $mockExtractor = Mockery::mock(ExtractorInterface::class);
+        $mockPipeLine = Mockery::spy(Pipeline::class);
 
         $slurp = new Slurp($mockPipeLine);
         $slurp->process($mockExtractor);
@@ -42,18 +45,18 @@ class SlurpTest extends TestCase
             ->once();
     }
 
-    public function testExtractorIsNullBeforeProcessing()
+    public function testExtractorIsNullBeforeProcessing(): void
     {
-        $mockPipeLine = \Mockery::mock(Pipeline::class);
+        $mockPipeLine = Mockery::mock(Pipeline::class);
         $slurp = new Slurp($mockPipeLine);
 
         $this->assertNull($slurp->getExtractor());
     }
 
-    public function testGetExtractorWhilstProcessing()
+    public function testGetExtractorWhilstProcessing(): void
     {
-        $mockExtractor = \Mockery::mock(ExtractorInterface::class);
-        $mockPipeLine = \Mockery::mock(Pipeline::class);
+        $mockExtractor = Mockery::mock(ExtractorInterface::class);
+        $mockPipeLine = Mockery::mock(Pipeline::class);
         $mockPipeLine->shouldReceive('__invoke')
             ->withArgs(function (Slurp $slurp) use ($mockExtractor) {
                 $this->assertSame($mockExtractor, $slurp->getExtractor());
@@ -64,10 +67,10 @@ class SlurpTest extends TestCase
         $slurp->process($mockExtractor);
     }
 
-    public function testExtractorIsNullAfterProcessing()
+    public function testExtractorIsNullAfterProcessing(): void
     {
-        $mockExtractor = \Mockery::mock(ExtractorInterface::class);
-        $mockPipeLine = \Mockery::mock(Pipeline::class);
+        $mockExtractor = Mockery::mock(ExtractorInterface::class);
+        $mockPipeLine = Mockery::mock(Pipeline::class);
         $mockPipeLine->shouldReceive('__invoke');
 
         $slurp = new Slurp($mockPipeLine);

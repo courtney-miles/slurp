@@ -5,6 +5,8 @@
  * Time: 6:33 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsertManager;
@@ -12,6 +14,7 @@ use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\StagedLoad;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
+use PDO;
 use PHPUnit\Framework\TestCase;
 
 class LoaderFactoryTest extends TestCase
@@ -19,7 +22,7 @@ class LoaderFactoryTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     /**
-     * @var \PDO|MockInterface
+     * @var PDO|MockInterface
      */
     protected $mockPdo;
 
@@ -32,11 +35,11 @@ class LoaderFactoryTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockPdo = \Mockery::mock(\PDO::class);
+        $this->mockPdo = \Mockery::mock(PDO::class);
         $this->factory = new LoaderFactory($this->mockPdo);
     }
 
-    public function testCreateStagedTable()
+    public function testCreateStagedTable(): void
     {
         $this->assertInstanceOf(
             StagedLoad::class,
@@ -48,7 +51,7 @@ class LoaderFactoryTest extends TestCase
         );
     }
 
-    public function testCreateBatchInsStmt()
+    public function testCreateBatchInsStmt(): void
     {
         $this->assertInstanceOf(
             BatchInsertManager::class,

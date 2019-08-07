@@ -5,8 +5,9 @@
  * Time: 6:26 AM
  */
 
-namespace MilesAsylum\Slurp\Load\DatabaseLoader;
+declare(strict_types=1);
 
+namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
 /**
  * This class can been used to run a DML statement immediately prior to committing the loaded records.

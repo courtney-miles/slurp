@@ -5,6 +5,8 @@
  * Time: 7:06 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Load;
 
 interface LoaderInterface

@@ -5,6 +5,8 @@
  * Time: 11:39 AM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\OuterPipeline;
 
 use League\Pipeline\Pipeline;

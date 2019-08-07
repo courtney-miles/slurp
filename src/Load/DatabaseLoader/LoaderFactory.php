@@ -5,16 +5,20 @@
  * Time: 3:34 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
+
+use PDO;
 
 class LoaderFactory
 {
     /**
-     * @var \PDO
+     * @var PDO
      */
     private $pdo;
 
-    public function __construct(\PDO $pdo)
+    public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
     }

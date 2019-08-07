@@ -5,7 +5,11 @@
  * Time: 6:39 AM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
+
+use InvalidArgumentException;
 
 class QueryFactory
 {
@@ -23,16 +27,16 @@ class QueryFactory
         string $database = null
     ): string {
         if (empty($columns)) {
-            throw new \InvalidArgumentException('One or more columns must be supplied.');
+            throw new InvalidArgumentException('One or more columns must be supplied.');
         }
 
         if ($batchSize < 1) {
-            throw new \InvalidArgumentException('The batch size cannot be less than 1.');
+            throw new InvalidArgumentException('The batch size cannot be less than 1.');
         }
 
         $tableRefTicked = "`{$table}`";
 
-        if (strlen($database)) {
+        if ($database !== null && $database !== '') {
             $tableRefTicked = "`{$database}`." . $tableRefTicked;
         }
 

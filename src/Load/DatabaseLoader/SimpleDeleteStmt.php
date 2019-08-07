@@ -5,13 +5,16 @@
  * Time: 7:18 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
+use PDO;
 
 class SimpleDeleteStmt implements DmlStmtInterface
 {
     /**
-     * @var \PDO
+     * @var PDO
      */
     private $pdo;
 
@@ -30,7 +33,7 @@ class SimpleDeleteStmt implements DmlStmtInterface
      */
     private $database;
 
-    public function __construct(\PDO $pdo, string $table, array $conditions = [], string $database = null)
+    public function __construct(PDO $pdo, string $table, array $conditions = [], string $database = null)
     {
         $this->pdo = $pdo;
         $this->table = $table;
@@ -48,7 +51,7 @@ class SimpleDeleteStmt implements DmlStmtInterface
 
         $tableRefTicked = "`{$this->table}`";
 
-        if (strlen($this->database)) {
+        if ($this->database !== null && $this->database !== '') {
             $tableRefTicked = "`{$this->database}`." . $tableRefTicked;
         }
 
@@ -72,7 +75,7 @@ class SimpleDeleteStmt implements DmlStmtInterface
         return $stmt->rowCount();
     }
 
-    protected function colNameToPlaceholder($colName)
+    protected function colNameToPlaceholder($colName): string
     {
         return ':' . str_replace([' '], ['_'], $colName);
     }

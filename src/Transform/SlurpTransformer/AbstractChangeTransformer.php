@@ -5,6 +5,8 @@
  * Time: 9:39 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
 abstract class AbstractChangeTransformer implements ChangeTransformerInterface
@@ -15,6 +17,6 @@ abstract class AbstractChangeTransformer implements ChangeTransformerInterface
 
     public function isString($value): bool
     {
-        return is_scalar($value) || (\is_object($value) && method_exists($value, '__toString'));
+        return is_scalar($value) || (is_object($value) && method_exists($value, '__toString'));
     }
 }

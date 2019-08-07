@@ -5,6 +5,8 @@
  * Time: 6:34 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp;
 
 use League\Pipeline\PipelineInterface;
@@ -44,12 +46,12 @@ class Slurp
         return $this->extractor;
     }
 
-    public function abort()
+    public function abort(): void
     {
         $this->aborted = true;
     }
 
-    public function isAborted()
+    public function isAborted(): bool
     {
         return $this->aborted;
     }

@@ -5,6 +5,8 @@
  * Time: 10:45 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\SlurpPayload;

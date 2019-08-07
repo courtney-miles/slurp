@@ -5,6 +5,8 @@
  * Time: 8:56 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp;
 
 use frictionlessdata\tableschema\Schema;
@@ -23,6 +25,7 @@ use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
+use PDO;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Validator\Constraint;
 
@@ -210,7 +213,7 @@ class SlurpBuilder
     }
 
     /**
-     * @param \PDO $pdo
+     * @param PDO $pdo
      * @param string $table
      * @param array $fieldMappings Array key is the destination column and the array value is the source column.
      * @param int $batchSize
@@ -219,7 +222,7 @@ class SlurpBuilder
      * @return DatabaseLoader
      */
     public function createDatabaseLoader(
-        \PDO $pdo,
+        PDO $pdo,
         string $table,
         array $fieldMappings,
         int $batchSize = 100,

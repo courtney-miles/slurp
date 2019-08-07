@@ -5,12 +5,15 @@
  * Time: 9:34 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\Filter\FilterInterface;
 use MilesAsylum\Slurp\InnerPipeline\FiltrationStage;
 use MilesAsylum\Slurp\Event\RecordFilteredEvent;
 use MilesAsylum\Slurp\SlurpPayload;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -34,14 +37,14 @@ class FiltrationStageTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockFilter = \Mockery::mock(FilterInterface::class);
+        $this->mockFilter = Mockery::mock(FilterInterface::class);
         $this->mockFilter->shouldReceive('filterRecord')
             ->andReturn(false)
             ->byDefault();
         $this->stage = new FiltrationStage($this->mockFilter);
     }
 
-    public function testFilterOnInvoke()
+    public function testFilterOnInvoke(): void
     {
         $record = ['foo' => 123];
         $payload = new SlurpPayload();
@@ -56,12 +59,12 @@ class FiltrationStageTest extends TestCase
         $this->assertTrue($payload->isFiltered());
     }
 
-    public function testDispatchEventOnFiltered()
+    public function testDispatchEventOnFiltered(): void
     {
         $payload = new SlurpPayload();
-        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(RecordFilteredEvent::NAME, \Mockery::type(RecordFilteredEvent::class))
+            ->with(RecordFilteredEvent::NAME, Mockery::type(RecordFilteredEvent::class))
             ->once();
 
         $this->mockFilter->shouldReceive('filterRecord')
@@ -71,10 +74,10 @@ class FiltrationStageTest extends TestCase
         ($this->stage)($payload);
     }
 
-    public function testDoNotDispatchEventOnNotFiltered()
+    public function testDoNotDispatchEventOnNotFiltered(): void
     {
         $payload = new SlurpPayload();
-        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')->never();
 
         $this->mockFilter->shouldReceive('filterRecord')

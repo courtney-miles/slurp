@@ -5,6 +5,8 @@
  * Time: 6:49 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\functional;
 
 use League\Csv\Reader;
@@ -12,13 +14,12 @@ use MilesAsylum\Slurp\Event\RecordValidatedEvent;
 use MilesAsylum\Slurp\Extract\CsvFileExtractor\CsvFileExtractor;
 use MilesAsylum\Slurp\PHPUnit\MySQLTestHelper;
 use MilesAsylum\Slurp\SlurpBuilder;
-use MilesAsylum\Slurp\InnerPipeline\StageObserverInterface;
-use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\CallbackChange;
-use MilesAsylum\Slurp\Transform\SlurpTransformer\StrCase;
 use MilesAsylum\Slurp\Validate\RecordViolation;
+use Mockery;
 use PHPUnit\DbUnit\Database\Connection;
 use PHPUnit\DbUnit\DataSet\IDataSet;
+use PHPUnit\DbUnit\DataSet\ITable;
 use PHPUnit\DbUnit\TestCaseTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\Event;
@@ -40,7 +41,7 @@ class SlurpTest extends TestCase
         $m->raiseTestSchema();
 
         self::$pdo = $m->getConnection();
-        self::$pdo->exec('USE ' . $_ENV['TESTS_SLURP_DBADAPTER_MYSQL_DATABASE']);
+        self::$pdo->exec('USE ' . $m->getDatabaseName());
 
         self::$table = 'tbl_foo';
         $table = self::$table;
@@ -56,7 +57,7 @@ SQL
         );
     }
 
-    public function testBasicLoad()
+    public function testBasicLoad(): void
     {
         $sb = SlurpBuilder::create();
         $sb->addLoader(
@@ -85,10 +86,10 @@ SQL
             ]
         )->getTable(self::$table);
 
-        $this->assertTablesEqual($expectedTable, $table);
+        self::assertTablesEqual($expectedTable, $table);
     }
 
-    public function testBasicLoadUnevenBatch()
+    public function testBasicLoadUnevenBatch(): void
     {
         $sb = SlurpBuilder::create();
         $sb->addLoader(
@@ -117,16 +118,16 @@ SQL
             ]
         )->getTable(self::$table);
 
-        $this->assertTablesEqual($expectedTable, $table);
+        self::assertTablesEqual($expectedTable, $table);
     }
 
-    public function testBasicLoadWithTransform()
+    public function testBasicLoadWithTransform(): void
     {
         $sb = SlurpBuilder::create();
         $sb->addTransformationChange(
             '_name_',
             new CallbackChange(
-                function ($value) {
+                static function ($value) {
                     return strtoupper($value);
                 }
             )
@@ -157,10 +158,10 @@ SQL
             ]
         )->getTable('tbl_foo');
 
-        $this->assertTablesEqual($expectedTable, $table);
+        self::assertTablesEqual($expectedTable, $table);
     }
 
-    public function testAllTypesFromSchema()
+    public function testAllTypesFromSchema(): void
     {
         self::$pdo->exec('DROP TABLE IF EXISTS `all_types`');
         self::$pdo->exec(<<<SQL
@@ -212,17 +213,17 @@ SQL
             ]
         )->getTable('all_types');
 
-        $this->assertTablesEqual($expectedTable, $table);
+        self::assertTablesEqual($expectedTable, $table);
     }
 
-    public function testValidateAgainstSchemaWithMissingColumns()
+    public function testValidateAgainstSchemaWithMissingColumns(): void
     {
         $violations = [];
-        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')->byDefault();
         $mockDispatcher->shouldReceive('dispatch')
-            ->withArgs(function (string $eventName, Event $event) use (&$violations) {
-                if ($eventName == RecordValidatedEvent::NAME) {
+            ->withArgs(static function (string $eventName, Event $event) use (&$violations) {
+                if ($eventName === RecordValidatedEvent::NAME) {
                     /** @var RecordValidatedEvent $event */
                     $violations = array_merge($violations, $event->getPayload()->getViolations());
                     return true;
@@ -255,7 +256,7 @@ SQL
         $this->assertInstanceOf(RecordViolation::class, $violation);
     }
 
-    protected function fetchQueryTable($tableName)
+    protected function fetchQueryTable($tableName): ITable
     {
         return $this->getConnection()->createQueryTable(
             $tableName,
@@ -270,7 +271,7 @@ SQL
      *
      * @return Connection
      */
-    protected function getConnection()
+    protected function getConnection(): Connection
     {
         return $this->createDefaultDBConnection(self::$pdo, $_ENV['TESTS_SLURP_DBADAPTER_MYSQL_DATABASE']);
     }
@@ -280,7 +281,7 @@ SQL
      *
      * @return IDataSet
      */
-    protected function getDataSet()
+    protected function getDataSet(): IDataSet
     {
         return $this->createArrayDataSet(
             ['tbl_foo' => []]

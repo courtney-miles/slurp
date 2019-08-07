@@ -5,6 +5,8 @@
  * Time: 9:59 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Exception;
 
 use Throwable;
@@ -16,7 +18,7 @@ class UnknownFieldException extends \InvalidArgumentException implements Excepti
      */
     protected $field;
 
-    public function __construct(string $field, string $message = "", int $code = 0, Throwable $previous = null)
+    public function __construct(string $field, string $message = '', int $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
         $this->field = $field;

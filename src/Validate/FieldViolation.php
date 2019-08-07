@@ -5,6 +5,8 @@
  * Time: 9:52 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Validate;
 
 class FieldViolation implements ViolationInterface

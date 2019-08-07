@@ -5,12 +5,15 @@
  * Time: 6:05 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Extract\CsvFileExtractor;
 
+use IteratorIterator;
 use MilesAsylum\Slurp\Extract\Exception\ValueCountMismatchException;
 use Traversable;
 
-class VerifyValueCountIterator extends \IteratorIterator
+class VerifyValueCountIterator extends IteratorIterator
 {
     private $expectedValueCount;
 
@@ -24,7 +27,7 @@ class VerifyValueCountIterator extends \IteratorIterator
      * @return array
      * @throws ValueCountMismatchException
      */
-    public function current()
+    public function current(): array
     {
         $record = parent::current();
 

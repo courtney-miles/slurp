@@ -5,12 +5,15 @@
  * Time: 9:54 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Validate\ConstraintValidation;
 
 use MilesAsylum\Slurp\PHPUnit\StubValidatorTrait;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
 use MilesAsylum\Slurp\Validate\FieldViolation;
 use MilesAsylum\Slurp\Validate\ViolationInterface;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -34,14 +37,14 @@ class ConstraintValidatorTest extends TestCase
      */
     protected $validator;
     
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
-        $this->mockValidator = \Mockery::mock(ValidatorInterface::class);
+        $this->mockValidator = Mockery::mock(ValidatorInterface::class);
         $this->validator = new ConstraintValidator($this->mockValidator);
     }
 
-    public function testValidateField()
+    public function testValidateField(): void
     {
         $recordId = 123;
         $field = 'col_one';
@@ -49,8 +52,8 @@ class ConstraintValidatorTest extends TestCase
         $constraints = [new NotBlank()];
         $message = 'Oops!';
 
-        $mockViolationList = \Mockery::mock(ConstraintViolationListInterface::class);
-        $mockViolation = \Mockery::mock(ConstraintViolationInterface::class);
+        $mockViolationList = Mockery::mock(ConstraintViolationListInterface::class);
+        $mockViolation = Mockery::mock(ConstraintViolationInterface::class);
         $mockViolation->shouldReceive('getMessage')->andReturn($message);
         $this->stubValidator($value, $constraints, $this->mockValidator, $mockViolationList, [$mockViolation]);
 
@@ -67,7 +70,7 @@ class ConstraintValidatorTest extends TestCase
         $this->assertEquals(new FieldViolation($recordId, $field, $value, $message), $violation);
     }
 
-    public function testValidateRecord()
+    public function testValidateRecord(): void
     {
         $recordId = 123;
         $field = 'col_one';
@@ -75,8 +78,8 @@ class ConstraintValidatorTest extends TestCase
         $constraints = [new NotBlank()];
         $message = 'Oops!';
 
-        $mockViolationList = \Mockery::mock(ConstraintViolationListInterface::class);
-        $mockViolation = \Mockery::mock(ConstraintViolationInterface::class);
+        $mockViolationList = Mockery::mock(ConstraintViolationListInterface::class);
+        $mockViolation = Mockery::mock(ConstraintViolationInterface::class);
         $mockViolation->shouldReceive('getMessage')->andReturn($message);
         $this->stubValidator($value, $constraints, $this->mockValidator, $mockViolationList, [$mockViolation]);
 

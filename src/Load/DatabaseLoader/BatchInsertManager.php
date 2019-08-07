@@ -5,14 +5,18 @@
  * Time: 8:53 AM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\Exception\MissingValueException;
+use PDO;
+use PDOStatement;
 
 class BatchInsertManager implements BatchManagerInterface
 {
     /**
-     * @var \PDO
+     * @var PDO
      */
     protected $pdo;
 
@@ -32,7 +36,7 @@ class BatchInsertManager implements BatchManagerInterface
     private $queryFactory;
 
     /**
-     * @var \PDOStatement[]
+     * @var PDOStatement[]
      */
     private $preparedBatchStmts = [];
 
@@ -42,7 +46,7 @@ class BatchInsertManager implements BatchManagerInterface
     private $database;
 
     public function __construct(
-        \PDO $pdo,
+        PDO $pdo,
         string $table,
         array $columns,
         QueryFactory $queryFactory,
@@ -68,7 +72,7 @@ class BatchInsertManager implements BatchManagerInterface
         }
     }
 
-    protected function getPreparedBatchStmt($count): \PDOStatement
+    protected function getPreparedBatchStmt($count): PDOStatement
     {
         if (!isset($this->preparedBatchStmts[$count])) {
             $this->preparedBatchStmts[$count] = $this->pdo->prepare(

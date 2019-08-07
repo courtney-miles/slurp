@@ -5,6 +5,8 @@
  * Time: 6:42 AM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Validate;
 
 use MilesAsylum\Slurp\Validate\FieldViolation;
@@ -42,22 +44,22 @@ class FieldViolationTest extends TestCase
         );
     }
 
-    public function testGetRecordId()
+    public function testGetRecordId(): void
     {
         $this->assertSame($this->recordId, $this->violation->getRecordId());
     }
 
-    public function testGetField()
+    public function testGetField(): void
     {
         $this->assertSame($this->field, $this->violation->getField());
     }
 
-    public function testGetValue()
+    public function testGetValue(): void
     {
         $this->assertSame($this->value, $this->violation->getValue());
     }
 
-    public function testGetMessage()
+    public function testGetMessage(): void
     {
         $this->assertSame($this->message, $this->violation->getMessage());
     }

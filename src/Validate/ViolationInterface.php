@@ -5,6 +5,8 @@
  * Time: 9:48 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Validate;
 
 interface ViolationInterface

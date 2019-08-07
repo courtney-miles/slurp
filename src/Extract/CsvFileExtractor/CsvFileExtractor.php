@@ -5,9 +5,13 @@
  * Time: 7:08 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Extract\CsvFileExtractor;
 
 use CallbackFilterIterator;
+use Iterator;
+use League\Csv\Exception;
 use League\Csv\Reader;
 
 class CsvFileExtractor implements CsvFileExtractorInterface
@@ -33,7 +37,7 @@ class CsvFileExtractor implements CsvFileExtractorInterface
 
     /**
      * @param string $delimiter
-     * @throws \League\Csv\Exception
+     * @throws Exception
      */
     public function setDelimiter(string $delimiter): void
     {
@@ -42,7 +46,7 @@ class CsvFileExtractor implements CsvFileExtractorInterface
 
     /**
      * @param string $enclosure
-     * @throws \League\Csv\Exception
+     * @throws Exception
      */
     public function setEnclosure(string $enclosure): void
     {
@@ -51,7 +55,7 @@ class CsvFileExtractor implements CsvFileExtractorInterface
 
     /**
      * @param string $escape
-     * @throws \League\Csv\Exception
+     * @throws Exception
      */
     public function setEscape(string $escape): void
     {
@@ -72,12 +76,12 @@ class CsvFileExtractor implements CsvFileExtractorInterface
         $this->headers = $headers;
     }
 
-    public function getIterator(): \Iterator
+    public function getIterator(): Iterator
     {
         return $this->prepareRecords($this->csvReader->getRecords(), $this->headers);
     }
 
-    protected function prepareRecords(\Iterator $records, array $headers): \Iterator
+    protected function prepareRecords(Iterator $records, array $headers): Iterator
     {
         if ($this->headerOffset !== null) {
             $records = new CallbackFilterIterator($records, function (array $record, int $offset): bool {

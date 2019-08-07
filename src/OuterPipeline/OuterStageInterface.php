@@ -5,6 +5,8 @@
  * Time: 11:46 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\OuterPipeline;
 
 use MilesAsylum\Slurp\Slurp;

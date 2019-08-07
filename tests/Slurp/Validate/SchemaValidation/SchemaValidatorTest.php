@@ -5,8 +5,11 @@
  * Time: 7:57 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Validate\SchemaValidation;
 
+use Exception;
 use frictionlessdata\tableschema\Fields\BaseField;
 use frictionlessdata\tableschema\Schema;
 use frictionlessdata\tableschema\SchemaValidationError;
@@ -15,6 +18,7 @@ use MilesAsylum\Slurp\Validate\RecordViolation;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use MilesAsylum\Slurp\Validate\FieldViolation;
 use MilesAsylum\Slurp\Validate\ViolationInterface;
+use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -32,18 +36,18 @@ class SchemaValidatorTest extends TestCase
 
     public function setUp()
     {
-        $this->mockTableSchema = \Mockery::mock(Schema::class);
+        $this->mockTableSchema = Mockery::mock(Schema::class);
         $this->validator = new SchemaValidator($this->mockTableSchema);
     }
 
-    public function testValidateField()
+    public function testValidateField(): void
     {
         $recordId = 123;
         $field = 'foo';
         $value = 'bar';
         $message = 'Oops!';
 
-        $mockValidationError = \Mockery::mock(SchemaValidationError::class);
+        $mockValidationError = Mockery::mock(SchemaValidationError::class);
         $mockValidationError->shouldReceive('getMessage')
             ->andReturn($message);
         $this->stubSchemaValidationFieldError($field, $value, $this->mockTableSchema, [$mockValidationError]);
@@ -59,7 +63,7 @@ class SchemaValidatorTest extends TestCase
         $this->assertEquals(new FieldViolation($recordId, $field, $value, $message), $violation);
     }
 
-    public function testValidateRecord()
+    public function testValidateRecord(): void
     {
         $recordId = 123;
         $badField = 'foo';
@@ -71,11 +75,11 @@ class SchemaValidatorTest extends TestCase
         $record = [$badField => $badValue, $goodField => $goodValue];
 
         $mockFields = [
-            \Mockery::mock(BaseField::class, ['name' => $badField, 'unique' => false]),
-            \Mockery::mock(BaseField::class, ['name' => $goodField, 'unique' => false])
+            Mockery::mock(BaseField::class, ['name' => $badField, 'unique' => false]),
+            Mockery::mock(BaseField::class, ['name' => $goodField, 'unique' => false])
         ];
 
-        $mockValidationError = \Mockery::mock(SchemaValidationError::class);
+        $mockValidationError = Mockery::mock(SchemaValidationError::class);
         $mockValidationError->extraDetails = [
             'field' => $badField,
             'value' => $badValue
@@ -95,11 +99,11 @@ class SchemaValidatorTest extends TestCase
         $this->assertEquals(new FieldViolation($recordId, $badField, $badValue, $message), $violation);
     }
 
-    public function testValidateRecordWithMissingField()
+    public function testValidateRecordWithMissingField(): void
     {
         $mockFields = [
-            \Mockery::mock(BaseField::class, ['name' => 'col_a', 'unique' => false]),
-            \Mockery::mock(BaseField::class, ['name' => 'col_b', 'unique' => false])
+            Mockery::mock(BaseField::class, ['name' => 'col_a', 'unique' => false]),
+            Mockery::mock(BaseField::class, ['name' => 'col_b', 'unique' => false])
         ];
 
         $record = ['col_a' => 123];
@@ -117,10 +121,10 @@ class SchemaValidatorTest extends TestCase
         $this->assertEquals(new RecordViolation(1, "Record is missing field/s: col_b"), $violation);
     }
 
-    public function testValidateRecordWithExtraField()
+    public function testValidateRecordWithExtraField(): void
     {
         $mockFields = [
-            \Mockery::mock(BaseField::class, ['name' => 'col_a', 'unique' => false]),
+            Mockery::mock(BaseField::class, ['name' => 'col_a', 'unique' => false]),
         ];
 
         $record = ['col_a' => 123, 'col_b' => 234];
@@ -135,15 +139,15 @@ class SchemaValidatorTest extends TestCase
         $violation = array_pop($violations);
 
         $this->assertInstanceOf(RecordViolation::class, $violation);
-        $this->assertEquals(new RecordViolation(1, "Record has extra field/s: col_b"), $violation);
+        $this->assertEquals(new RecordViolation(1, 'Record has extra field/s: col_b'), $violation);
     }
 
-    public function testValidateRecordWithUniqueField()
+    public function testValidateRecordWithUniqueField(): void
     {
         $field = 'id';
         $record = [$field => 123];
 
-        $mockUniqueField = \Mockery::mock(BaseField::class);
+        $mockUniqueField = Mockery::mock(BaseField::class);
         $mockUniqueField->shouldReceive('name')
             ->andReturn($field);
         $mockUniqueField->shouldReceive('unique')
@@ -161,10 +165,13 @@ class SchemaValidatorTest extends TestCase
         $violation = array_pop($violations);
 
         $this->assertInstanceOf(ViolationInterface::class, $violation);
-        $this->assertEquals(new FieldViolation(2, $field, $record[$field], "id: value is not unique."), $violation);
+        $this->assertEquals(
+            new FieldViolation(2, $field, $record[$field], 'id: value is not unique.'),
+            $violation
+        );
     }
 
-    public function testUnknownFieldException()
+    public function testUnknownFieldException(): void
     {
         $this->expectException(UnknownFieldException::class);
         $this->expectExceptionMessage('Unknown field foo.');
@@ -173,7 +180,7 @@ class SchemaValidatorTest extends TestCase
 
         $this->mockTableSchema->shouldReceive('field')
             ->with($field)
-            ->andThrow(\Exception::class);
+            ->andThrow(Exception::class);
 
         $this->validator->validateField(123, $field, 234);
     }
@@ -183,8 +190,8 @@ class SchemaValidatorTest extends TestCase
         $value,
         MockInterface $mockTableSchema,
         array $validationErrors
-    ) {
-        $mockSchemaField = \Mockery::mock(BaseField::class);
+    ): void {
+        $mockSchemaField = Mockery::mock(BaseField::class);
         $mockSchemaField->shouldReceive('validateValue')
             ->with($value)
             ->andReturn($validationErrors);
@@ -198,7 +205,7 @@ class SchemaValidatorTest extends TestCase
         MockInterface $mockTableSchema,
         array $validationErrors,
         array $fields = []
-    ) {
+    ): void {
         $mockTableSchema->shouldReceive('validateRow')
             ->with($record)
             ->andReturn($validationErrors);

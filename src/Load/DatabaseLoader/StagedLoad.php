@@ -5,14 +5,17 @@
  * Time: 3:29 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\DatabaseLoaderException;
+use PDO;
 
 class StagedLoad
 {
     /**
-     * @var \PDO
+     * @var PDO
      */
     private $pdo;
 
@@ -38,7 +41,7 @@ class StagedLoad
      */
     private $database;
 
-    public function __construct(\PDO $pdo, string $table, array $columns, string $database = null)
+    public function __construct(PDO $pdo, string $table, array $columns, string $database = null)
     {
         $this->pdo = $pdo;
         $this->table = $table;
@@ -66,6 +69,9 @@ class StagedLoad
         return $this->stageTable;
     }
 
+    /**
+     * @throws DatabaseLoaderException
+     */
     public function discard(): void
     {
         if (!$this->hasBegun) {
@@ -78,6 +84,9 @@ class StagedLoad
         $this->hasBegun = false;
     }
 
+    /**
+     * @throws DatabaseLoaderException
+     */
     public function commit(): void
     {
         if (!$this->hasBegun) {
@@ -134,7 +143,7 @@ SQL
     {
         $tableRefTicked = "`{$table}`";
 
-        if (strlen($database)) {
+        if ($database !== null && $database !== '') {
             $tableRefTicked = "`{$database}`." . $tableRefTicked;
         }
 

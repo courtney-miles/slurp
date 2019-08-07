@@ -5,13 +5,15 @@
  * Time: 11:34 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\Event\RecordValidatedEvent;
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\InnerPipeline\StageObserverInterface;
 use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -43,7 +45,7 @@ class ValidationStageTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockValidator = \Mockery::mock(ValidatorInterface::class);
+        $this->mockValidator = Mockery::mock(ValidatorInterface::class);
         $this->mockValidator->shouldReceive('validateRecord')
             ->withAnyArgs()
             ->andReturn([])
@@ -52,7 +54,7 @@ class ValidationStageTest extends TestCase
         $this->stage = new ValidationStage($this->mockValidator);
     }
 
-    public function testValidateOnInvoke()
+    public function testValidateOnInvoke(): void
     {
         $recordId = 123;
         $record = ['bar'];
@@ -69,7 +71,7 @@ class ValidationStageTest extends TestCase
         $this->assertSame($mockPayload, ($this->stage)($mockPayload));
     }
 
-    public function testDoNotValidateFiltered()
+    public function testDoNotValidateFiltered(): void
     {
         $mockPayload = $this->createMockPayload(123, ['bar']);
         $mockPayload->shouldReceive('isFiltered')
@@ -83,22 +85,22 @@ class ValidationStageTest extends TestCase
         $this->assertSame($mockPayload, ($this->stage)($mockPayload));
     }
 
-    public function testDispatchEventOnValidatedRecord()
+    public function testDispatchEventOnValidatedRecord(): void
     {
         $mockPayload = $this->createMockPayload(213, []);
-        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(RecordValidatedEvent::NAME, \Mockery::type(RecordValidatedEvent::class))
+            ->with(RecordValidatedEvent::NAME, Mockery::type(RecordValidatedEvent::class))
             ->once();
 
         $this->stage->setEventDispatcher($mockDispatcher);
         ($this->stage)($mockPayload);
     }
 
-    public function testDoNotDispatchEventWhenFilteredAndNotValidated()
+    public function testDoNotDispatchEventWhenFilteredAndNotValidated(): void
     {
         $mockPayload = $this->createMockPayload(213, [], true);
-        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')->never();
 
         $this->stage->setEventDispatcher($mockDispatcher);
@@ -114,7 +116,7 @@ class ValidationStageTest extends TestCase
      */
     public function createMockPayload(int $recordId, array $record, bool $isFiltered = false)
     {
-        $mockPayload = \Mockery::mock(SlurpPayload::class);
+        $mockPayload = Mockery::mock(SlurpPayload::class);
         $mockPayload->shouldReceive('getRecordId')
             ->andReturn($recordId);
         $mockPayload->shouldReceive('getRecord')
@@ -129,7 +131,7 @@ class ValidationStageTest extends TestCase
         return $mockPayload;
     }
 
-    public function stubViolations(MockInterface $mockValidator, int $recordId, array $record, array $violations)
+    public function stubViolations(MockInterface $mockValidator, int $recordId, array $record, array $violations): void
     {
         $mockValidator->shouldReceive('validateRecord')
             ->with($recordId, $record)

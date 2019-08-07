@@ -5,6 +5,8 @@
  * Time: 11:02 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Transform;
 
 interface TransformerInterface

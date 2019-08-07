@@ -5,6 +5,8 @@
  * Time: 10:14 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SlurpTransformer;
 
 use MilesAsylum\Slurp\Transform\SlurpTransformer\AbstractChangeTransformer;
@@ -24,14 +26,14 @@ class TransformerLoaderTest extends TestCase
         $this->transformerLoader = new TransformerLoader();
     }
 
-    public function testLoadTransformer()
+    public function testLoadTransformer(): void
     {
         $transformer = $this->transformerLoader->loadTransformer(new Scratch());
         $this->assertInstanceOf(ScratchTransformer::class, $transformer);
         $this->assertSame(
             $transformer,
             $this->transformerLoader->loadTransformer(new Scratch()),
-            "The loaded transformer did not return the same instance of the transformer."
+            'The loaded transformer did not return the same instance of the transformer.'
         );
     }
 }
