@@ -5,11 +5,14 @@
  * Time: 6:32 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Extract\CsvFileExtractor;
 
+use IteratorIterator;
 use Traversable;
 
-class MapIterator extends \IteratorIterator
+class MapIterator extends IteratorIterator
 {
     /**
      * @var array

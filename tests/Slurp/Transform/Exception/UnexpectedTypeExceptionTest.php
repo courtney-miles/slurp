@@ -5,10 +5,13 @@
  * Time: 9:12 AM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Transform\Exception;
 
 use MilesAsylum\Slurp\Transform\Exception\UnexpectedTypeException;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class UnexpectedTypeExceptionTest extends TestCase
 {
@@ -18,19 +21,19 @@ class UnexpectedTypeExceptionTest extends TestCase
      * @param $expectedType
      * @param $expectedMessage
      */
-    public function testConstructMessage($value, $expectedType, $expectedMessage)
+    public function testConstructMessage($value, $expectedType, $expectedMessage): void
     {
         $e = UnexpectedTypeException::createUnexpected($value, $expectedType);
 
         $this->assertSame($expectedMessage, $e->getMessage());
     }
 
-    public function getConstructorArgs()
+    public function getConstructorArgs(): array
     {
         return [
-            ['foo', \stdClass::class, 'Expected argument of type "stdClass", "string" given'],
-            [['foo'], \stdClass::class, 'Expected argument of type "stdClass", "array" given'],
-            [new \stdClass(), \stdClass::class, 'Expected argument of type "stdClass", "stdClass" given'],
+            ['foo', stdClass::class, 'Expected argument of type "stdClass", "string" given'],
+            [['foo'], stdClass::class, 'Expected argument of type "stdClass", "array" given'],
+            [new stdClass(), stdClass::class, 'Expected argument of type "stdClass", "stdClass" given'],
         ];
     }
 }

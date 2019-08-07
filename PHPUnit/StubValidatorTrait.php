@@ -5,6 +5,8 @@
  * Time: 6:51 AM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\PHPUnit;
 
 use Mockery\MockInterface;

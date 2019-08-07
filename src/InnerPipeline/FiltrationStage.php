@@ -5,6 +5,8 @@
  * Time: 8:46 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\Event\RecordFilteredEvent;

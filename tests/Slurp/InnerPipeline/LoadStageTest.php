@@ -5,6 +5,8 @@
  * Time: 10:43 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\Event\LoadAbortedEvent;
@@ -12,6 +14,7 @@ use MilesAsylum\Slurp\Event\RecordLoadedEvent;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\InnerPipeline\LoadStage;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -31,11 +34,11 @@ class LoadStageTest extends TestCase
      */
     protected $mockLoader;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
-        $this->mockLoader = \Mockery::mock(LoaderInterface::class);
+        $this->mockLoader = Mockery::mock(LoaderInterface::class);
         $this->mockLoader->shouldReceive('loadValues')->byDefault();
         $this->mockLoader->shouldReceive('abort')->byDefault();
         $this->mockLoader->shouldReceive('hasBegun')
@@ -45,7 +48,7 @@ class LoadStageTest extends TestCase
         $this->stage = new LoadStage($this->mockLoader);
     }
 
-    public function testMarkLoaderToBegin()
+    public function testMarkLoaderToBegin(): void
     {
         $mockPayload = $this->createMockPayload([], false);
 
@@ -57,7 +60,7 @@ class LoadStageTest extends TestCase
         $this->assertSame($mockPayload, ($this->stage)($mockPayload));
     }
 
-    public function testLoadValuesWhenInvoked()
+    public function testLoadValuesWhenInvoked(): void
     {
         $values = ['foo'];
 
@@ -70,7 +73,7 @@ class LoadStageTest extends TestCase
         $this->assertSame($mockPayload, ($this->stage)($mockPayload));
     }
 
-    public function testAbortOnViolation()
+    public function testAbortOnViolation(): void
     {
         $mockViolatedPayload = $this->createMockPayload([], true);
 
@@ -85,7 +88,7 @@ class LoadStageTest extends TestCase
         $this->assertSame($mockViolatedPayload, ($this->stage)($mockViolatedPayload));
     }
 
-    public function testDoNotReBeginWhenPreviouslyAborted()
+    public function testDoNotReBeginWhenPreviouslyAborted(): void
     {
         $mockViolatedPayload = $this->createMockPayload([], true);
         $mockPayload = $this->createMockPayload([], false);
@@ -104,7 +107,7 @@ class LoadStageTest extends TestCase
     /**
      * @depends testAbortOnViolation
      */
-    public function testDoNotLoadWhenPreviouslyAborted()
+    public function testDoNotLoadWhenPreviouslyAborted(): void
     {
         $mockViolatedPayload = $this->createMockPayload([], true);
         $mockPayload = $this->createMockPayload([], false);
@@ -119,28 +122,28 @@ class LoadStageTest extends TestCase
         ($this->stage)($mockPayload);
     }
 
-    public function testDispatchEventOnLoad()
+    public function testDispatchEventOnLoad(): void
     {
         $mockPayload = $this->createMockPayload(['foo'], false);
-        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(RecordLoadedEvent::NAME, \Mockery::type(RecordLoadedEvent::class))
+            ->with(RecordLoadedEvent::NAME, Mockery::type(RecordLoadedEvent::class))
             ->once();
         $this->stage->setEventDispatcher($mockDispatcher);
 
         ($this->stage)($mockPayload);
     }
 
-    public function testDispatchLoadAbortedEventOnInvalidRecord()
+    public function testDispatchLoadAbortedEventOnInvalidRecord(): void
     {
         /** @var LoadAbortedEvent $event */
         $event = null;
         $mockPayload = $this->createMockPayload(['foo'], true);
-        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
             ->with(
                 LoadAbortedEvent::NAME,
-                \Mockery::on(
+                Mockery::on(
                     function ($arg) use (&$event) {
                         if (!$arg instanceof LoadAbortedEvent) {
                             return false;
@@ -166,7 +169,7 @@ class LoadStageTest extends TestCase
     protected function createMockPayload(array $values, bool $hasViolations)
     {
         /** @var SlurpPayload|MockInterface $mockPayload */
-        $mockPayload = \Mockery::mock(SlurpPayload::class);
+        $mockPayload = Mockery::mock(SlurpPayload::class);
         $mockPayload->shouldReceive('getRecord')
             ->andReturn($values);
         $mockPayload->shouldReceive('hasViolations')

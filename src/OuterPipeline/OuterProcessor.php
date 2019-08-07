@@ -5,6 +5,8 @@
  * Time: 9:45 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\OuterPipeline;
 
 use League\Pipeline\InterruptibleProcessor;
@@ -15,7 +17,7 @@ class OuterProcessor extends InterruptibleProcessor
     public function __construct()
     {
         parent::__construct(
-            function (Slurp $slurp) {
+            static function (Slurp $slurp) {
                 return !$slurp->isAborted();
             }
         );

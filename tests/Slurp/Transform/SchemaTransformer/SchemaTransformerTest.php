@@ -5,15 +5,19 @@
  * Time: 8:52 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SchemaTransformer;
 
 use Carbon\Carbon;
+use Exception;
 use frictionlessdata\tableschema\Fields\DateField;
 use frictionlessdata\tableschema\Fields\DatetimeField;
 use frictionlessdata\tableschema\Fields\TimeField;
 use frictionlessdata\tableschema\Schema;
 use MilesAsylum\Slurp\Transform\Exception\TransformationException;
 use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -32,20 +36,20 @@ class SchemaTransformerTest extends TestCase
      */
     protected $schemaTransformer;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->mockSchema = \Mockery::mock(Schema::class);
+        $this->mockSchema = Mockery::mock(Schema::class);
         $this->schemaTransformer = new SchemaTransformer($this->mockSchema);
     }
 
-    public function testTransformField()
+    public function testTransformField(): void
     {
         $this->markTestIncomplete(
             'Unable to test transforming a field because BaseField::castValue() is marked as final.'
         );
     }
 
-    public function testTransformRecord()
+    public function testTransformRecord(): void
     {
         $record = ['foo' => 123];
         $castRecord = ['foo' => 321];
@@ -64,7 +68,7 @@ class SchemaTransformerTest extends TestCase
      * @param mixed $scalarValue
      * @throws TransformationException
      */
-    public function testConvertComplexTypeBackToScalar(string $fieldClass, $complexValue, $scalarValue)
+    public function testConvertComplexTypeBackToScalar(string $fieldClass, $complexValue, $scalarValue): void
     {
         $fieldName = 'foo';
 
@@ -73,7 +77,7 @@ class SchemaTransformerTest extends TestCase
             ->andReturn([$fieldName => $complexValue]);
         $this->mockSchema->shouldReceive('field')
             ->with($fieldName)
-            ->andReturn(\Mockery::mock($fieldClass));
+            ->andReturn(Mockery::mock($fieldClass));
 
         $this->assertSame(
             [$fieldName => $scalarValue],
@@ -81,7 +85,7 @@ class SchemaTransformerTest extends TestCase
         );
     }
 
-    public function getComplexTypeConversionTestData()
+    public function getComplexTypeConversionTestData(): array
     {
         return [
             [TimeField::class, [12, 23, 34], '12:23:34'],
@@ -93,7 +97,7 @@ class SchemaTransformerTest extends TestCase
         ];
     }
 
-    public function testExceptionFromCastWhenTransformingRecord()
+    public function testExceptionFromCastWhenTransformingRecord(): void
     {
         $msg = 'fail';
         $this->expectException(TransformationException::class);
@@ -102,7 +106,7 @@ class SchemaTransformerTest extends TestCase
         $record = ['foo' => 123];
         $this->mockSchema->shouldReceive('castRow')
             ->with($record)
-            ->andThrow(\Exception::class, $msg);
+            ->andThrow(Exception::class, $msg);
 
         $this->schemaTransformer->transformRecord($record);
     }

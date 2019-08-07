@@ -5,9 +5,12 @@
  * Time: 10:18 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Transform\SchemaTransformer;
 
 use Carbon\Carbon;
+use Exception;
 use frictionlessdata\tableschema\Fields\BaseField;
 use frictionlessdata\tableschema\Fields\DateField;
 use frictionlessdata\tableschema\Fields\DatetimeField;
@@ -16,6 +19,7 @@ use frictionlessdata\tableschema\Schema;
 use MilesAsylum\Slurp\Exception\UnknownFieldException;
 use MilesAsylum\Slurp\Transform\Exception\TransformationException;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
+use Throwable;
 
 class SchemaTransformer implements TransformerInterface
 {
@@ -39,13 +43,13 @@ class SchemaTransformer implements TransformerInterface
     {
         try {
             $schemaField = $this->tableSchema->field($field);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new UnknownFieldException($field, "Unknown field $field.");
         }
 
         try {
             $value = $schemaField->castValue($value);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new TransformationException(
                 'An error occurred transforming a field:' . $e->getMessage(),
                 0,
@@ -65,7 +69,7 @@ class SchemaTransformer implements TransformerInterface
     {
         try {
             $record = $this->tableSchema->castRow($record);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new TransformationException(
                 'An error occurred transforming a record: ' . $e->getMessage(),
                 0,
@@ -94,7 +98,6 @@ class SchemaTransformer implements TransformerInterface
                     $record[$fieldName] = $value->toDateTimeString();
                     break;
             }
-
         }
 
         return $record;
@@ -102,13 +105,13 @@ class SchemaTransformer implements TransformerInterface
 
     /**
      * @param $name
-     * @return \frictionlessdata\tableschema\Fields\BaseField|null
+     * @return BaseField|null
      */
     protected function getField($name): ?BaseField
     {
         try {
             $schemaField = $this->tableSchema->field($name);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $schemaField = null;
         }
 

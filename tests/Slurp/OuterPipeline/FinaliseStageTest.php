@@ -5,6 +5,8 @@
  * Time: 12:15 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\OuterPipeline;
 
 use MilesAsylum\Slurp\Event\ExtractionFinalisationBeginEvent;
@@ -12,6 +14,7 @@ use MilesAsylum\Slurp\Event\ExtractionFinalisationCompleteEvent;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -45,7 +48,7 @@ class FinaliseStageTest extends TestCase
         $this->stage = new FinaliseStage($this->mockLoader);
     }
 
-    public function testFinaliseLoadOnInvoke()
+    public function testFinaliseLoadOnInvoke(): void
     {
         $this->mockLoader->shouldReceive('finalise')
             ->once();
@@ -53,7 +56,7 @@ class FinaliseStageTest extends TestCase
         $this->assertSame($this->mockSlurp, ($this->stage)($this->mockSlurp));
     }
 
-    public function testsDoNotFinaliseIfNotBegun()
+    public function testsDoNotFinaliseIfNotBegun(): void
     {
         $this->mockLoader->shouldReceive('hasBegun')
             ->andReturn(false);
@@ -63,7 +66,7 @@ class FinaliseStageTest extends TestCase
         ($this->stage)($this->mockSlurp);
     }
 
-    public function testsDoNotFinaliseIfLoadAborted()
+    public function testsDoNotFinaliseIfLoadAborted(): void
     {
         $this->mockLoader->shouldReceive('isAborted')
             ->andReturn(true);
@@ -73,7 +76,7 @@ class FinaliseStageTest extends TestCase
         ($this->stage)($this->mockSlurp);
     }
 
-    public function testsDoNotFinaliseIfSlurpAborted()
+    public function testsDoNotFinaliseIfSlurpAborted(): void
     {
         $this->mockSlurp->shouldReceive('isAborted')
             ->andReturn(true);
@@ -83,18 +86,18 @@ class FinaliseStageTest extends TestCase
         ($this->stage)($this->mockSlurp);
     }
 
-    public function testFinalisationEventsDispatched()
+    public function testFinalisationEventsDispatched(): void
     {
-        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
             ->with(
                 ExtractionFinalisationBeginEvent::NAME,
-                \Mockery::type(ExtractionFinalisationBeginEvent::class)
+                Mockery::type(ExtractionFinalisationBeginEvent::class)
             )->once();
         $mockDispatcher->shouldReceive('dispatch')
             ->with(
                 ExtractionFinalisationCompleteEvent::NAME,
-                \Mockery::type(ExtractionFinalisationCompleteEvent::class)
+                Mockery::type(ExtractionFinalisationCompleteEvent::class)
             )->once();
 
         $this->stage->setEventDispatcher($mockDispatcher);
@@ -107,7 +110,7 @@ class FinaliseStageTest extends TestCase
      */
     protected function createMockLoader(): MockInterface
     {
-        $mockLoader = \Mockery::mock(LoaderInterface::class);
+        $mockLoader = Mockery::mock(LoaderInterface::class);
         $mockLoader->shouldReceive('hasBegun')
             ->andReturn(true)
             ->byDefault();
@@ -125,7 +128,7 @@ class FinaliseStageTest extends TestCase
      */
     protected function createMockSlurp(): MockInterface
     {
-        $mockSlurp = \Mockery::mock(Slurp::class);
+        $mockSlurp = Mockery::mock(Slurp::class);
         $mockSlurp->shouldReceive('isAborted')
             ->andReturn(false)
             ->byDefault();

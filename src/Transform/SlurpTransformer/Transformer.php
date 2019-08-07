@@ -5,6 +5,8 @@
  * Time: 10:27 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
 use MilesAsylum\Slurp\Exception\UnknownFieldException;

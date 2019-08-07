@@ -5,10 +5,13 @@
  * Time: 6:37 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Extract\CsvFileExtractor;
 
 use MilesAsylum\Slurp\Extract\CsvFileExtractor\CsvFileExtractor;
 use MilesAsylum\Slurp\Extract\CsvFileExtractor\CsvMultiFileExtractor;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
@@ -16,11 +19,11 @@ class CsvMultiFileExtractorTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
-    public function testSetDelimiter()
+    public function testSetDelimiter(): void
     {
         $delimiter = '!';
-        $mockCsvFileExtractor1 = \Mockery::mock(CsvFileExtractor::class);
-        $mockCsvFileExtractor2 = \Mockery::mock(CsvFileExtractor::class);
+        $mockCsvFileExtractor1 = Mockery::mock(CsvFileExtractor::class);
+        $mockCsvFileExtractor2 = Mockery::mock(CsvFileExtractor::class);
 
         $mockCsvFileExtractor1->shouldReceive('setDelimiter')
             ->with($delimiter)
@@ -33,11 +36,11 @@ class CsvMultiFileExtractorTest extends TestCase
         $x->setDelimiter($delimiter);
     }
 
-    public function testSetEnclosure()
+    public function testSetEnclosure(): void
     {
         $enclosure = '!';
-        $mockCsvFileExtractor1 = \Mockery::mock(CsvFileExtractor::class);
-        $mockCsvFileExtractor2 = \Mockery::mock(CsvFileExtractor::class);
+        $mockCsvFileExtractor1 = Mockery::mock(CsvFileExtractor::class);
+        $mockCsvFileExtractor2 = Mockery::mock(CsvFileExtractor::class);
 
         $mockCsvFileExtractor1->shouldReceive('setEnclosure')
             ->with($enclosure)
@@ -50,11 +53,11 @@ class CsvMultiFileExtractorTest extends TestCase
         $x->setEnclosure($enclosure);
     }
 
-    public function testSetEscape()
+    public function testSetEscape(): void
     {
         $escape = '!';
-        $mockCsvFileExtractor1 = \Mockery::mock(CsvFileExtractor::class);
-        $mockCsvFileExtractor2 = \Mockery::mock(CsvFileExtractor::class);
+        $mockCsvFileExtractor1 = Mockery::mock(CsvFileExtractor::class);
+        $mockCsvFileExtractor2 = Mockery::mock(CsvFileExtractor::class);
 
         $mockCsvFileExtractor1->shouldReceive('setEscape')
             ->with($escape)
@@ -67,10 +70,10 @@ class CsvMultiFileExtractorTest extends TestCase
         $x->setEscape($escape);
     }
 
-    public function testLoadHeadersFromFile()
+    public function testLoadHeadersFromFile(): void
     {
-        $mockCsvFileExtractor1 = \Mockery::mock(CsvFileExtractor::class);
-        $mockCsvFileExtractor2 = \Mockery::mock(CsvFileExtractor::class);
+        $mockCsvFileExtractor1 = Mockery::mock(CsvFileExtractor::class);
+        $mockCsvFileExtractor2 = Mockery::mock(CsvFileExtractor::class);
 
         $mockCsvFileExtractor1->shouldReceive('loadHeadersFromFile')
             ->once();
@@ -81,11 +84,11 @@ class CsvMultiFileExtractorTest extends TestCase
         $x->loadHeadersFromFile();
     }
 
-    public function testSetHeaders()
+    public function testSetHeaders(): void
     {
         $headers = ['foo', 'bar'];
-        $mockCsvFileExtractor1 = \Mockery::mock(CsvFileExtractor::class);
-        $mockCsvFileExtractor2 = \Mockery::mock(CsvFileExtractor::class);
+        $mockCsvFileExtractor1 = Mockery::mock(CsvFileExtractor::class);
+        $mockCsvFileExtractor2 = Mockery::mock(CsvFileExtractor::class);
 
         $mockCsvFileExtractor1->shouldReceive('setHeaders')
             ->with($headers)

@@ -5,6 +5,8 @@
  * Time: 7:24 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Event;
 
 use MilesAsylum\Slurp\SlurpPayload;

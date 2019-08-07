@@ -5,9 +5,12 @@
  * Time: 9:03 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Filter\ContraintFiltration;
 
 use MilesAsylum\Slurp\Filter\ConstraintFiltration\ConstraintFilter;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -28,17 +31,17 @@ class ConstraintFilterTest extends TestCase
      */
     protected $mockValidator;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->mockValidator = \Mockery::mock(ValidatorInterface::class);
+        $this->mockValidator = Mockery::mock(ValidatorInterface::class);
         $this->filter = new ConstraintFilter($this->mockValidator);
     }
 
-    public function testDoFilterRecord()
+    public function testDoFilterRecord(): void
     {
         $record = ['foo' => 123, 'bar' => 234];
 
-        $mockConstraint = \Mockery::mock(Constraint::class);
+        $mockConstraint = Mockery::mock(Constraint::class);
         $this->mockValidator->shouldReceive('validate')
             ->with(234, $mockConstraint)
             ->andReturn([]); // ... a empty array to satisfy the test.
@@ -47,11 +50,11 @@ class ConstraintFilterTest extends TestCase
         $this->assertTrue($this->filter->filterRecord($record));
     }
 
-    public function testDoNotFilterRecord()
+    public function testDoNotFilterRecord(): void
     {
         $record = ['foo' => 123, 'bar' => 234];
 
-        $mockConstraint = \Mockery::mock(Constraint::class);
+        $mockConstraint = Mockery::mock(Constraint::class);
         $this->mockValidator->shouldReceive('validate')
             ->with(234, $mockConstraint)
             ->andReturn([true]); // ... any non-empty array to satisfy the test.

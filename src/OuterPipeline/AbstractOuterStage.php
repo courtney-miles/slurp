@@ -5,6 +5,8 @@
  * Time: 8:41 AM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\OuterPipeline;
 
 use Symfony\Component\EventDispatcher\Event;

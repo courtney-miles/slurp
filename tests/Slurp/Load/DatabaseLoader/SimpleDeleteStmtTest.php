@@ -5,11 +5,15 @@
  * Time: 7:01 AM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\DatabaseLoader\SimpleDeleteStmt;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
+use PDO;
 use PHPUnit\Framework\TestCase;
 
 class SimpleDeleteStmtTest extends TestCase
@@ -17,7 +21,7 @@ class SimpleDeleteStmtTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     /**
-     * @var \PDO|MockInterface
+     * @var PDO|MockInterface
      */
     protected $mockPdo;
 
@@ -26,12 +30,12 @@ class SimpleDeleteStmtTest extends TestCase
      */
     protected $mockDelStmt;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
-        $this->mockPdo = \Mockery::mock(\PDO::class);
-        $this->mockDelStmt = \Mockery::mock(\PDOStatement::class);
+        $this->mockPdo = Mockery::mock(PDO::class);
+        $this->mockDelStmt = Mockery::mock(\PDOStatement::class);
         $this->mockDelStmt->shouldReceive('execute')
             ->byDefault();
         $this->mockDelStmt->shouldReceive('rowCount')
@@ -42,7 +46,7 @@ class SimpleDeleteStmtTest extends TestCase
             ->byDefault();
     }
 
-    public function testExecuteWithoutConditions()
+    public function testExecuteWithoutConditions(): void
     {
         $table = 'my_tbl';
 
@@ -62,7 +66,7 @@ SQL;
         $deleteStmt->execute();
     }
 
-    public function testExecuteWithDatabase()
+    public function testExecuteWithDatabase(): void
     {
         $database = 'my_db';
         $table = 'my_tbl';
@@ -79,7 +83,7 @@ SQL;
         (new SimpleDeleteStmt($this->mockPdo, $table, [], $database))->execute();
     }
 
-    public function testExecuteWithConditions()
+    public function testExecuteWithConditions(): void
     {
         $table = 'my_tbl';
         $conditions = ['col 1' => 123, 'col2' => 'abc'];
@@ -99,7 +103,7 @@ SQL;
         (new SimpleDeleteStmt($this->mockPdo, $table, $conditions))->execute();
     }
 
-    public function testExecuteReturnsAffectedRowCount()
+    public function testExecuteReturnsAffectedRowCount(): void
     {
         $affectedRows = 3;
 

@@ -5,17 +5,20 @@
  * Time: 7:37 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SlurpTransformer;
 
 use MilesAsylum\Slurp\Transform\Exception\UnexpectedTypeException;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\CallbackChange;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\CallbackTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class CallbackTransformerTest extends TestCase
 {
-    public function testTransform()
+    public function testTransform(): void
     {
         $transformer = new CallbackTransformer();
 
@@ -23,19 +26,19 @@ class CallbackTransformerTest extends TestCase
             'foo',
             $transformer->transform(
                 'foo',
-                new CallbackChange(function ($value) {
+                new CallbackChange(static function ($value) {
                     return $value;
                 })
             )
         );
     }
 
-    public function testExceptionOnWrongType()
+    public function testExceptionOnWrongType(): void
     {
         $this->expectException(UnexpectedTypeException::class);
 
         $transformer = new CallbackTransformer();
 
-        $transformer->transform('foo', \Mockery::mock(Change::class));
+        $transformer->transform('foo', Mockery::mock(Change::class));
     }
 }

@@ -5,8 +5,9 @@
  * Time: 10:38 PM
  */
 
-namespace MilesAsylum\Slurp\InnerPipeline;
+declare(strict_types=1);
 
+namespace MilesAsylum\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\Event\LoadAbortedEvent;
 use MilesAsylum\Slurp\Event\RecordLoadedEvent;

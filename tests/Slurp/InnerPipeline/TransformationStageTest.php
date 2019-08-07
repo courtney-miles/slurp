@@ -5,12 +5,15 @@
  * Time: 10:50 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\Event\RecordTransformedEvent;
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\InnerPipeline\TransformationStage;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -37,7 +40,7 @@ class TransformationStageTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockTransformer = \Mockery::mock(TransformerInterface::class);
+        $this->mockTransformer = Mockery::mock(TransformerInterface::class);
         $this->mockTransformer->shouldReceive('transformRecord')
             ->byDefault();
 
@@ -46,7 +49,7 @@ class TransformationStageTest extends TestCase
         );
     }
 
-    public function testReplaceWithTransformedValue()
+    public function testReplaceWithTransformedValue(): void
     {
         $field = 'foo';
         $value = 123;
@@ -61,7 +64,7 @@ class TransformationStageTest extends TestCase
         $this->assertSame($transValue, $mockPayload->getFieldValue($field));
     }
 
-    public function testDoNotTransformWhereViolation()
+    public function testDoNotTransformWhereViolation(): void
     {
         $field = 'foo';
         $value = 123;
@@ -75,12 +78,12 @@ class TransformationStageTest extends TestCase
         $this->assertSame($value, $mockPayload->getFieldValue($field));
     }
 
-    public function testDispatchEventOnTransformRecord()
+    public function testDispatchEventOnTransformRecord(): void
     {
         $mockPayload = $this->createMockPayload('foo', 123, false);
-        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(RecordTransformedEvent::NAME, \Mockery::type(RecordTransformedEvent::class))
+            ->with(RecordTransformedEvent::NAME, Mockery::type(RecordTransformedEvent::class))
             ->once();
 
         $this->stage->setEventDispatcher($mockDispatcher);
@@ -88,10 +91,10 @@ class TransformationStageTest extends TestCase
         ($this->stage)($mockPayload);
     }
 
-    public function testDoNotDispatchEventOnNotTransformRecord()
+    public function testDoNotDispatchEventOnNotTransformRecord(): void
     {
         $mockPayload = $this->createMockPayload('foo', 123, true);
-        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')->never();
 
         $this->stage->setEventDispatcher($mockDispatcher);
@@ -108,7 +111,7 @@ class TransformationStageTest extends TestCase
     protected function createMockPayload(string $field, $value, bool $hasViolation): MockInterface
     {
         /** @var SlurpPayload|MockInterface $mockPayload */
-        $mockPayload = \Mockery::mock(SlurpPayload::class)->makePartial();
+        $mockPayload = Mockery::mock(SlurpPayload::class)->makePartial();
         $mockPayload->setFieldValue($field, $value);
         $mockPayload->shouldReceive('hasViolations')
             ->andReturn($hasViolation);

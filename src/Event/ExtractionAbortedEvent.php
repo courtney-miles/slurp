@@ -5,8 +5,9 @@
  * Time: 10:38 PM
  */
 
-namespace MilesAsylum\Slurp\Event;
+declare(strict_types=1);
 
+namespace MilesAsylum\Slurp\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 

@@ -5,6 +5,8 @@
  * Time: 9:13 AM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp;
 
 use frictionlessdata\tableschema\Schema;
@@ -31,7 +33,9 @@ use MilesAsylum\Slurp\Transform\TransformerInterface;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
+use PDO;
 use Symfony\Component\Validator\Validation;
+use Throwable;
 
 class SlurpFactory
 {
@@ -69,7 +73,7 @@ class SlurpFactory
     {
         try {
             return new Schema($path);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new FactoryException(
                 'Error creating table schema from file path: ' . $e->getMessage(),
                 0,
@@ -87,7 +91,7 @@ class SlurpFactory
     {
         try {
             return new Schema($arr);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new FactoryException(
                 'Error creating table schema from array: ' . $e->getMessage(),
                 0,
@@ -96,14 +100,14 @@ class SlurpFactory
         }
     }
 
-    public function createConstraintValidator()
+    public function createConstraintValidator(): ConstraintValidator
     {
         return new ConstraintValidator(
             Validation::createValidator()
         );
     }
 
-    public function createConstraintFilter()
+    public function createConstraintFilter(): ConstraintFilter
     {
         return new ConstraintFilter(
             Validation::createValidator()
@@ -115,7 +119,7 @@ class SlurpFactory
         return new SchemaValidator($tableSchema);
     }
 
-    public function createTransformer()
+    public function createTransformer(): Transformer
     {
         return Transformer::createTransformer();
     }
@@ -126,7 +130,7 @@ class SlurpFactory
     }
 
     /**
-     * @param \PDO $pdo
+     * @param PDO $pdo
      * @param string $table
      * @param array $fieldMappings Array key is the destination column and the array value is the source column.
      * @param int $batchSize
@@ -135,7 +139,7 @@ class SlurpFactory
      * @return DatabaseLoader
      */
     public function createDatabaseLoader(
-        \PDO $pdo,
+        PDO $pdo,
         string $table,
         array $fieldMappings,
         int $batchSize = 100,
@@ -175,7 +179,7 @@ class SlurpFactory
     }
 
     public function createSimpleDeleteStmt(
-        \PDO $pdo,
+        PDO $pdo,
         string $table,
         array $conditions = [],
         string $database = null

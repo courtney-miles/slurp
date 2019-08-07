@@ -5,6 +5,8 @@
  * Time: 10:15 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Extract\CsvFileExtractor;
 
 use League\Csv\Reader;
@@ -39,7 +41,7 @@ class CsvFileExtractorTest extends TestCase
         $this->csvExtractor = new CsvFileExtractor($this->mockReader);
     }
 
-    public function testSetDelimiter()
+    public function testSetDelimiter(): void
     {
         $delimiter = '!';
         $this->mockReader->shouldReceive('setDelimiter')
@@ -49,7 +51,7 @@ class CsvFileExtractorTest extends TestCase
         $this->csvExtractor->setDelimiter($delimiter);
     }
 
-    public function testSetEnclosure()
+    public function testSetEnclosure(): void
     {
         $enclosure = '!';
         $this->mockReader->shouldReceive('setEnclosure')
@@ -59,7 +61,7 @@ class CsvFileExtractorTest extends TestCase
         $this->csvExtractor->setEnclosure($enclosure);
     }
 
-    public function testSetEscape()
+    public function testSetEscape(): void
     {
         $escape = '!';
         $this->mockReader->shouldReceive('setEscape')
@@ -69,7 +71,7 @@ class CsvFileExtractorTest extends TestCase
         $this->csvExtractor->setEscape($escape);
     }
 
-    public function testNoHeaders()
+    public function testNoHeaders(): void
     {
         $csvRows = [[123, 234]];
         $this->setUpMockReader($this->mockReader, $csvRows);
@@ -80,7 +82,7 @@ class CsvFileExtractorTest extends TestCase
         }
     }
 
-    public function testUseHeadersFromFile()
+    public function testUseHeadersFromFile(): void
     {
         $csvRows = [
             ['col_1', 'col_2'],
@@ -95,7 +97,7 @@ class CsvFileExtractorTest extends TestCase
         $this->assertSame(array_combine($csvRows[0], $csvRows[1]), reset($records));
     }
 
-    public function testSetHeaders()
+    public function testSetHeaders(): void
     {
         $headers = ['col_1', 'col_2'];
         $csvRows = [[123, 234]];
@@ -108,7 +110,7 @@ class CsvFileExtractorTest extends TestCase
         }
     }
 
-    public function testExceptionOnInconsistentNumberOfRowValuesWithoutHeaders()
+    public function testExceptionOnInconsistentNumberOfRowValuesWithoutHeaders(): void
     {
         $this->expectException(ValueCountMismatchException::class);
 
@@ -120,7 +122,7 @@ class CsvFileExtractorTest extends TestCase
         }
     }
 
-    public function testExceptionOnInconsistentNumberOfRowValuesWithHeaders()
+    public function testExceptionOnInconsistentNumberOfRowValuesWithHeaders(): void
     {
         $this->expectException(ValueCountMismatchException::class);
 
@@ -133,7 +135,7 @@ class CsvFileExtractorTest extends TestCase
         }
     }
 
-    public function setUpMockReader(MockInterface $mockReader, array $rows)
+    public function setUpMockReader(MockInterface $mockReader, array $rows): void
     {
         $mockReader->shouldReceive('fetchOne')
             ->withNoArgs()

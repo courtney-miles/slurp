@@ -5,6 +5,8 @@
  * Time: 8:42 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Extract\DatabaseExtractor;
 
 use MilesAsylum\Slurp\Extract\ExtractorInterface;
@@ -34,14 +36,7 @@ class DatabaseExtractor implements ExtractorInterface
         $this->queryParams = $queryParams;
     }
 
-    /**
-     * Retrieve an external iterator
-     * @link https://php.net/manual/en/iteratoraggregate.getiterator.php
-     * @return Traversable An instance of an object implementing <b>Iterator</b> or
-     * <b>Traversable</b>
-     * @since 5.0.0
-     */
-    public function getIterator()
+    public function getIterator(): iterable
     {
         $this->queryStmt->execute($this->queryParams);
 

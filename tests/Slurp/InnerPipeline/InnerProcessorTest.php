@@ -5,6 +5,8 @@
  * Time: 10:25 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\InnerPipeline\InnerProcessor;
@@ -30,7 +32,7 @@ class InnerProcessorTest extends TestCase
         $this->processor = new InnerProcessor();
     }
 
-    public function testNoInterruption()
+    public function testNoInterruption(): void
     {
         $payload = new SlurpPayload();
 
@@ -47,13 +49,13 @@ class InnerProcessorTest extends TestCase
         $this->assertSame($payload, $this->processor->process($payload, $mockStageOne, $mockStageTwo));
     }
 
-    public function testInterruptOnFiltered()
+    public function testInterruptOnFiltered(): void
     {
         $payload = new SlurpPayload();
 
         $mockStageOne = $this->createMockStage();
         $mockStageOne->shouldReceive('__invoke')
-            ->withArgs(function (SlurpPayload $payload) {
+            ->withArgs(static function (SlurpPayload $payload) {
                 $payload->setFiltered(true);
                 return true;
             })->andReturn($payload);

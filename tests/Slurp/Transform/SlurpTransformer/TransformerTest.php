@@ -5,12 +5,15 @@
  * Time: 10:00 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SlurpTransformer;
 
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\ChangeTransformerInterface;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\TransformerLoader;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -29,21 +32,21 @@ class TransformerTest extends TestCase
      */
     protected $mockLoader;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->mockLoader = \Mockery::mock(TransformerLoader::class);
+        $this->mockLoader = Mockery::mock(TransformerLoader::class);
 
         $this->transformer = new Transformer($this->mockLoader);
     }
 
-    public function testTransformField()
+    public function testTransformField(): void
     {
         $field = 'foo';
         $value = 123;
         $newValue = 321;
 
-        $mockChange = \Mockery::mock(Change::class);
-        $mockChangeTransformer = \Mockery::mock(ChangeTransformerInterface::class);
+        $mockChange = Mockery::mock(Change::class);
+        $mockChangeTransformer = Mockery::mock(ChangeTransformerInterface::class);
         $mockChangeTransformer->shouldReceive('transform')
             ->with($value, $mockChange)
             ->andReturn($newValue);
@@ -54,14 +57,14 @@ class TransformerTest extends TestCase
         $this->assertSame($newValue, $this->transformer->transformField($field, $value));
     }
 
-    public function testTransformRecord()
+    public function testTransformRecord(): void
     {
         $field = 'foo';
         $value = 123;
         $newValue = 321;
 
-        $mockChange = \Mockery::mock(Change::class);
-        $mockChangeTransformer = \Mockery::mock(ChangeTransformerInterface::class);
+        $mockChange = Mockery::mock(Change::class);
+        $mockChangeTransformer = Mockery::mock(ChangeTransformerInterface::class);
         $mockChangeTransformer->shouldReceive('transform')
             ->with($value, $mockChange)
             ->andReturn($newValue);
@@ -72,7 +75,7 @@ class TransformerTest extends TestCase
         $this->assertSame([$field => $newValue], $this->transformer->transformRecord([$field => $value]));
     }
 
-    public function testTransformNoChanges()
+    public function testTransformNoChanges(): void
     {
         $field = 'foo';
         $value = 123;
@@ -80,15 +83,15 @@ class TransformerTest extends TestCase
         $this->assertSame([$field => $value], $this->transformer->transformRecord([$field => $value]));
     }
 
-    public function testAddChange()
+    public function testAddChange(): void
     {
         $field = 'foo';
         $value = 123;
         $newValueOne = 321;
         $newValueTwo = 654;
-        $mockChangeOne = \Mockery::mock(Change::class);
-        $mockChangeTwo = \Mockery::mock(Change::class);
-        $mockChangeTransformer = \Mockery::mock(ChangeTransformerInterface::class);
+        $mockChangeOne = Mockery::mock(Change::class);
+        $mockChangeTwo = Mockery::mock(Change::class);
+        $mockChangeTransformer = Mockery::mock(ChangeTransformerInterface::class);
         $mockChangeTransformer->shouldReceive('transform')
             ->with($value, $mockChangeOne)
             ->andReturn($newValueOne);
@@ -104,14 +107,14 @@ class TransformerTest extends TestCase
         $this->assertSame([$field => $newValueTwo], $this->transformer->transformRecord([$field => $value]));
     }
 
-    public function testResetChanges()
+    public function testResetChanges(): void
     {
         $field = 'foo';
         $value = 123;
         $newValueTwo = 654;
-        $mockChangeOne = \Mockery::mock(Change::class);
-        $mockChangeTwo = \Mockery::mock(Change::class);
-        $mockChangeTransformer = \Mockery::mock(ChangeTransformerInterface::class);
+        $mockChangeOne = Mockery::mock(Change::class);
+        $mockChangeTwo = Mockery::mock(Change::class);
+        $mockChangeTransformer = Mockery::mock(ChangeTransformerInterface::class);
         $mockChangeTransformer->shouldReceive('transform')
             ->with($value, $mockChangeOne)
             ->never();
@@ -131,7 +134,7 @@ class TransformerTest extends TestCase
         MockInterface $mockLoader,
         Change $change,
         ChangeTransformerInterface $changeTransformer
-    ) {
+    ): void {
         $mockLoader->shouldReceive('loadTransformer')
             ->with($change)
             ->andReturn($changeTransformer);

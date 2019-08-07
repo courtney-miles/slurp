@@ -5,8 +5,11 @@
  * Time: 9:34 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Validate\SchemaValidation;
 
+use Exception;
 use frictionlessdata\tableschema\Fields\BaseField;
 use frictionlessdata\tableschema\Schema;
 use frictionlessdata\tableschema\SchemaValidationError;
@@ -30,12 +33,12 @@ class SchemaValidator implements ValidatorInterface
     /**
      * @var null|array
      */
-    private $foundUniqueFields = null;
+    private $foundUniqueFields;
 
     /**
      * @var null|array
      */
-    private $fieldNames = null;
+    private $fieldNames;
 
     public function __construct(Schema $tableSchema)
     {
@@ -51,7 +54,7 @@ class SchemaValidator implements ValidatorInterface
 
         try {
             $schemaField = $this->tableSchema->field($field);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new UnknownFieldException($field, 'Unknown field ' . $field . '.');
         }
 

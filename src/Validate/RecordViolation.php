@@ -5,6 +5,8 @@
  * Time: 7:07 AM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Validate;
 
 class RecordViolation implements ViolationInterface

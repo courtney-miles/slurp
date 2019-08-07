@@ -5,6 +5,8 @@
  * Time: 8:51 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Filter\ConstraintFiltration;
 
 use MilesAsylum\Slurp\Filter\FilterInterface;

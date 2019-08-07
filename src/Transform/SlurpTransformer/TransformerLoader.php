@@ -5,6 +5,8 @@
  * Time: 9:57 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
 class TransformerLoader

@@ -5,6 +5,8 @@
  * Time: 11:13 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsertManager;
@@ -13,8 +15,10 @@ use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\DatabaseLoaderException;
 use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DmlStmtInterface;
 use MilesAsylum\Slurp\Load\DatabaseLoader\StagedLoad;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
+use PDO;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseLoaderTest extends TestCase
@@ -37,13 +41,13 @@ class DatabaseLoaderTest extends TestCase
     protected $mockStagedLoad;
 
     /**
-     * @var \PDO|MockInterface
+     * @var PDO|MockInterface
      */
     protected $mockPdo;
 
     protected $batchSize = 3;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -55,7 +59,7 @@ class DatabaseLoaderTest extends TestCase
         );
     }
 
-    public function testBegin()
+    public function testBegin(): void
     {
         $this->mockStagedLoad->shouldReceive('begin')
             ->once();
@@ -67,7 +71,7 @@ class DatabaseLoaderTest extends TestCase
         $this->assertTrue($databaseLoader->hasBegun());
     }
 
-    public function testAbort()
+    public function testAbort(): void
     {
         $this->mockStagedLoad->shouldReceive('discard')
             ->once();
@@ -80,7 +84,7 @@ class DatabaseLoaderTest extends TestCase
         $this->assertTrue($databaseLoader->isAborted());
     }
 
-    public function testAutoFlushBatch()
+    public function testAutoFlushBatch(): void
     {
         $rows = [
             ['col1' => 123, 'col2' => 234],
@@ -104,7 +108,7 @@ class DatabaseLoaderTest extends TestCase
         }
     }
 
-    public function testFlushRemainingOnFinalise()
+    public function testFlushRemainingOnFinalise(): void
     {
         $rows = [
             ['col1' => 123, 'col2' => 234],
@@ -135,9 +139,9 @@ class DatabaseLoaderTest extends TestCase
         $databaseLoader->finalise();
     }
 
-    public function testCallPreCommitDmlOnFinalise()
+    public function testCallPreCommitDmlOnFinalise(): void
     {
-        $mockPreCommitDml = \Mockery::mock(DmlStmtInterface::class);
+        $mockPreCommitDml = Mockery::mock(DmlStmtInterface::class);
 
         $mockPreCommitDml->shouldReceive('execute')
             ->once();
@@ -157,7 +161,7 @@ class DatabaseLoaderTest extends TestCase
         $databaseLoader->finalise();
     }
 
-    public function testRemapColumns()
+    public function testRemapColumns(): void
     {
         $row = ['col1' => 123, 'col2' => 234];
 
@@ -176,7 +180,7 @@ class DatabaseLoaderTest extends TestCase
         $databaseLoader->loadValues($row);
     }
 
-    public function testCreateBatchInsertManager()
+    public function testCreateBatchInsertManager(): void
     {
         $table = '_tmp_tbl_foo';
         $fieldMapping = ['col_a' => []];
@@ -200,7 +204,7 @@ class DatabaseLoaderTest extends TestCase
         $databaseLoader->begin();
     }
 
-    public function testExceptionWhenLoadBeforeBegin()
+    public function testExceptionWhenLoadBeforeBegin(): void
     {
         $this->expectException(DatabaseLoaderException::class);
 
@@ -209,7 +213,7 @@ class DatabaseLoaderTest extends TestCase
         $databaseLoader->loadValues([]);
     }
 
-    public function testExceptionWhenLoadAfterAbort()
+    public function testExceptionWhenLoadAfterAbort(): void
     {
         $this->expectException(DatabaseLoaderException::class);
 
@@ -220,7 +224,7 @@ class DatabaseLoaderTest extends TestCase
         $databaseLoader->loadValues([]);
     }
 
-    public function testExceptionWhenAbortBeforeBegin()
+    public function testExceptionWhenAbortBeforeBegin(): void
     {
         $this->expectException(DatabaseLoaderException::class);
 
@@ -229,7 +233,7 @@ class DatabaseLoaderTest extends TestCase
         $databaseLoader->abort();
     }
 
-    public function testExceptionWhenFinaliseBeforeBegin()
+    public function testExceptionWhenFinaliseBeforeBegin(): void
     {
         $this->expectException(DatabaseLoaderException::class);
 
@@ -238,7 +242,7 @@ class DatabaseLoaderTest extends TestCase
         $databaseLoader->finalise();
     }
 
-    public function testExceptionWhenFinaliseAfterAbort()
+    public function testExceptionWhenFinaliseAfterAbort(): void
     {
         $this->expectException(DatabaseLoaderException::class);
 
@@ -259,7 +263,7 @@ class DatabaseLoaderTest extends TestCase
         BatchInsertManager $batchInsertManager,
         StagedLoad $stagedLoad
     ): MockInterface {
-        $mockLoaderFactory = \Mockery::mock(LoaderFactory::class);
+        $mockLoaderFactory = Mockery::mock(LoaderFactory::class);
         $mockLoaderFactory->shouldReceive('createBatchInsertManager')
             ->withAnyArgs()
             ->andReturn($batchInsertManager)
@@ -277,7 +281,7 @@ class DatabaseLoaderTest extends TestCase
      */
     protected function createMockStagedLoad(): MockInterface
     {
-        $mockStagedLoad = \Mockery::mock(StagedLoad::class);
+        $mockStagedLoad = Mockery::mock(StagedLoad::class);
         $mockStagedLoad->shouldReceive('begin')
             ->byDefault();
         $mockStagedLoad->shouldReceive('discard')
@@ -291,7 +295,7 @@ class DatabaseLoaderTest extends TestCase
      */
     protected function createMockBatchInsertManager(): MockInterface
     {
-        $mockBatchInsertManager = \Mockery::mock(BatchInsertManager::class);
+        $mockBatchInsertManager = Mockery::mock(BatchInsertManager::class);
 
         return $mockBatchInsertManager;
     }

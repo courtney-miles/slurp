@@ -5,6 +5,8 @@
  * Time: 9:06 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Extract\Exception;
 
 use MilesAsylum\Slurp\Extract\Exception\ValueCountMismatchException;
@@ -12,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class ValueCountMismatchExceptionTest extends TestCase
 {
-    public function testCreateMismatch()
+    public function testCreateMismatch(): void
     {
         $e = ValueCountMismatchException::createMismatch(123, 1, 2);
 

@@ -5,6 +5,8 @@
  * Time: 8:48 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Filter;
 
 interface FilterInterface

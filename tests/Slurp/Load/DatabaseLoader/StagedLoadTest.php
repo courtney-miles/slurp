@@ -5,6 +5,8 @@
  * Time: 7:41 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\DatabaseLoaderException;
@@ -22,7 +24,7 @@ class StagedLoadTest extends TestCase
      */
     protected $mockPdo;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -42,7 +44,7 @@ class StagedLoadTest extends TestCase
         ?string $database,
         string $tickedTableRef,
         string $tickedTempTableRef
-    ) {
+    ): void {
         $columns = ['col_a', 'col_b'];
         $capturedSql = [];
 
@@ -60,7 +62,7 @@ SQL;
 
         $this->mockPdo->shouldReceive('exec')
             ->withArgs(
-                function ($sql) use (&$capturedSql) {
+                static function ($sql) use (&$capturedSql) {
                     $capturedSql[] = trim($sql);
 
                     return true;
@@ -86,7 +88,7 @@ SQL;
         );
     }
 
-    public function getTableRefsForBeginCommitTest()
+    public function getTableRefsForBeginCommitTest(): array
     {
         return [
             ['my_tbl', null, '`my_tbl`', '`_my_tbl_stage`'],
@@ -94,7 +96,7 @@ SQL;
         ];
     }
 
-    public function testExceptionIfCommitWhenNotBegun()
+    public function testExceptionIfCommitWhenNotBegun(): void
     {
         $this->expectException(DatabaseLoaderException::class);
         $this->createStagedLoad($this->mockPdo, 'my_tbl', ['col_a'], null)->commit();

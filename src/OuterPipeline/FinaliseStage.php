@@ -5,6 +5,8 @@
  * Time: 11:25 AM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\OuterPipeline;
 
 use MilesAsylum\Slurp\Event\ExtractionFinalisationBeginEvent;

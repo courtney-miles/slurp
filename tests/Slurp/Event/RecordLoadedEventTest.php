@@ -5,6 +5,8 @@
  * Time: 10:20 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Event;
 
 use MilesAsylum\Slurp\Event\RecordLoadedEvent;
@@ -13,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 class RecordLoadedEventTest extends TestCase
 {
-    public function testGetPayload()
+    public function testGetPayload(): void
     {
         $mockPayload = \Mockery::mock(SlurpPayload::class);
         $event = new RecordLoadedEvent($mockPayload);

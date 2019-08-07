@@ -5,12 +5,16 @@
  * Time: 11:09 AM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp;
 
+use InvalidArgumentException;
 use MilesAsylum\Slurp\PHPUnit\StubValidatorTrait;
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Validate\FieldViolation;
 use MilesAsylum\Slurp\Validate\RecordViolation;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +23,7 @@ class SlurpPayloadTest extends TestCase
     use MockeryPHPUnitIntegration;
     use StubValidatorTrait;
 
-    public function testHasNotValue()
+    public function testHasNotValue(): void
     {
         $payload = new SlurpPayload();
 
@@ -27,7 +31,7 @@ class SlurpPayloadTest extends TestCase
         $this->assertNull($payload->getFieldValue('foo'));
     }
 
-    public function testSetValue()
+    public function testSetValue(): void
     {
         $payload = new SlurpPayload();
         $payload->setFieldValue('foo', 123);
@@ -36,7 +40,7 @@ class SlurpPayloadTest extends TestCase
         $this->assertSame(123, $payload->getFieldValue('foo'));
     }
 
-    public function testSetValues()
+    public function testSetValues(): void
     {
         $values = ['foo' => 123, 'bar' => 234];
         $payload = new SlurpPayload();
@@ -50,7 +54,7 @@ class SlurpPayloadTest extends TestCase
         }
     }
 
-    public function testReplaceValue()
+    public function testReplaceValue(): void
     {
         $payload = new SlurpPayload();
         $payload->setFieldValue('foo', 123);
@@ -60,22 +64,22 @@ class SlurpPayloadTest extends TestCase
         $this->assertSame(234, $payload->getFieldValue('foo'));
     }
 
-    public function testExceptionOnReplaceUnknownValue()
+    public function testExceptionOnReplaceUnknownValue(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $payload = new SlurpPayload();
         $payload->replaceFieldValue('foo', 234);
     }
 
-    public function testGetRowIdDefault()
+    public function testGetRowIdDefault(): void
     {
         $payload = new SlurpPayload();
 
         $this->assertNull($payload->getRecordId());
     }
 
-    public function testSetId()
+    public function testSetId(): void
     {
         $payload = new SlurpPayload();
         $payload->setRecordId(123);
@@ -83,7 +87,7 @@ class SlurpPayloadTest extends TestCase
         $this->assertSame(123, $payload->getRecordId());
     }
 
-    public function testHasNoViolations()
+    public function testHasNoViolations(): void
     {
         $payload = new SlurpPayload();
 
@@ -92,40 +96,40 @@ class SlurpPayloadTest extends TestCase
         $this->assertSame([], $payload->getViolations());
     }
 
-    public function testHasViolationOfType()
+    public function testHasViolationOfType(): void
     {
         $payload = new SlurpPayload();
 
-        $mockViolation = \Mockery::mock(FieldViolation::class);
+        $mockViolation = Mockery::mock(FieldViolation::class);
         $payload->addViolations([$mockViolation]);
 
         $this->assertTrue($payload->hasViolations(FieldViolation::class));
     }
 
-    public function testDoesNotHaveViolationOfType()
+    public function testDoesNotHaveViolationOfType(): void
     {
         $payload = new SlurpPayload();
 
-        $mockViolation = \Mockery::mock(FieldViolation::class);
+        $mockViolation = Mockery::mock(FieldViolation::class);
         $payload->addViolations([$mockViolation]);
 
         $this->assertFalse($payload->hasViolations(RecordViolation::class));
     }
 
-    public function testAddFirstViolations()
+    public function testAddFirstViolations(): void
     {
         $payload = new SlurpPayload();
-        $mockViolation = \Mockery::mock(FieldViolation::class);
+        $mockViolation = Mockery::mock(FieldViolation::class);
         $payload->addViolations([$mockViolation]);
 
         $this->assertTrue($payload->hasViolations());
         $this->assertSame([$mockViolation], $payload->getViolations());
     }
 
-    public function testValueHasViolation()
+    public function testValueHasViolation(): void
     {
         $payload = new SlurpPayload();
-        $mockViolation = \Mockery::mock(FieldViolation::class);
+        $mockViolation = Mockery::mock(FieldViolation::class);
         $mockViolation->shouldReceive('getField')
             ->andReturn('foo');
         $payload->addViolations([$mockViolation]);
@@ -133,10 +137,10 @@ class SlurpPayloadTest extends TestCase
         $this->assertTrue($payload->fieldHasViolation('foo'));
     }
 
-    public function testValueHasNotViolation()
+    public function testValueHasNotViolation(): void
     {
         $payload = new SlurpPayload();
-        $mockViolation = \Mockery::mock(FieldViolation::class);
+        $mockViolation = Mockery::mock(FieldViolation::class);
         $mockViolation->shouldReceive('getField')
             ->andReturn('foo');
         $payload->addViolations([$mockViolation]);
@@ -144,7 +148,7 @@ class SlurpPayloadTest extends TestCase
         $this->assertfalse($payload->fieldHasViolation('bar'));
     }
 
-    public function testSetLoadAborted()
+    public function testSetLoadAborted(): void
     {
         $payload = new SlurpPayload();
         $this->assertFalse($payload->isLoadAborted());
@@ -153,7 +157,7 @@ class SlurpPayloadTest extends TestCase
         $this->assertTrue($payload->isLoadAborted());
     }
 
-    public function testSetFiltered()
+    public function testSetFiltered(): void
     {
         $payload = new SlurpPayload();
         $this->assertFalse($payload->isFiltered());

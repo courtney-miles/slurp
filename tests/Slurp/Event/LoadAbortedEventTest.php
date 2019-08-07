@@ -5,6 +5,8 @@
  * Time: 5:18 PM
  */
 
+declare(strict_types=1);
+
 namespace MilesAsylum\Slurp\Tests\Slurp\Event;
 
 use MilesAsylum\Slurp\Event\LoadAbortedEvent;
@@ -13,14 +15,14 @@ use PHPUnit\Framework\TestCase;
 
 class LoadAbortedEventTest extends TestCase
 {
-    public function testGetPayloadDefaultValue()
+    public function testGetPayloadDefaultValue(): void
     {
         $event = new LoadAbortedEvent();
 
         $this->assertNull($event->getPayload());
     }
 
-    public function testGetPayload()
+    public function testGetPayload(): void
     {
         $mockPayload = \Mockery::mock(SlurpPayload::class);
         $event = new LoadAbortedEvent($mockPayload);
