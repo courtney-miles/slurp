@@ -15,6 +15,9 @@ use MilesAsylum\Slurp\Event\ExtractionAbortedEvent;
 use MilesAsylum\Slurp\Event\ExtractionEndedEvent;
 use MilesAsylum\Slurp\Event\ExtractionStartedEvent;
 use MilesAsylum\Slurp\Event\RecordProcessedEvent;
+use MilesAsylum\Slurp\Extract\Exception\ExtractionException;
+use MilesAsylum\Slurp\Extract\Exception\MalformedSourceException;
+use MilesAsylum\Slurp\OuterPipeline\Exception\OuterPipelineException;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
 
@@ -41,26 +44,56 @@ class ExtractionStage extends AbstractOuterStage
         $this->interrupt = $interrupt;
     }
 
+    /**
+     * @param Slurp $slurp
+     * @return Slurp
+     * @throws OuterPipelineException
+     */
     public function __invoke(Slurp $slurp): Slurp
     {
         $this->dispatch(ExtractionStartedEvent::NAME, new ExtractionStartedEvent());
 
-        foreach ($slurp->getExtractor() as $id => $values) {
-            $payload = new SlurpPayload();
-            $payload->setRecordId($id);
-            $payload->setRecord($values);
+        $extractor = $slurp->getExtractor();
 
-            ($this->innerPipeline)($payload);
+        if ($extractor === null) {
+            throw new OuterPipelineException(sprintf('An extractor has not been set for %s.', Slurp::class));
+        }
 
-            $this->dispatch(RecordProcessedEvent::NAME, new RecordProcessedEvent());
+        $iterator = new \IteratorIterator($extractor->getIterator());
+        $previousRecordId = null;
 
-            $interrupt = $this->interrupt;
+        try {
+            foreach ($extractor as $id => $values) {
+                $payload = new SlurpPayload();
+                $payload->setRecordId($id);
+                $payload->setRecord($values);
 
-            if ($interrupt !== null && $interrupt($slurp, $payload)) {
-                $slurp->abort();
-                $this->dispatch(ExtractionAbortedEvent::NAME, new ExtractionAbortedEvent());
-                break;
+                ($this->innerPipeline)($payload);
+
+                $this->dispatch(RecordProcessedEvent::NAME, new RecordProcessedEvent());
+
+                $interrupt = $this->interrupt;
+
+                if ($interrupt !== null && $interrupt($slurp, $payload)) {
+                    $slurp->abort();
+                    $this->dispatch(
+                        ExtractionAbortedEvent::NAME,
+                        new ExtractionAbortedEvent(
+                            'Extraction was interrupted.',
+                            $id
+                        )
+                    );
+                    break;
+                }
+
+                $previousRecordId = $id;
             }
+        } catch (MalformedSourceException $e) {
+            $slurp->abort();
+            $this->dispatch(
+                ExtractionAbortedEvent::NAME,
+                new ExtractionAbortedEvent($e->getMessage(), $previousRecordId + 1)
+            );
         }
 
         $this->dispatch(ExtractionEndedEvent::NAME, new ExtractionEndedEvent());
