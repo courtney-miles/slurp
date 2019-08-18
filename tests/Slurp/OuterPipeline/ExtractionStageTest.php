@@ -11,13 +11,16 @@ namespace MilesAsylum\Slurp\Tests\Slurp\OuterPipeline;
 
 use ArrayObject;
 use League\Pipeline\Pipeline;
+use MilesAsylum\Slurp\Event\ExtractionAbortedEvent;
 use MilesAsylum\Slurp\Event\ExtractionEndedEvent;
 use MilesAsylum\Slurp\Event\ExtractionStartedEvent;
 use MilesAsylum\Slurp\Event\RecordProcessedEvent;
+use MilesAsylum\Slurp\Extract\Exception\ExtractionException;
+use MilesAsylum\Slurp\Extract\Exception\MalformedSourceException;
 use MilesAsylum\Slurp\Extract\ExtractorInterface;
+use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -106,7 +109,7 @@ class ExtractionStageTest extends TestCase
         $this->stubExtractorContent($mockExtractor, []);
         $this->mockSlurp->shouldReceive('getExtractor')->andReturn($mockExtractor);
 
-        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = $this->createMockDispatcher();
         $mockDispatcher->shouldReceive('dispatch')
             ->with(ExtractionStartedEvent::NAME, Mockery::type(ExtractionStartedEvent::class))
             ->once();
@@ -128,7 +131,7 @@ class ExtractionStageTest extends TestCase
         $this->mockSlurp->shouldReceive('getExtractor')->andReturn($mockExtractor);
         $this->mockPipeline->shouldReceive('__invoke');
 
-        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = $this->createMockDispatcher();
         $mockDispatcher->shouldReceive('dispatch')->byDefault();
         $mockDispatcher->shouldReceive('dispatch')
             ->with(RecordProcessedEvent::NAME, Mockery::type(RecordProcessedEvent::class))
@@ -139,10 +142,81 @@ class ExtractionStageTest extends TestCase
         ($this->stage)($this->mockSlurp);
     }
 
+    public function testAbortOnExtractionException(): void
+    {
+        $rows = [['foo', 123], ['bar', 234]];
+        $exceptionAtCount = 1;
+        $exceptionMessage = 'Fubar';
+        /** @var ExtractionAbortedEvent|null $spiedEvent This is used to capture the event so we can perform assertions against it. */
+        $spiedEvent = null;
+        $mockExtractor = Mockery::mock(ExtractorInterface::class);
+        $this->stubExtractorContentWithException($mockExtractor, $rows, $exceptionAtCount, $exceptionMessage);
+        $this->mockSlurp->shouldReceive('getExtractor')->andReturn($mockExtractor);
+        $this->mockSlurp->shouldReceive('abort')->once();
+        $this->mockPipeline->shouldReceive('__invoke');
+
+        $mockDispatcher = $this->createMockDispatcher();
+        $mockDispatcher->shouldReceive('dispatch')->byDefault();
+        $mockDispatcher->shouldReceive('dispatch')
+            ->with(ExtractionAbortedEvent::NAME, Mockery::type(ExtractionAbortedEvent::class))
+            ->andReturnUsing(static function ($eventName, $event) use (&$spiedEvent) {
+                $spiedEvent = $event;
+            })
+            ->once();
+        $this->stage->setEventDispatcher($mockDispatcher);
+
+        ($this->stage)($this->mockSlurp);
+
+        $this->assertInstanceOf(ExtractionAbortedEvent::class, $spiedEvent);
+        $this->assertSame($exceptionAtCount, $spiedEvent->getRecordId());
+        $this->assertSame($exceptionMessage, $spiedEvent->getReason());
+    }
+
+    /**
+     * @return MockInterface|EventDispatcherInterface
+     */
+    protected function createMockDispatcher(): MockInterface
+    {
+        return Mockery::mock(EventDispatcherInterface::class);
+    }
 
     protected function stubExtractorContent(MockInterface $mockExtractor, array $rowValues): void
     {
         $mockExtractor->shouldReceive('getIterator')
             ->andReturn(new ArrayObject($rowValues));
+    }
+
+    protected function stubExtractorContentWithException(
+        MockInterface $mockExtractor,
+        array $rowValues,
+        int $exceptionAtCount,
+        string $exceptionMessage
+    ): void {
+        $iteratorWithException = new class($rowValues, $exceptionAtCount, $exceptionMessage) extends \IteratorIterator {
+            protected $exceptionAtCount;
+            /**
+             * @var string
+             */
+            private $exceptionMessage;
+
+            public function __construct(array $rows, int $exceptionAtCount, string $exceptionMessage)
+            {
+                $this->exceptionAtCount = $exceptionAtCount;
+                $this->exceptionMessage = $exceptionMessage;
+                parent::__construct(new ArrayObject($rows));
+            }
+
+            public function current()
+            {
+                if ($this->key() !== $this->exceptionAtCount) {
+                    return parent::current();
+                }
+
+                throw new MalformedSourceException($this->exceptionMessage);
+            }
+        };
+
+        $mockExtractor->shouldReceive('getIterator')
+            ->andReturn($iteratorWithException);
     }
 }
