@@ -9,7 +9,8 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
-use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\DatabaseLoaderException;
+use MilesAsylum\Slurp\Exception\LogicException;
+use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
 use PDO;
 
 class StagedLoad
@@ -52,12 +53,12 @@ class StagedLoad
 
     /**
      * @return string The name of the temporary table to insert staged data into.
-     * @throws DatabaseLoaderException
+     * @throws LogicException
      */
     public function begin(): string
     {
         if ($this->hasBegun) {
-            throw new DatabaseLoaderException(
+            throw new LogicException(
                 'Staged-load has already been begun.'
             );
         }
@@ -70,12 +71,12 @@ class StagedLoad
     }
 
     /**
-     * @throws DatabaseLoaderException
+     * @throws LogicException
      */
     public function discard(): void
     {
         if (!$this->hasBegun) {
-            throw new DatabaseLoaderException(
+            throw new LogicException(
                 'Staged-load cannot be discarded without first being begun.'
             );
         }
@@ -85,12 +86,12 @@ class StagedLoad
     }
 
     /**
-     * @throws DatabaseLoaderException
+     * @throws LogicException
      */
     public function commit(): void
     {
         if (!$this->hasBegun) {
-            throw new DatabaseLoaderException(
+            throw new LogicException(
                 'Staged-load cannot be committed without first being begun.'
             );
         }
@@ -107,12 +108,20 @@ class StagedLoad
 
         $updateValuesStr = implode(', ', $updateValues);
 
-        $this->pdo->exec(<<<SQL
+        try {
+            $this->pdo->exec(<<<SQL
 INSERT INTO {$tickedTableRef} ({$cols})
   SELECT {$cols} FROM {$tickedStageTable}
   ON DUPLICATE KEY UPDATE {$updateValuesStr}
 SQL
-        );
+            );
+        } catch (\PDOException $e) {
+            throw new LoadRuntimeException(
+                'PDO exception thrown when copying rows from the staging table to the destination table.',
+                0,
+                $e
+            );
+        }
 
         $this->dropTemporaryTable($this->stageTable, $this->database);
 

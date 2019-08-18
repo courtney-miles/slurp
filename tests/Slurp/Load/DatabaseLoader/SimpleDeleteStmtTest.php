@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\DatabaseLoader\SimpleDeleteStmt;
+use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -113,5 +114,24 @@ SQL;
         $delete = new SimpleDeleteStmt($this->mockPdo, 'foo');
 
         $this->assertSame($affectedRows, $delete->execute());
+    }
+
+    public function testThrowRuntimeExceptionOnPDOException(): void
+    {
+        $pdoException = new \PDOException();
+        $delete = new SimpleDeleteStmt($this->mockPdo, 'foo');
+        $this->mockDelStmt->shouldReceive('execute')
+            ->andThrow($pdoException);
+
+        try {
+            $delete->execute();
+        } catch (\Exception $e) {
+            $this->assertInstanceOf(LoadRuntimeException::class, $e);
+            $this->assertSame('PDO exception thrown when deleting rows.', $e->getMessage());
+            $this->assertSame($pdoException, $e->getPrevious());
+            return;
+        }
+
+        $this->fail('Exception was not raised.');
     }
 }

@@ -9,7 +9,8 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
-use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\DatabaseLoaderException;
+use MilesAsylum\Slurp\Exception\LogicException;
+use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 
 class DatabaseLoader implements LoaderInterface
@@ -61,6 +62,8 @@ class DatabaseLoader implements LoaderInterface
      */
     private $database;
 
+    protected $countRecordWritten = 0;
+
     /**
      * DatabaseLoader constructor.
      * @param string $table
@@ -87,13 +90,14 @@ class DatabaseLoader implements LoaderInterface
     }
 
     /**
-     * @param array $values
-     * @throws DatabaseLoaderException
+     * @param array $record
+     * @throws LogicException
+     * @throws LoadRuntimeException Thrown if an error occurs writing rows to the database.
      */
-    public function loadValues(array $values): void
+    public function loadRecord(array $record): void
     {
         if (!$this->hasBegun()) {
-            throw new DatabaseLoaderException(
+            throw new LogicException(
                 sprintf(
                     'Data cannot be loaded until %s has been called.',
                     __CLASS__ . '::begin()'
@@ -102,10 +106,10 @@ class DatabaseLoader implements LoaderInterface
         }
 
         if ($this->isAborted()) {
-            throw new DatabaseLoaderException('Data cannot be loaded because the loading has been aborted.');
+            throw new LogicException('Data cannot be loaded because the loading has been aborted.');
         }
 
-        $this->rowCollection[] = $this->mapColumnNames($values);
+        $this->rowCollection[] = $this->mapColumnNames($record);
 
         if (count($this->rowCollection) >= $this->batchSize) {
             $this->flush();
@@ -135,12 +139,12 @@ class DatabaseLoader implements LoaderInterface
     }
 
     /**
-     * @throws DatabaseLoaderException
+     * @throws LogicException
      */
     public function abort(): void
     {
         if (!$this->hasBegun()) {
-            throw new DatabaseLoaderException('Unable to abort when loading has not begun.');
+            throw new LogicException('Unable to abort when loading has not begun.');
         }
 
         $this->aborted = true;
@@ -155,16 +159,17 @@ class DatabaseLoader implements LoaderInterface
     }
 
     /**
-     * @throws DatabaseLoaderException
+     * @throws LogicException
+     * @throws LoadRuntimeException Thrown if an database error occurs.
      */
     public function finalise(): void
     {
         if (!$this->hasBegun()) {
-            throw new DatabaseLoaderException('Unable to finalise when loading has not begun.');
+            throw new LogicException('Unable to finalise when loading has not begun.');
         }
 
         if ($this->isAborted()) {
-            throw new DatabaseLoaderException('Unable to finalise when loading has been aborted.');
+            throw new LogicException('Unable to finalise when loading has been aborted.');
         }
 
         $this->flush();
@@ -176,26 +181,60 @@ class DatabaseLoader implements LoaderInterface
         $this->stagedLoad->commit();
     }
 
+    /**
+     * @throws LoadRuntimeException
+     */
     protected function flush(): void
     {
-        $this->batchStmt->write($this->rowCollection);
+        try {
+            $this->batchStmt->write($this->rowCollection);
+        } catch (LoadRuntimeException $e) {
+            if ($e->getPrevious() instanceof \PDOException) {
+                $e = new LoadRuntimeException(
+                    sprintf(
+                        'PDO exception thrown when batch inserting records %d through to %d: %s',
+                        $this->getCountRecordsWritten() + 1,
+                        $this->getCountRecordsWritten() + count($this->rowCollection),
+                        $e->getPrevious()->getMessage()
+                    ),
+                    0,
+                    $e->getPrevious()
+                );
+            }
+
+            throw $e;
+        }
+
+        $this->addCountRecordsWritten(count($this->rowCollection));
         $this->rowCollection = [];
     }
 
-    protected function mapColumnNames(array $values): array
+    protected function mapColumnNames(array $row): array
     {
         if (empty($this->fieldMapping)) {
-            return $values;
+            return $row;
         }
 
         $newValues = [];
 
-        foreach ($values as $sourceCol => $value) {
+        foreach ($row as $sourceCol => $value) {
             foreach (array_keys($this->fieldMapping, $sourceCol) as $destCol) {
                 $newValues[$destCol] = $value;
             }
         }
 
         return $newValues;
+    }
+
+    protected function addCountRecordsWritten(int $count): int
+    {
+        $this->countRecordWritten += $count;
+
+        return $this->countRecordWritten;
+    }
+
+    protected function getCountRecordsWritten(): int
+    {
+        return $this->countRecordWritten;
     }
 }

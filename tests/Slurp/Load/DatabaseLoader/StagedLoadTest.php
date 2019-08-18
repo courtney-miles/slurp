@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
-use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\DatabaseLoaderException;
+use MilesAsylum\Slurp\Exception\LogicException;
 use MilesAsylum\Slurp\Load\DatabaseLoader\StagedLoad;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -37,7 +37,7 @@ class StagedLoadTest extends TestCase
      * @param string|null $database
      * @param string $tickedTableRef
      * @param string $tickedTempTableRef
-     * @throws DatabaseLoaderException
+     * @throws LogicException
      */
     public function testBeginThenCommit(
         string $table,
@@ -98,7 +98,7 @@ SQL;
 
     public function testExceptionIfCommitWhenNotBegun(): void
     {
-        $this->expectException(DatabaseLoaderException::class);
+        $this->expectException(LogicException::class);
         $this->createStagedLoad($this->mockPdo, 'my_tbl', ['col_a'], null)->commit();
     }
 
