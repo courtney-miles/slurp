@@ -39,7 +39,7 @@ class LoadStageTest extends TestCase
         parent::setUp();
 
         $this->mockLoader = Mockery::mock(LoaderInterface::class);
-        $this->mockLoader->shouldReceive('loadValues')->byDefault();
+        $this->mockLoader->shouldReceive('loadRecord')->byDefault();
         $this->mockLoader->shouldReceive('abort')->byDefault();
         $this->mockLoader->shouldReceive('hasBegun')
             ->andReturn(true)
@@ -60,13 +60,13 @@ class LoadStageTest extends TestCase
         $this->assertSame($mockPayload, ($this->stage)($mockPayload));
     }
 
-    public function testLoadValuesWhenInvoked(): void
+    public function testLoadRecordWhenInvoked(): void
     {
         $values = ['foo'];
 
         $mockPayload = $this->createMockPayload($values, false);
 
-        $this->mockLoader->shouldReceive('loadValues')
+        $this->mockLoader->shouldReceive('loadRecord')
             ->with($values)
             ->once();
 
@@ -79,7 +79,7 @@ class LoadStageTest extends TestCase
 
         $this->mockLoader->shouldReceive('abort')
             ->once();
-        $this->mockLoader->shouldReceive('loadValues')
+        $this->mockLoader->shouldReceive('loadRecord')
             ->never();
         $mockViolatedPayload->shouldReceive('setLoadAborted')
             ->with(true)
@@ -112,7 +112,7 @@ class LoadStageTest extends TestCase
         $mockViolatedPayload = $this->createMockPayload([], true);
         $mockPayload = $this->createMockPayload([], false);
 
-        $this->mockLoader->shouldReceive('loadValues')
+        $this->mockLoader->shouldReceive('loadRecord')
             ->never();
         $mockViolatedPayload->shouldReceive('setLoadAborted');
         $mockPayload->shouldReceive('setLoadAborted')
@@ -144,7 +144,7 @@ class LoadStageTest extends TestCase
             ->with(
                 LoadAbortedEvent::NAME,
                 Mockery::on(
-                    function ($arg) use (&$event) {
+                    static function ($arg) use (&$event) {
                         if (!$arg instanceof LoadAbortedEvent) {
                             return false;
                         }

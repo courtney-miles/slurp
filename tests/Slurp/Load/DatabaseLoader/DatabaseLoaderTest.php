@@ -11,10 +11,11 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsertManager;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
-use MilesAsylum\Slurp\Load\DatabaseLoader\Exception\DatabaseLoaderException;
+use MilesAsylum\Slurp\Exception\LogicException;
 use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DmlStmtInterface;
 use MilesAsylum\Slurp\Load\DatabaseLoader\StagedLoad;
+use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -104,7 +105,7 @@ class DatabaseLoaderTest extends TestCase
         $databaseLoader->begin();
 
         foreach ($rows as $row) {
-            $databaseLoader->loadValues($row);
+            $databaseLoader->loadRecord($row);
         }
     }
 
@@ -133,10 +134,44 @@ class DatabaseLoaderTest extends TestCase
         $databaseLoader->begin();
 
         foreach ($rows as $row) {
-            $databaseLoader->loadValues($row);
+            $databaseLoader->loadRecord($row);
         }
 
         $databaseLoader->finalise();
+    }
+
+    public function testRethrowLoadRuntimeException(): void
+    {
+        $row = ['col1' => 123, 'col2' => 234];
+        $pdoExceptionMsg = 'SQL Fubar';
+        $pdoException = new \PDOException($pdoExceptionMsg);
+        $origException = new LoadRuntimeException('', 0, $pdoException);
+
+        $this->mockBatchInsertManager->shouldReceive('write')
+            ->andThrow($origException);
+
+        $databaseLoader = new DatabaseLoader(
+            'my_tbl',
+            ['col1' => 'col1', 'col2' => 'col2'],
+            $this->mockLoaderFactory,
+            1
+        );
+        $databaseLoader->begin();
+
+        try {
+            $databaseLoader->loadRecord($row);
+        } catch (\Exception $e) {
+            $this->assertNotSame($origException, $e);
+            $this->assertInstanceOf(LoadRuntimeException::class, $e);
+            $this->assertSame(
+                'PDO exception thrown when batch inserting records 1 through to 1: ' . $pdoExceptionMsg,
+                $e->getMessage()
+            );
+            $this->assertSame($pdoException, $e->getPrevious());
+            return;
+        }
+
+        $this->fail('Exception was not raised.');
     }
 
     public function testCallPreCommitDmlOnFinalise(): void
@@ -177,7 +212,7 @@ class DatabaseLoaderTest extends TestCase
         );
         $databaseLoader->begin();
 
-        $databaseLoader->loadValues($row);
+        $databaseLoader->loadRecord($row);
     }
 
     public function testCreateBatchInsertManager(): void
@@ -206,27 +241,27 @@ class DatabaseLoaderTest extends TestCase
 
     public function testExceptionWhenLoadBeforeBegin(): void
     {
-        $this->expectException(DatabaseLoaderException::class);
+        $this->expectException(LogicException::class);
 
         $databaseLoader = new DatabaseLoader('', [], $this->mockLoaderFactory, 1);
 
-        $databaseLoader->loadValues([]);
+        $databaseLoader->loadRecord([]);
     }
 
     public function testExceptionWhenLoadAfterAbort(): void
     {
-        $this->expectException(DatabaseLoaderException::class);
+        $this->expectException(LogicException::class);
 
         $databaseLoader = new DatabaseLoader('', [], $this->mockLoaderFactory, 1);
 
         $databaseLoader->begin();
         $databaseLoader->abort();
-        $databaseLoader->loadValues([]);
+        $databaseLoader->loadRecord([]);
     }
 
     public function testExceptionWhenAbortBeforeBegin(): void
     {
-        $this->expectException(DatabaseLoaderException::class);
+        $this->expectException(LogicException::class);
 
         $databaseLoader = new DatabaseLoader('', [], $this->mockLoaderFactory, 1);
 
@@ -235,7 +270,7 @@ class DatabaseLoaderTest extends TestCase
 
     public function testExceptionWhenFinaliseBeforeBegin(): void
     {
-        $this->expectException(DatabaseLoaderException::class);
+        $this->expectException(LogicException::class);
 
         $databaseLoader = new DatabaseLoader('', [], $this->mockLoaderFactory, 1);
 
@@ -244,7 +279,7 @@ class DatabaseLoaderTest extends TestCase
 
     public function testExceptionWhenFinaliseAfterAbort(): void
     {
-        $this->expectException(DatabaseLoaderException::class);
+        $this->expectException(LogicException::class);
 
         $databaseLoader = new DatabaseLoader('', [], $this->mockLoaderFactory, 1);
 

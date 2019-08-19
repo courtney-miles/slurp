@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
+use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
 use PDO;
 
 class SimpleDeleteStmt implements DmlStmtInterface
@@ -69,8 +70,16 @@ class SimpleDeleteStmt implements DmlStmtInterface
             $conditionsStr = 'WHERE ' . implode(' AND ', $conditions);
         }
 
-        $stmt = $this->pdo->prepare(trim("DELETE FROM {$tableRefTicked} {$conditionsStr}"));
-        $stmt->execute($qryParams);
+        try {
+            $stmt = $this->pdo->prepare(trim("DELETE FROM {$tableRefTicked} {$conditionsStr}"));
+            $stmt->execute($qryParams);
+        } catch (\PDOException $e) {
+            throw new LoadRuntimeException(
+                'PDO exception thrown when deleting rows.',
+                0,
+                $e
+            );
+        }
 
         return $stmt->rowCount();
     }

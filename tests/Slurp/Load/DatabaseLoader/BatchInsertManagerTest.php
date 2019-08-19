@@ -11,6 +11,7 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\DatabaseLoader\QueryFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsertManager;
+use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
 use MilesAsylum\Slurp\Load\Exception\MissingValueException;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -176,5 +177,36 @@ class BatchInsertManagerTest extends TestCase
         $this->batchInsUpdStmt->write(
             [['col_1' => 123]]
         );
+    }
+
+    public function testThrowRuntimeExceptionOnPDOException(): void
+    {
+        $pdoException = new \PDOException();
+
+        $this->mockQueryFactory->shouldReceive('createInsertQuery')
+            ->byDefault();
+
+        $mockStmt = Mockery::mock(PDOStatement::class);
+        $this->mockPdo->shouldReceive('prepare')
+            ->andReturn($mockStmt);
+
+        $mockStmt->shouldReceive('execute')
+            ->andThrow($pdoException);
+
+        try {
+            $this->batchInsUpdStmt->write(
+                [['col_1' => 123, 'col_2' => 234],]
+            );
+        } catch (\Exception $e) {
+            $this->assertInstanceOf(LoadRuntimeException::class, $e);
+            $this->assertSame(
+                'PDO exception thrown when inserting batch of records into staging table.',
+                $e->getMessage()
+            );
+            $this->assertSame($pdoException, $e->getPrevious());
+            return;
+        }
+
+        $this->fail('Exception was not raised.');
     }
 }

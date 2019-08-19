@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
+use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
 use MilesAsylum\Slurp\Load\Exception\MissingValueException;
 use PDO;
 use PDOStatement;
@@ -61,14 +62,22 @@ class BatchInsertManager implements BatchManagerInterface
 
     /**
      * @param array[] $rows
+     * @throws LoadRuntimeException Thrown if an error occurs writing rows to the database.
      */
     public function write(array $rows): void
     {
         if (!empty($rows)) {
-            $this->getPreparedBatchStmt(count($rows))
-                ->execute(
-                    $this->convertRowCollectionToParams($rows)
+            $stmt = $this->getPreparedBatchStmt(count($rows));
+
+            try {
+                $stmt->execute($this->convertRowCollectionToParams($rows));
+            } catch (\PDOException $e) {
+                throw new LoadRuntimeException(
+                    'PDO exception thrown when inserting batch of records into staging table.',
+                    0,
+                    $e
                 );
+            }
         }
     }
 
@@ -101,14 +110,14 @@ class BatchInsertManager implements BatchManagerInterface
 
     protected function convertRowCollectionToParams(array $rowCollection): array
     {
-        $params = [];
+        $paramSets = [];
 
         foreach ($rowCollection as $rowId => $row) {
             $this->ensureColumnMatch($rowId, $row);
-            $params = array_merge($params, $this->convertRowToParams($row));
+            $paramSets[] = $this->convertRowToParams($row);
         }
 
-        return $params;
+        return array_merge(...$paramSets);
     }
 
     protected function convertRowToParams(array $row): array
