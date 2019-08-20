@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 14/08/18
- * Time: 10:14 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -21,7 +25,7 @@ class TransformerLoaderTest extends TestCase
      */
     protected $transformerLoader;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->transformerLoader = new TransformerLoader();
     }
@@ -51,7 +55,7 @@ class Scratch extends Change
 
 class ScratchTransformer extends AbstractChangeTransformer
 {
-    public function transform($value, Change $change)
+    public function transform($value, Change $change): void
     {
         // Meh.
     }

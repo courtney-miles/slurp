@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 27/08/18
- * Time: 6:53 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -18,8 +22,10 @@ class VerifyValueCountIteratorTest extends TestCase
 {
     /**
      * @dataProvider getValueCountMismatchTestData
+     *
      * @param array $values
      * @param int $expectedCount
+     *
      * @throws ValueCountMismatchException
      */
     public function testValueCountMismatch(array $values, int $expectedCount): void
@@ -45,8 +51,8 @@ class VerifyValueCountIteratorTest extends TestCase
     public function getValueCountMismatchTestData(): array
     {
         return [
-            [[123,234], 1],
-            [[123,234], 3],
+            [[123, 234], 1],
+            [[123, 234], 3],
         ];
     }
 }

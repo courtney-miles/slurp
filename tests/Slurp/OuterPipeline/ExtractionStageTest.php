@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 26/08/18
- * Time: 12:21 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -15,7 +19,6 @@ use MilesAsylum\Slurp\Event\ExtractionAbortedEvent;
 use MilesAsylum\Slurp\Event\ExtractionEndedEvent;
 use MilesAsylum\Slurp\Event\ExtractionStartedEvent;
 use MilesAsylum\Slurp\Event\RecordProcessedEvent;
-use MilesAsylum\Slurp\Extract\Exception\ExtractionException;
 use MilesAsylum\Slurp\Extract\Exception\MalformedSourceException;
 use MilesAsylum\Slurp\Extract\ExtractorInterface;
 use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
@@ -159,7 +162,7 @@ class ExtractionStageTest extends TestCase
         $mockDispatcher->shouldReceive('dispatch')->byDefault();
         $mockDispatcher->shouldReceive('dispatch')
             ->with(ExtractionAbortedEvent::NAME, Mockery::type(ExtractionAbortedEvent::class))
-            ->andReturnUsing(static function ($eventName, $event) use (&$spiedEvent) {
+            ->andReturnUsing(static function ($eventName, $event) use (&$spiedEvent): void {
                 $spiedEvent = $event;
             })
             ->once();

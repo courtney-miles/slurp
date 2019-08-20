@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 17/08/18
- * Time: 6:39 AM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -18,6 +22,7 @@ class QueryFactory
      * @param array $columns
      * @param int $batchSize
      * @param string $database
+     *
      * @return string
      */
     public function createInsertQuery(
@@ -36,7 +41,7 @@ class QueryFactory
 
         $tableRefTicked = "`{$table}`";
 
-        if ($database !== null && $database !== '') {
+        if (null !== $database && '' !== $database) {
             $tableRefTicked = "`{$database}`." . $tableRefTicked;
         }
 

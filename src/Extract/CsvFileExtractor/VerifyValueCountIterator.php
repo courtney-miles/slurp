@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 27/08/18
- * Time: 6:05 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -25,6 +29,7 @@ class VerifyValueCountIterator extends IteratorIterator
 
     /**
      * @return array
+     *
      * @throws ValueCountMismatchException
      */
     public function current(): array

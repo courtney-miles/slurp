@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 16/09/18
- * Time: 7:41 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -33,10 +37,12 @@ class StagedLoadTest extends TestCase
 
     /**
      * @dataProvider getTableRefsForBeginCommitTest
+     *
      * @param string $table
      * @param string|null $database
      * @param string $tickedTableRef
      * @param string $tickedTempTableRef
+     *
      * @throws LogicException
      */
     public function testBeginThenCommit(

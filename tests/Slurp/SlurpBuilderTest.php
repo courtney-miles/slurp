@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 24/09/18
- * Time: 5:42 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -82,7 +86,6 @@ class SlurpBuilderTest extends TestCase
      * @var PipelineInterface|MockInterface
      */
     private $mockInnerPipeline;
-
 
     /**
      * @var PipelineInterface|MockInterface
@@ -428,7 +431,7 @@ class SlurpBuilderTest extends TestCase
 
     public function testSetExtractionInterrupt(): void
     {
-        $interrupt = static function () {
+        $interrupt = static function (): void {
         };
 
         $this->mockFactory->shouldReceive('createExtractionStage')
@@ -550,6 +553,7 @@ class SlurpBuilderTest extends TestCase
      * @param ConstraintFilter $constraintFilter
      * @param OuterProcessor $outerProcessor
      * @param InnerProcessor $innerProcessor
+     *
      * @return SlurpFactory|MockInterface
      */
     protected function createMockFactory(
@@ -593,6 +597,7 @@ class SlurpBuilderTest extends TestCase
 
     /**
      * @param PipelineInterface $innerPipeline
+     *
      * @return PipelineBuilder|MockInterface
      */
     protected function createMockInnerPipelineBuilder(PipelineInterface $innerPipeline)
@@ -619,6 +624,7 @@ class SlurpBuilderTest extends TestCase
 
     /**
      * @param PipelineInterface $outerPipeline
+     *
      * @return PipelineBuilder|MockInterface
      */
     protected function createMockOuterPipelineBuilder(PipelineInterface $outerPipeline)

@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 26/08/18
- * Time: 12:15 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -39,7 +43,7 @@ class FinaliseStageTest extends TestCase
      */
     protected $mockSlurp;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

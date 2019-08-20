@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 26/08/18
- * Time: 8:53 AM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -12,6 +16,7 @@ namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
 use MilesAsylum\Slurp\Load\Exception\MissingValueException;
 use PDO;
+use PDOException;
 use PDOStatement;
 
 class BatchInsertManager implements BatchManagerInterface
@@ -62,7 +67,8 @@ class BatchInsertManager implements BatchManagerInterface
 
     /**
      * @param array[] $rows
-     * @throws LoadRuntimeException Thrown if an error occurs writing rows to the database.
+     *
+     * @throws LoadRuntimeException thrown if an error occurs writing rows to the database
      */
     public function write(array $rows): void
     {
@@ -71,7 +77,7 @@ class BatchInsertManager implements BatchManagerInterface
 
             try {
                 $stmt->execute($this->convertRowCollectionToParams($rows));
-            } catch (\PDOException $e) {
+            } catch (PDOException $e) {
                 throw new LoadRuntimeException(
                     'PDO exception thrown when inserting batch of records into staging table.',
                     0,

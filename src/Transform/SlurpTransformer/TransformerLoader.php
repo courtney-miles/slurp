@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 14/08/18
- * Time: 9:57 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -18,6 +22,7 @@ class TransformerLoader
 
     /**
      * @param Change $change
+     *
      * @return ChangeTransformerInterface
      */
     public function loadTransformer(Change $change): ChangeTransformerInterface

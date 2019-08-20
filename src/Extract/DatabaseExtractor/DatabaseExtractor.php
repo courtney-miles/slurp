@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 20/09/18
- * Time: 8:42 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -10,7 +14,6 @@ declare(strict_types=1);
 namespace MilesAsylum\Slurp\Extract\DatabaseExtractor;
 
 use MilesAsylum\Slurp\Extract\ExtractorInterface;
-use Traversable;
 
 class DatabaseExtractor implements ExtractorInterface
 {

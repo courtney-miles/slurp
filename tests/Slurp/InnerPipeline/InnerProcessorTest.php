@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 15/10/18
- * Time: 10:25 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -25,7 +29,7 @@ class InnerProcessorTest extends TestCase
      */
     protected $processor;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -57,6 +61,7 @@ class InnerProcessorTest extends TestCase
         $mockStageOne->shouldReceive('__invoke')
             ->withArgs(static function (SlurpPayload $payload) {
                 $payload->setFiltered(true);
+
                 return true;
             })->andReturn($payload);
 

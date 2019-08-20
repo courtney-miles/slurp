@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 15/10/18
- * Time: 10:06 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -65,6 +69,7 @@ class OuterProcessorTest extends TestCase
         $mockStageOne->shouldReceive('__invoke')
             ->withArgs(static function (Slurp $slurp) use (&$abort) {
                 $abort = true;
+
                 return true;
             })->andReturn($mockSlurp);
 

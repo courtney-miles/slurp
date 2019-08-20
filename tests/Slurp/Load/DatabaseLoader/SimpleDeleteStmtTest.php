@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 22/09/18
- * Time: 7:01 AM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -129,6 +133,7 @@ SQL;
             $this->assertInstanceOf(LoadRuntimeException::class, $e);
             $this->assertSame('PDO exception thrown when deleting rows.', $e->getMessage());
             $this->assertSame($pdoException, $e->getPrevious());
+
             return;
         }
 

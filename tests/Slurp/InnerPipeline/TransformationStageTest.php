@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 24/08/18
- * Time: 10:50 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -36,7 +40,7 @@ class TransformationStageTest extends TestCase
      */
     protected $mockTransformer;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -106,6 +110,7 @@ class TransformationStageTest extends TestCase
      * @param string $field
      * @param $value
      * @param bool $hasViolation
+     *
      * @return MockInterface|SlurpPayload
      */
     protected function createMockPayload(string $field, $value, bool $hasViolation): MockInterface

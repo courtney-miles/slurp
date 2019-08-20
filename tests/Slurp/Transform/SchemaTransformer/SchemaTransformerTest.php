@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 5/09/18
- * Time: 8:52 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -63,9 +67,11 @@ class SchemaTransformerTest extends TestCase
 
     /**
      * @dataProvider getComplexTypeConversionTestData
+     *
      * @param string $fieldClass
      * @param mixed $complexValue
      * @param mixed $scalarValue
+     *
      * @throws TransformationException
      */
     public function testConvertComplexTypeBackToScalar(string $fieldClass, $complexValue, $scalarValue): void

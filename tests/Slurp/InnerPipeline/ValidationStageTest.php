@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 24/08/18
- * Time: 11:34 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -41,7 +45,7 @@ class ValidationStageTest extends TestCase
      */
     protected $mockValidator;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -112,6 +116,7 @@ class ValidationStageTest extends TestCase
      * @param int $recordId
      * @param array $record
      * @param bool $isFiltered
+     *
      * @return SlurpPayload|MockInterface
      */
     public function createMockPayload(int $recordId, array $record, bool $isFiltered = false)

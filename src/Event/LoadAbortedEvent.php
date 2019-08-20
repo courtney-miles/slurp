@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 17/02/19
- * Time: 7:24 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -28,9 +32,10 @@ class LoadAbortedEvent extends Event
 
     /**
      * The payload that caused the load to be aborted.
+     *
      * @return SlurpPayload|null
      */
-    public function getPayload():? SlurpPayload
+    public function getPayload(): ?SlurpPayload
     {
         return $this->payload;
     }

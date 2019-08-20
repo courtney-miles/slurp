@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 15/10/18
- * Time: 9:34 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -33,7 +37,7 @@ class FiltrationStageTest extends TestCase
      */
     protected $mockFilter;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

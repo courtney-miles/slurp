@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 26/08/18
- * Time: 11:39 AM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -15,7 +19,6 @@ use MilesAsylum\Slurp\Event\ExtractionAbortedEvent;
 use MilesAsylum\Slurp\Event\ExtractionEndedEvent;
 use MilesAsylum\Slurp\Event\ExtractionStartedEvent;
 use MilesAsylum\Slurp\Event\RecordProcessedEvent;
-use MilesAsylum\Slurp\Extract\Exception\ExtractionException;
 use MilesAsylum\Slurp\Extract\Exception\MalformedSourceException;
 use MilesAsylum\Slurp\OuterPipeline\Exception\OuterPipelineException;
 use MilesAsylum\Slurp\Slurp;
@@ -35,6 +38,7 @@ class ExtractionStage extends AbstractOuterStage
 
     /**
      * InvokeExtractionPipeline constructor.
+     *
      * @param PipelineInterface $innerPipeline
      * @param callable|null $interrupt
      */
@@ -46,7 +50,9 @@ class ExtractionStage extends AbstractOuterStage
 
     /**
      * @param Slurp $slurp
+     *
      * @return Slurp
+     *
      * @throws OuterPipelineException
      */
     public function __invoke(Slurp $slurp): Slurp
@@ -55,7 +61,7 @@ class ExtractionStage extends AbstractOuterStage
 
         $extractor = $slurp->getExtractor();
 
-        if ($extractor === null) {
+        if (null === $extractor) {
             throw new OuterPipelineException(sprintf('An extractor has not been set for %s.', Slurp::class));
         }
 
@@ -74,7 +80,7 @@ class ExtractionStage extends AbstractOuterStage
 
                 $interrupt = $this->interrupt;
 
-                if ($interrupt !== null && $interrupt($slurp, $payload)) {
+                if (null !== $interrupt && $interrupt($slurp, $payload)) {
                     $slurp->abort();
                     $this->dispatch(
                         ExtractionAbortedEvent::NAME,

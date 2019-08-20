@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 24/08/18
- * Time: 10:43 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -164,6 +168,7 @@ class LoadStageTest extends TestCase
     /**
      * @param array $values
      * @param bool $hasViolations
+     *
      * @return SlurpPayload|MockInterface
      */
     protected function createMockPayload(array $values, bool $hasViolations)

@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 26/08/18
- * Time: 9:22 AM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -195,7 +199,7 @@ class BatchInsertManagerTest extends TestCase
 
         try {
             $this->batchInsUpdStmt->write(
-                [['col_1' => 123, 'col_2' => 234],]
+                [['col_1' => 123, 'col_2' => 234]]
             );
         } catch (\Exception $e) {
             $this->assertInstanceOf(LoadRuntimeException::class, $e);
@@ -204,6 +208,7 @@ class BatchInsertManagerTest extends TestCase
                 $e->getMessage()
             );
             $this->assertSame($pdoException, $e->getPrevious());
+
             return;
         }
 

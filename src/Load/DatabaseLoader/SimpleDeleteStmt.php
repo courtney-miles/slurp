@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 21/09/18
- * Time: 7:18 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -52,7 +56,7 @@ class SimpleDeleteStmt implements DmlStmtInterface
 
         $tableRefTicked = "`{$this->table}`";
 
-        if ($this->database !== null && $this->database !== '') {
+        if (null !== $this->database && '' !== $this->database) {
             $tableRefTicked = "`{$this->database}`." . $tableRefTicked;
         }
 

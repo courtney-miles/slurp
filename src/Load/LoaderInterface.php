@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 12/08/18
- * Time: 7:06 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -11,7 +15,7 @@ namespace MilesAsylum\Slurp\Load;
 
 interface LoaderInterface
 {
-    public function loadRecord(array $record) : void;
+    public function loadRecord(array $record): void;
 
     public function begin(): void;
 

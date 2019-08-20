@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 20/08/18
- * Time: 10:25 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -66,8 +70,9 @@ class DatabaseLoader implements LoaderInterface
 
     /**
      * DatabaseLoader constructor.
+     *
      * @param string $table
-     * @param array $fieldMapping Array key is the destination column and the array value is the source column.
+     * @param array $fieldMapping array key is the destination column and the array value is the source column
      * @param LoaderFactory $dmlFactory
      * @param int $batchSize
      * @param DmlStmtInterface|null $preCommitStmt
@@ -91,8 +96,9 @@ class DatabaseLoader implements LoaderInterface
 
     /**
      * @param array $record
+     *
      * @throws LogicException
-     * @throws LoadRuntimeException Thrown if an error occurs writing rows to the database.
+     * @throws LoadRuntimeException thrown if an error occurs writing rows to the database
      */
     public function loadRecord(array $record): void
     {
@@ -160,7 +166,7 @@ class DatabaseLoader implements LoaderInterface
 
     /**
      * @throws LogicException
-     * @throws LoadRuntimeException Thrown if an database error occurs.
+     * @throws LoadRuntimeException thrown if an database error occurs
      */
     public function finalise(): void
     {
@@ -174,7 +180,7 @@ class DatabaseLoader implements LoaderInterface
 
         $this->flush();
 
-        if ($this->preCommitStmt !== null) {
+        if (null !== $this->preCommitStmt) {
             $this->preCommitStmt->execute();
         }
 
@@ -218,7 +224,7 @@ class DatabaseLoader implements LoaderInterface
         $newValues = [];
 
         foreach ($row as $sourceCol => $value) {
-            foreach (array_keys($this->fieldMapping, $sourceCol) as $destCol) {
+            foreach (array_keys($this->fieldMapping, $sourceCol, true) as $destCol) {
                 $newValues[$destCol] = $value;
             }
         }

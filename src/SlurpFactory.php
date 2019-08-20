@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 16/09/18
- * Time: 9:13 AM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -66,7 +70,9 @@ class SlurpFactory
 
     /**
      * @param string $path
+     *
      * @return Schema
+     *
      * @throws FactoryException
      */
     public function createTableSchemaFromPath(string $path): Schema
@@ -84,7 +90,9 @@ class SlurpFactory
 
     /**
      * @param array $arr
+     *
      * @return Schema
+     *
      * @throws FactoryException
      */
     public function createTableSchemaFromArray(array $arr): Schema
@@ -132,10 +140,11 @@ class SlurpFactory
     /**
      * @param PDO $pdo
      * @param string $table
-     * @param array $fieldMappings Array key is the destination column and the array value is the source column.
+     * @param array $fieldMappings array key is the destination column and the array value is the source column
      * @param int $batchSize
      * @param DmlStmtInterface|null $preCommitStmt
      * @param string|null $database
+     *
      * @return DatabaseLoader
      */
     public function createDatabaseLoader(

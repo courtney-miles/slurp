@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 13/08/18
- * Time: 9:54 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -36,7 +40,7 @@ class ConstraintValidatorTest extends TestCase
      * @var ConstraintValidator
      */
     protected $validator;
-    
+
     public function setUp(): void
     {
         parent::setUp();

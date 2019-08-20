@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 22/08/18
- * Time: 8:45 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -39,7 +43,7 @@ class SlurpPayload
     /**
      * @return int
      */
-    public function getRecordId():? int
+    public function getRecordId(): ?int
     {
         return $this->recordId;
     }
@@ -70,6 +74,7 @@ class SlurpPayload
 
     /**
      * @param $name
+     *
      * @return mixed|null
      */
     public function getFieldValue($name)
@@ -139,7 +144,7 @@ class SlurpPayload
             return false;
         }
 
-        if (!empty($this->violations) && $classType === null) {
+        if (!empty($this->violations) && null === $classType) {
             return true;
         }
 

@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 15/08/18
- * Time: 7:08 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -37,6 +41,7 @@ class CsvFileExtractor implements CsvFileExtractorInterface
 
     /**
      * @param string $delimiter
+     *
      * @throws Exception
      */
     public function setDelimiter(string $delimiter): void
@@ -46,6 +51,7 @@ class CsvFileExtractor implements CsvFileExtractorInterface
 
     /**
      * @param string $enclosure
+     *
      * @throws Exception
      */
     public function setEnclosure(string $enclosure): void
@@ -55,6 +61,7 @@ class CsvFileExtractor implements CsvFileExtractorInterface
 
     /**
      * @param string $escape
+     *
      * @throws Exception
      */
     public function setEscape(string $escape): void
@@ -83,7 +90,7 @@ class CsvFileExtractor implements CsvFileExtractorInterface
 
     protected function prepareRecords(Iterator $records, array $headers): Iterator
     {
-        if ($this->headerOffset !== null) {
+        if (null !== $this->headerOffset) {
             $records = new CallbackFilterIterator($records, function (array $record, int $offset): bool {
                 return $offset !== $this->headerOffset;
             });

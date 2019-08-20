@@ -1,8 +1,14 @@
 <?php
+
+declare(strict_types=1);
 /**
- * Author: Courtney Miles
- * Date: 17/8/19
- * Time: 5:00 pm
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Event;

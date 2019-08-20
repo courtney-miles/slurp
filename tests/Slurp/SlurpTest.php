@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 12/08/18
- * Time: 6:36 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -60,6 +64,7 @@ class SlurpTest extends TestCase
         $mockPipeLine->shouldReceive('__invoke')
             ->withArgs(function (Slurp $slurp) use ($mockExtractor) {
                 $this->assertSame($mockExtractor, $slurp->getExtractor());
+
                 return true;
             });
 

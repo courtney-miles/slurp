@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 4/09/18
- * Time: 10:18 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -36,7 +40,9 @@ class SchemaTransformer implements TransformerInterface
     /**
      * @param string $field
      * @param $value
+     *
      * @return mixed
+     *
      * @throws TransformationException
      */
     public function transformField(string $field, $value)
@@ -62,7 +68,9 @@ class SchemaTransformer implements TransformerInterface
 
     /**
      * @param array $record
+     *
      * @return array|mixed[]
+     *
      * @throws TransformationException
      */
     public function transformRecord(array $record): array
@@ -80,7 +88,7 @@ class SchemaTransformer implements TransformerInterface
         foreach ($record as $fieldName => $value) {
             $field = $this->getField($fieldName);
 
-            if ($field === null || $value === null) {
+            if (null === $field || null === $value) {
                 continue;
             }
 
@@ -90,11 +98,11 @@ class SchemaTransformer implements TransformerInterface
                     $record[$fieldName] = implode(':', $value);
                     break;
                 case $field instanceof DateField:
-                    /** @var Carbon $value */
+                    /* @var Carbon $value */
                     $record[$fieldName] = $value->toDateString();
                     break;
                 case $field instanceof DatetimeField:
-                    /** @var Carbon $value */
+                    /* @var Carbon $value */
                     $record[$fieldName] = $value->toDateTimeString();
                     break;
             }
@@ -105,6 +113,7 @@ class SchemaTransformer implements TransformerInterface
 
     /**
      * @param $name
+     *
      * @return BaseField|null
      */
     protected function getField($name): ?BaseField

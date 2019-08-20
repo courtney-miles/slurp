@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 25/08/18
- * Time: 7:11 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -54,7 +58,7 @@ class MySQLTestHelper
     public function getDatabasePort(): int
     {
         return isset($_ENV['TESTS_SLURP_DBADAPTER_MYSQL_PORT'])
-            ? (int)$_ENV['TESTS_SLURP_DBADAPTER_MYSQL_PORT']
+            ? (int) $_ENV['TESTS_SLURP_DBADAPTER_MYSQL_PORT']
             : 3306;
     }
 

@@ -1,8 +1,12 @@
 <?php
 /**
- * Author: Courtney Miles
- * Date: 15/08/18
- * Time: 10:15 PM
+ * @author Courtney Miles
+ *
+ * @see https://github.com/courtney-miles/slurp
+ *
+ * @package milesasylum/slurp
+ *
+ * @license MIT
  */
 
 declare(strict_types=1);
@@ -33,7 +37,7 @@ class CsvFileExtractorTest extends TestCase
      */
     protected $mockReader;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -86,7 +90,7 @@ class CsvFileExtractorTest extends TestCase
     {
         $csvRows = [
             ['col_1', 'col_2'],
-            [123, 234]
+            [123, 234],
         ];
         $this->setUpMockReader($this->mockReader, $csvRows);
         $this->csvExtractor->loadHeadersFromFile();
@@ -114,7 +118,7 @@ class CsvFileExtractorTest extends TestCase
     {
         $this->expectException(ValueCountMismatchException::class);
 
-        $csvRows = [[123, 234],[345,456,567]];
+        $csvRows = [[123, 234], [345, 456, 567]];
         $this->setUpMockReader($this->mockReader, $csvRows);
 
         foreach ($this->csvExtractor as $rowId => $row) {
