@@ -29,6 +29,7 @@ class VerifyValueCountIterator extends IteratorIterator
 
     /**
      * @return array
+     *
      * @throws ValueCountMismatchException
      */
     public function current(): array

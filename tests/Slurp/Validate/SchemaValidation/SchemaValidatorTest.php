@@ -38,7 +38,7 @@ class SchemaValidatorTest extends TestCase
      */
     protected $mockTableSchema;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->mockTableSchema = Mockery::mock(Schema::class);
         $this->validator = new SchemaValidator($this->mockTableSchema);
@@ -80,13 +80,13 @@ class SchemaValidatorTest extends TestCase
 
         $mockFields = [
             Mockery::mock(BaseField::class, ['name' => $badField, 'unique' => false]),
-            Mockery::mock(BaseField::class, ['name' => $goodField, 'unique' => false])
+            Mockery::mock(BaseField::class, ['name' => $goodField, 'unique' => false]),
         ];
 
         $mockValidationError = Mockery::mock(SchemaValidationError::class);
         $mockValidationError->extraDetails = [
             'field' => $badField,
-            'value' => $badValue
+            'value' => $badValue,
         ];
         $mockValidationError->shouldReceive('getMessage')
             ->andReturn($message);
@@ -107,7 +107,7 @@ class SchemaValidatorTest extends TestCase
     {
         $mockFields = [
             Mockery::mock(BaseField::class, ['name' => 'col_a', 'unique' => false]),
-            Mockery::mock(BaseField::class, ['name' => 'col_b', 'unique' => false])
+            Mockery::mock(BaseField::class, ['name' => 'col_b', 'unique' => false]),
         ];
 
         $record = ['col_a' => 123];
@@ -122,7 +122,7 @@ class SchemaValidatorTest extends TestCase
         $violation = array_pop($violations);
 
         $this->assertInstanceOf(RecordViolation::class, $violation);
-        $this->assertEquals(new RecordViolation(1, "Record is missing field/s: col_b"), $violation);
+        $this->assertEquals(new RecordViolation(1, 'Record is missing field/s: col_b'), $violation);
     }
 
     public function testValidateRecordWithExtraField(): void

@@ -43,7 +43,7 @@ class FinaliseStageTest extends TestCase
      */
     protected $mockSlurp;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

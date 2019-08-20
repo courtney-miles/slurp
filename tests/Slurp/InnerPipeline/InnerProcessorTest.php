@@ -29,7 +29,7 @@ class InnerProcessorTest extends TestCase
      */
     protected $processor;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -61,6 +61,7 @@ class InnerProcessorTest extends TestCase
         $mockStageOne->shouldReceive('__invoke')
             ->withArgs(static function (SlurpPayload $payload) {
                 $payload->setFiltered(true);
+
                 return true;
             })->andReturn($payload);
 

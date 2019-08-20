@@ -133,6 +133,7 @@ SQL;
             $this->assertInstanceOf(LoadRuntimeException::class, $e);
             $this->assertSame('PDO exception thrown when deleting rows.', $e->getMessage());
             $this->assertSame($pdoException, $e->getPrevious());
+
             return;
         }
 

@@ -40,7 +40,7 @@ class ConstraintValidatorTest extends TestCase
      * @var ConstraintValidator
      */
     protected $validator;
-    
+
     public function setUp(): void
     {
         parent::setUp();

@@ -34,7 +34,6 @@ abstract class AbstractStage implements StageInterface
      */
     private $state;
 
-
     public function setEventDispatcher(EventDispatcherInterface $dispatcher): void
     {
         $this->dispatcher = $dispatcher;

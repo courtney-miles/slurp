@@ -67,9 +67,11 @@ class SchemaTransformerTest extends TestCase
 
     /**
      * @dataProvider getComplexTypeConversionTestData
+     *
      * @param string $fieldClass
      * @param mixed $complexValue
      * @param mixed $scalarValue
+     *
      * @throws TransformationException
      */
     public function testConvertComplexTypeBackToScalar(string $fieldClass, $complexValue, $scalarValue): void

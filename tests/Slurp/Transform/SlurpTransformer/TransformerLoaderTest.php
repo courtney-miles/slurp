@@ -25,7 +25,7 @@ class TransformerLoaderTest extends TestCase
      */
     protected $transformerLoader;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->transformerLoader = new TransformerLoader();
     }
@@ -55,7 +55,7 @@ class Scratch extends Change
 
 class ScratchTransformer extends AbstractChangeTransformer
 {
-    public function transform($value, Change $change)
+    public function transform($value, Change $change): void
     {
         // Meh.
     }

@@ -62,7 +62,7 @@ class CsvMultiFileExtractor implements CsvFileExtractorInterface
     /**
      * Loads the first row in the CSV file as the headers.
      */
-    public function loadHeadersFromFile() : void
+    public function loadHeadersFromFile(): void
     {
         foreach ($this->extractors as $extractor) {
             $extractor->loadHeadersFromFile();

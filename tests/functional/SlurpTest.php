@@ -37,7 +37,7 @@ class SlurpTest extends TestCase
 
     protected static $table;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
 
@@ -85,8 +85,8 @@ SQL
                 self::$table => [
                     ['name' => 'foo', 'date' => '2018-01-01', 'value' => '123.00'],
                     ['name' => 'bar', 'date' => '2018-01-02', 'value' => '234.00'],
-                    ['name' => 'baz', 'date' => '2018-01-03', 'value' => '345.00']
-                ]
+                    ['name' => 'baz', 'date' => '2018-01-03', 'value' => '345.00'],
+                ],
             ]
         )->getTable(self::$table);
 
@@ -117,8 +117,8 @@ SQL
                 self::$table => [
                     ['name' => 'foo', 'date' => '2018-01-01', 'value' => '123.00'],
                     ['name' => 'bar', 'date' => '2018-01-02', 'value' => '234.00'],
-                    ['name' => 'baz', 'date' => '2018-01-03', 'value' => '345.00']
-                ]
+                    ['name' => 'baz', 'date' => '2018-01-03', 'value' => '345.00'],
+                ],
             ]
         )->getTable(self::$table);
 
@@ -157,8 +157,8 @@ SQL
                 self::$table => [
                     ['name' => 'FOO', 'date' => '2018-01-01', 'value' => '123.00'],
                     ['name' => 'BAR', 'date' => '2018-01-02', 'value' => '234.00'],
-                    ['name' => 'BAZ', 'date' => '2018-01-03', 'value' => '345.00']
-                ]
+                    ['name' => 'BAZ', 'date' => '2018-01-03', 'value' => '345.00'],
+                ],
             ]
         )->getTable('tbl_foo');
 
@@ -189,8 +189,8 @@ SQL
                 self::$pdo,
                 'all_types',
                 array_combine(
-                    ['a_string','a_number','an_integer','a_boolean','a_date','a_time','a_datetime'],
-                    ['a_string','a_number','an_integer','a_boolean','a_date','a_time','a_datetime']
+                    ['a_string', 'a_number', 'an_integer', 'a_boolean', 'a_date', 'a_time', 'a_datetime'],
+                    ['a_string', 'a_number', 'an_integer', 'a_boolean', 'a_date', 'a_time', 'a_datetime']
                 ),
                 1
             )
@@ -211,9 +211,9 @@ SQL
                         'a_boolean' => 1,
                         'a_date' => '2018-01-01',
                         'a_time' => '12:34:56',
-                        'a_datetime' => '2018-01-01 12:34:56'
+                        'a_datetime' => '2018-01-01 12:34:56',
                     ],
-                ]
+                ],
             ]
         )->getTable('all_types');
 
@@ -227,9 +227,10 @@ SQL
         $mockDispatcher->shouldReceive('dispatch')->byDefault();
         $mockDispatcher->shouldReceive('dispatch')
             ->withArgs(static function (string $eventName, Event $event) use (&$violations) {
-                if ($eventName === RecordValidatedEvent::NAME) {
+                if (RecordValidatedEvent::NAME === $eventName) {
                     /** @var RecordValidatedEvent $event */
                     $violations = array_merge($violations, $event->getPayload()->getViolations());
+
                     return true;
                 }
 
@@ -247,7 +248,7 @@ SQL
                        ['name' => 'col_a'],
                        ['name' => 'col_b'],
                        ['name' => 'col_c'],
-                   ]
+                   ],
                 ]
             )
         )->setEventDispatcher($mockDispatcher)

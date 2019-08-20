@@ -58,7 +58,7 @@ class MySQLTestHelper
     public function getDatabasePort(): int
     {
         return isset($_ENV['TESTS_SLURP_DBADAPTER_MYSQL_PORT'])
-            ? (int)$_ENV['TESTS_SLURP_DBADAPTER_MYSQL_PORT']
+            ? (int) $_ENV['TESTS_SLURP_DBADAPTER_MYSQL_PORT']
             : 3306;
     }
 

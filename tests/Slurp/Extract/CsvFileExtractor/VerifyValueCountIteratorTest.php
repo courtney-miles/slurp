@@ -22,8 +22,10 @@ class VerifyValueCountIteratorTest extends TestCase
 {
     /**
      * @dataProvider getValueCountMismatchTestData
+     *
      * @param array $values
      * @param int $expectedCount
+     *
      * @throws ValueCountMismatchException
      */
     public function testValueCountMismatch(array $values, int $expectedCount): void
@@ -49,8 +51,8 @@ class VerifyValueCountIteratorTest extends TestCase
     public function getValueCountMismatchTestData(): array
     {
         return [
-            [[123,234], 1],
-            [[123,234], 3],
+            [[123, 234], 1],
+            [[123, 234], 3],
         ];
     }
 }

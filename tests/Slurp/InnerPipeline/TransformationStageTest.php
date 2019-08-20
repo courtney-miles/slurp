@@ -40,7 +40,7 @@ class TransformationStageTest extends TestCase
      */
     protected $mockTransformer;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -110,6 +110,7 @@ class TransformationStageTest extends TestCase
      * @param string $field
      * @param $value
      * @param bool $hasViolation
+     *
      * @return MockInterface|SlurpPayload
      */
     protected function createMockPayload(string $field, $value, bool $hasViolation): MockInterface

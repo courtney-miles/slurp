@@ -56,7 +56,7 @@ class SimpleDeleteStmt implements DmlStmtInterface
 
         $tableRefTicked = "`{$this->table}`";
 
-        if ($this->database !== null && $this->database !== '') {
+        if (null !== $this->database && '' !== $this->database) {
             $tableRefTicked = "`{$this->database}`." . $tableRefTicked;
         }
 

@@ -72,7 +72,7 @@ class DatabaseLoaderTest extends TestCase
         $databaseLoader = new DatabaseLoader('', [], $this->mockLoaderFactory, 1);
 
         $databaseLoader->begin();
-        
+
         $this->assertTrue($databaseLoader->hasBegun());
     }
 
@@ -172,6 +172,7 @@ class DatabaseLoaderTest extends TestCase
                 $e->getMessage()
             );
             $this->assertSame($pdoException, $e->getPrevious());
+
             return;
         }
 
@@ -296,6 +297,7 @@ class DatabaseLoaderTest extends TestCase
     /**
      * @param BatchInsertManager $batchInsertManager
      * @param StagedLoad $stagedLoad
+     *
      * @return LoaderFactory|MockInterface
      */
     protected function createMockLoaderFactory(

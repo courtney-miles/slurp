@@ -35,12 +35,12 @@ class SchemaValidator implements ValidatorInterface
     private $uniqueFieldValues = [];
 
     /**
-     * @var null|array
+     * @var array|null
      */
     private $foundUniqueFields;
 
     /**
-     * @var null|array
+     * @var array|null
      */
     private $fieldNames;
 
@@ -119,8 +119,7 @@ class SchemaValidator implements ValidatorInterface
             $value = $record[$uniqueField->name()];
             $keyValue = is_object($value) ? spl_object_hash($value) : $value;
 
-            if (isset($this->uniqueFieldValues[$fieldName])
-                && isset($this->uniqueFieldValues[$fieldName][$keyValue])
+            if (isset($this->uniqueFieldValues[$fieldName], $this->uniqueFieldValues[$fieldName][$keyValue])
             ) {
                 $violations[] = new FieldViolation(
                     $recordId,
@@ -141,7 +140,7 @@ class SchemaValidator implements ValidatorInterface
      */
     protected function getUniqueFields(): array
     {
-        if ($this->foundUniqueFields === null) {
+        if (null === $this->foundUniqueFields) {
             $this->foundUniqueFields = [];
 
             foreach ($this->tableSchema->fields() as $field) {
@@ -156,7 +155,7 @@ class SchemaValidator implements ValidatorInterface
 
     protected function getFieldNames(): array
     {
-        if ($this->fieldNames === null) {
+        if (null === $this->fieldNames) {
             $this->fieldNames = [];
 
             foreach ($this->tableSchema->fields() as $field) {

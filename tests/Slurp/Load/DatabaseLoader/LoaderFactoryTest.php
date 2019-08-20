@@ -35,7 +35,7 @@ class LoaderFactoryTest extends TestCase
      */
     protected $factory;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

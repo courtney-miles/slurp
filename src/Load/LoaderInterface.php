@@ -15,7 +15,7 @@ namespace MilesAsylum\Slurp\Load;
 
 interface LoaderInterface
 {
-    public function loadRecord(array $record) : void;
+    public function loadRecord(array $record): void;
 
     public function begin(): void;
 

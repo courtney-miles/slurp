@@ -22,6 +22,7 @@ class TransformerLoader
 
     /**
      * @param Change $change
+     *
      * @return ChangeTransformerInterface
      */
     public function loadTransformer(Change $change): ChangeTransformerInterface

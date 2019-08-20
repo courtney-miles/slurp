@@ -22,6 +22,7 @@ class QueryFactory
      * @param array $columns
      * @param int $batchSize
      * @param string $database
+     *
      * @return string
      */
     public function createInsertQuery(
@@ -40,7 +41,7 @@ class QueryFactory
 
         $tableRefTicked = "`{$table}`";
 
-        if ($database !== null && $database !== '') {
+        if (null !== $database && '' !== $database) {
             $tableRefTicked = "`{$database}`." . $tableRefTicked;
         }
 
