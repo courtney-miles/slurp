@@ -20,6 +20,7 @@ use MilesAsylum\Slurp\Transform\SlurpTransformer\TransformerLoader;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Error\Warning;
 use PHPUnit\Framework\TestCase;
 
 class TransformerTest extends TestCase
@@ -85,6 +86,41 @@ class TransformerTest extends TestCase
         $value = 123;
 
         $this->assertSame([$field => $value], $this->transformer->transformRecord([$field => $value]));
+    }
+
+    public function testTransformUndefinedField(): void
+    {
+        $record = ['foo' => 123];
+
+        $mockChange = Mockery::mock(Change::class);
+        $mockChangeTransformer = Mockery::mock(ChangeTransformerInterface::class);
+        $mockChangeTransformer->shouldReceive('transform')
+            ->never();
+        $this->stubTransformerLoader($this->mockLoader, $mockChange, $mockChangeTransformer);
+        $this->transformer->setFieldChanges('bar', $mockChange);
+
+        $this->assertSame(
+            $record,
+            @$this->transformer->transformRecord($record)
+        );
+    }
+
+    public function testTransformUndefinedFieldTriggersWarning(): void
+    {
+        $this->expectException(Warning::class);
+        $this->expectExceptionMessage(
+            'Unable to apply transformation for field \'bar\'. The supplied record did not contain this field.'
+        )
+        ;
+
+        $mockChange = Mockery::mock(Change::class);
+        $mockChangeTransformer = Mockery::mock(ChangeTransformerInterface::class);
+        $mockChangeTransformer->shouldReceive('transform')
+            ->never();
+        $this->stubTransformerLoader($this->mockLoader, $mockChange, $mockChangeTransformer);
+        $this->transformer->setFieldChanges('bar', $mockChange);
+
+        $this->transformer->transformRecord(['foo' => 123]);
     }
 
     public function testAddChange(): void

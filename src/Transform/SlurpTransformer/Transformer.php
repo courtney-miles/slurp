@@ -83,7 +83,14 @@ class Transformer implements TransformerInterface
     {
         foreach ($this->fieldChanges as $field => $changes) {
             if (!isset($record[$field])) {
-                return null;
+                trigger_error(
+                    sprintf(
+                        'Unable to apply transformation for field \'%s\'. The supplied record did not contain this field.',
+                        $field
+                    ),
+                    E_USER_WARNING
+                );
+                continue;
             }
 
             foreach ($changes as $change) {
