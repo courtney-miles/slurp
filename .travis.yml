@@ -3,6 +3,11 @@ language: php
 services:
 - mysql
 
+env:
+    global:
+        - CHECK_PHP_SYNTAX="false"
+        - TESTS_SLURP_DBADAPTER_MYSQL_HOST="localhost"
+
 matrix:
     include:
         - php: 7.2
