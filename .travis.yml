@@ -13,6 +13,10 @@ matrix:
         - php: 7.2
           env: CHECK_PHP_SYNTAX="true"
 
+cache:
+    directories:
+        - $HOME/.composer/cache/files
+
 before_script:
 - composer self-update
 - composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction

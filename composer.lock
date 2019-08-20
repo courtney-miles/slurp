@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8595d53ca875249851e8c9a156bfdc32",
+    "content-hash": "c0f30e8de3b53f05a97abdf28f52fec5",
     "packages": [
         {
             "name": "frictionlessdata/tableschema",
@@ -1790,9 +1790,9 @@
             "authors": [
                 {
                     "name": "Kitamura Satoshi",
+                    "role": "Original creator",
                     "email": "with.no.parachute@gmail.com",
-                    "homepage": "https://www.facebook.com/satooshi.jp",
-                    "role": "Original creator"
+                    "homepage": "https://www.facebook.com/satooshi.jp"
                 },
                 {
                     "name": "Takashi Matsuo",
@@ -2283,8 +2283,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Simple template engine.",
@@ -3424,8 +3424,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Library that helps with managing the version number of Git-hosted PHP projects",
@@ -4209,7 +4209,7 @@
     "stability-flags": {
         "roave/security-advisories": 20
     },
-    "prefer-stable": false,
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "7.1 - 7.2",
