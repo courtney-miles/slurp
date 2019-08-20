@@ -16,6 +16,7 @@ namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 use MilesAsylum\Slurp\Exception\LogicException;
 use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
 use PDO;
+use PDOException;
 
 class StagedLoad
 {
@@ -56,7 +57,8 @@ class StagedLoad
     }
 
     /**
-     * @return string The name of the temporary table to insert staged data into.
+     * @return string the name of the temporary table to insert staged data into
+     *
      * @throws LogicException
      */
     public function begin(): string
@@ -119,7 +121,7 @@ INSERT INTO {$tickedTableRef} ({$cols})
   ON DUPLICATE KEY UPDATE {$updateValuesStr}
 SQL
             );
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             throw new LoadRuntimeException(
                 'PDO exception thrown when copying rows from the staging table to the destination table.',
                 0,
@@ -156,7 +158,7 @@ SQL
     {
         $tableRefTicked = "`{$table}`";
 
-        if ($database !== null && $database !== '') {
+        if (null !== $database && '' !== $database) {
             $tableRefTicked = "`{$database}`." . $tableRefTicked;
         }
 

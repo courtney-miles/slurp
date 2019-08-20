@@ -57,6 +57,6 @@ class ConstraintFilter implements FilterInterface
         }
 
         // Where there are no violations, this means the value is a valid match and should be filtered.
-        return !(bool)count($this->validator->validate($value, $this->fieldConstraints[$field]));
+        return !(bool) count($this->validator->validate($value, $this->fieldConstraints[$field]));
     }
 }

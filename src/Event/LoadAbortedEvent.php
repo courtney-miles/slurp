@@ -32,9 +32,10 @@ class LoadAbortedEvent extends Event
 
     /**
      * The payload that caused the load to be aborted.
+     *
      * @return SlurpPayload|null
      */
-    public function getPayload():? SlurpPayload
+    public function getPayload(): ?SlurpPayload
     {
         return $this->payload;
     }

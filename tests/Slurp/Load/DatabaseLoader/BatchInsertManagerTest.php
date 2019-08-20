@@ -199,7 +199,7 @@ class BatchInsertManagerTest extends TestCase
 
         try {
             $this->batchInsUpdStmt->write(
-                [['col_1' => 123, 'col_2' => 234],]
+                [['col_1' => 123, 'col_2' => 234]]
             );
         } catch (\Exception $e) {
             $this->assertInstanceOf(LoadRuntimeException::class, $e);
@@ -208,6 +208,7 @@ class BatchInsertManagerTest extends TestCase
                 $e->getMessage()
             );
             $this->assertSame($pdoException, $e->getPrevious());
+
             return;
         }
 

@@ -21,6 +21,7 @@ class UnexpectedTypeExceptionTest extends TestCase
 {
     /**
      * @dataProvider getConstructorArgs
+     *
      * @param $value
      * @param $expectedType
      * @param $expectedMessage

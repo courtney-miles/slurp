@@ -37,7 +37,7 @@ class FiltrationStageTest extends TestCase
      */
     protected $mockFilter;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

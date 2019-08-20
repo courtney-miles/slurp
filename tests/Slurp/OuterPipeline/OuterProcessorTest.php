@@ -69,6 +69,7 @@ class OuterProcessorTest extends TestCase
         $mockStageOne->shouldReceive('__invoke')
             ->withArgs(static function (Slurp $slurp) use (&$abort) {
                 $abort = true;
+
                 return true;
             })->andReturn($mockSlurp);
 

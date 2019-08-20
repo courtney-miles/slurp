@@ -36,7 +36,7 @@ class DatabaseExtractorTest extends TestCase
      */
     protected $mockStmt;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

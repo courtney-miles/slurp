@@ -64,6 +64,7 @@ class SlurpTest extends TestCase
         $mockPipeLine->shouldReceive('__invoke')
             ->withArgs(function (Slurp $slurp) use ($mockExtractor) {
                 $this->assertSame($mockExtractor, $slurp->getExtractor());
+
                 return true;
             });
 

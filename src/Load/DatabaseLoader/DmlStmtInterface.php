@@ -19,7 +19,7 @@ namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 interface DmlStmtInterface
 {
     /**
-     * @return int The number of affected rows.
+     * @return int the number of affected rows
      */
     public function execute(): int;
 }

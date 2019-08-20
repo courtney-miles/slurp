@@ -45,7 +45,7 @@ class ValidationStageTest extends TestCase
      */
     protected $mockValidator;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -116,6 +116,7 @@ class ValidationStageTest extends TestCase
      * @param int $recordId
      * @param array $record
      * @param bool $isFiltered
+     *
      * @return SlurpPayload|MockInterface
      */
     public function createMockPayload(int $recordId, array $record, bool $isFiltered = false)

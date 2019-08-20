@@ -1,25 +1,31 @@
 language: php
 
-php:
-- '7.1'
-- '7.2'
-
 services:
 - mysql
 
-env:
-- VALIDATOR_VER=3.4.*
-- VALIDATOR_VER=4.0.*
-- VALIDATOR_VER=4.1.*
+matrix:
+    include:
+        - php: 7.2
+          env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
+        - php: 7.1
+          env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
+        - php: 7.1
+        - php: 7.2
+          env: CHECK_PHP_SYNTAX="true"
+
+cache:
+    directories:
+        - $HOME/.composer/cache/files
 
 before_script:
 - composer self-update
-- composer install --no-interaction --dev
-- composer require symfony/validator:${VALIDATOR_VER} --no-update
+- composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction
 
 script:
+- composer validate --strict --no-check-lock
 - php vendor/bin/phpunit -c phpunit.xml.dist --testsuite unit_tests --coverage-clover build/logs/clover.xml
 - php vendor/bin/phpunit -c phpunit.xml.dist --testsuite functional_tests
+- if [[ "$CHECK_PHP_SYNTAX" == "true" ]]; then php vendor/bin/php-cs-fixer fix --dry-run --verbose --diff --allow-risky=yes --no-interaction --ansi; fi;
 
 after_success:
 - travis_retry php vendor/bin/php-coveralls

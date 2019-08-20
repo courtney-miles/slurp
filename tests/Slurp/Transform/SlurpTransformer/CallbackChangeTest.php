@@ -21,7 +21,7 @@ class CallbackChangeTest extends TestCase
 {
     public function testTransformedBy(): void
     {
-        $change = new CallbackChange(static function () {
+        $change = new CallbackChange(static function (): void {
         });
 
         $this->assertSame(CallbackTransformer::class, $change->transformedBy());

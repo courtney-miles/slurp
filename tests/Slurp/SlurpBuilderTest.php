@@ -87,7 +87,6 @@ class SlurpBuilderTest extends TestCase
      */
     private $mockInnerPipeline;
 
-
     /**
      * @var PipelineInterface|MockInterface
      */
@@ -432,7 +431,7 @@ class SlurpBuilderTest extends TestCase
 
     public function testSetExtractionInterrupt(): void
     {
-        $interrupt = static function () {
+        $interrupt = static function (): void {
         };
 
         $this->mockFactory->shouldReceive('createExtractionStage')
@@ -554,6 +553,7 @@ class SlurpBuilderTest extends TestCase
      * @param ConstraintFilter $constraintFilter
      * @param OuterProcessor $outerProcessor
      * @param InnerProcessor $innerProcessor
+     *
      * @return SlurpFactory|MockInterface
      */
     protected function createMockFactory(
@@ -597,6 +597,7 @@ class SlurpBuilderTest extends TestCase
 
     /**
      * @param PipelineInterface $innerPipeline
+     *
      * @return PipelineBuilder|MockInterface
      */
     protected function createMockInnerPipelineBuilder(PipelineInterface $innerPipeline)
@@ -623,6 +624,7 @@ class SlurpBuilderTest extends TestCase
 
     /**
      * @param PipelineInterface $outerPipeline
+     *
      * @return PipelineBuilder|MockInterface
      */
     protected function createMockOuterPipelineBuilder(PipelineInterface $outerPipeline)

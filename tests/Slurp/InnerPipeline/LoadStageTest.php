@@ -168,6 +168,7 @@ class LoadStageTest extends TestCase
     /**
      * @param array $values
      * @param bool $hasViolations
+     *
      * @return SlurpPayload|MockInterface
      */
     protected function createMockPayload(array $values, bool $hasViolations)

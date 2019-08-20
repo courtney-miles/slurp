@@ -41,6 +41,7 @@ class CsvFileExtractor implements CsvFileExtractorInterface
 
     /**
      * @param string $delimiter
+     *
      * @throws Exception
      */
     public function setDelimiter(string $delimiter): void
@@ -50,6 +51,7 @@ class CsvFileExtractor implements CsvFileExtractorInterface
 
     /**
      * @param string $enclosure
+     *
      * @throws Exception
      */
     public function setEnclosure(string $enclosure): void
@@ -59,6 +61,7 @@ class CsvFileExtractor implements CsvFileExtractorInterface
 
     /**
      * @param string $escape
+     *
      * @throws Exception
      */
     public function setEscape(string $escape): void
@@ -87,7 +90,7 @@ class CsvFileExtractor implements CsvFileExtractorInterface
 
     protected function prepareRecords(Iterator $records, array $headers): Iterator
     {
-        if ($this->headerOffset !== null) {
+        if (null !== $this->headerOffset) {
             $records = new CallbackFilterIterator($records, function (array $record, int $offset): bool {
                 return $offset !== $this->headerOffset;
             });

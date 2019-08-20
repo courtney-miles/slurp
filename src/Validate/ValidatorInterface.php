@@ -19,6 +19,7 @@ interface ValidatorInterface
      * @param int $recordId
      * @param string $field
      * @param $value
+     *
      * @return ViolationInterface[]
      */
     public function validateField(int $recordId, string $field, $value): array;
@@ -26,6 +27,7 @@ interface ValidatorInterface
     /**
      * @param int $recordId
      * @param array $record
+     *
      * @return ViolationInterface[]
      */
     public function validateRecord(int $recordId, array $record): array;
