@@ -15,7 +15,7 @@ namespace MilesAsylum\Slurp\OuterPipeline;
 
 use League\Pipeline\Pipeline;
 use League\Pipeline\PipelineInterface;
-use MilesAsylum\Slurp\Event\ExtractionAbortedEvent;
+use MilesAsylum\Slurp\Event\ExtractionFailedEvent;
 use MilesAsylum\Slurp\Event\ExtractionEndedEvent;
 use MilesAsylum\Slurp\Event\ExtractionStartedEvent;
 use MilesAsylum\Slurp\Event\RecordProcessedEvent;
@@ -83,8 +83,8 @@ class ExtractionStage extends AbstractOuterStage
                 if (null !== $interrupt && $interrupt($slurp, $payload)) {
                     $slurp->abort();
                     $this->dispatch(
-                        ExtractionAbortedEvent::NAME,
-                        new ExtractionAbortedEvent(
+                        ExtractionFailedEvent::NAME,
+                        new ExtractionFailedEvent(
                             'Extraction was interrupted.',
                             $id
                         )
@@ -97,8 +97,8 @@ class ExtractionStage extends AbstractOuterStage
         } catch (MalformedSourceException $e) {
             $slurp->abort();
             $this->dispatch(
-                ExtractionAbortedEvent::NAME,
-                new ExtractionAbortedEvent($e->getMessage(), $previousRecordId + 1)
+                ExtractionFailedEvent::NAME,
+                new ExtractionFailedEvent($e->getMessage(), $previousRecordId + 1)
             );
         }
 

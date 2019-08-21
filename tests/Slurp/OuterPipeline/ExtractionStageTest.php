@@ -15,7 +15,7 @@ namespace MilesAsylum\Slurp\Tests\Slurp\OuterPipeline;
 
 use ArrayObject;
 use League\Pipeline\Pipeline;
-use MilesAsylum\Slurp\Event\ExtractionAbortedEvent;
+use MilesAsylum\Slurp\Event\ExtractionFailedEvent;
 use MilesAsylum\Slurp\Event\ExtractionEndedEvent;
 use MilesAsylum\Slurp\Event\ExtractionStartedEvent;
 use MilesAsylum\Slurp\Event\RecordProcessedEvent;
@@ -150,7 +150,7 @@ class ExtractionStageTest extends TestCase
         $rows = [['foo', 123], ['bar', 234]];
         $exceptionAtCount = 1;
         $exceptionMessage = 'Fubar';
-        /** @var ExtractionAbortedEvent|null $spiedEvent This is used to capture the event so we can perform assertions against it. */
+        /** @var ExtractionFailedEvent|null $spiedEvent This is used to capture the event so we can perform assertions against it. */
         $spiedEvent = null;
         $mockExtractor = Mockery::mock(ExtractorInterface::class);
         $this->stubExtractorContentWithException($mockExtractor, $rows, $exceptionAtCount, $exceptionMessage);
@@ -161,7 +161,7 @@ class ExtractionStageTest extends TestCase
         $mockDispatcher = $this->createMockDispatcher();
         $mockDispatcher->shouldReceive('dispatch')->byDefault();
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(ExtractionAbortedEvent::NAME, Mockery::type(ExtractionAbortedEvent::class))
+            ->with(ExtractionFailedEvent::NAME, Mockery::type(ExtractionFailedEvent::class))
             ->andReturnUsing(static function ($eventName, $event) use (&$spiedEvent): void {
                 $spiedEvent = $event;
             })
@@ -170,7 +170,7 @@ class ExtractionStageTest extends TestCase
 
         ($this->stage)($this->mockSlurp);
 
-        $this->assertInstanceOf(ExtractionAbortedEvent::class, $spiedEvent);
+        $this->assertInstanceOf(ExtractionFailedEvent::class, $spiedEvent);
         $this->assertSame($exceptionAtCount, $spiedEvent->getRecordId());
         $this->assertSame($exceptionMessage, $spiedEvent->getReason());
     }

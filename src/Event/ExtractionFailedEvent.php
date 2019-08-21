@@ -15,9 +15,9 @@ namespace MilesAsylum\Slurp\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 
-class ExtractionAbortedEvent extends Event
+class ExtractionFailedEvent extends Event
 {
-    public const NAME = 'slurp.extraction.aborted';
+    public const NAME = 'slurp.extraction.failed';
 
     /**
      * @var string|null
