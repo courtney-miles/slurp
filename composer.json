@@ -12,13 +12,13 @@
         }
     ],
     "require": {
-        "php": "7.1 - 7.2",
+        "php": "^7.2",
         "ext-PDO": "*",
         "ext-pdo_mysql": "*",
         "symfony/validator": "^3.4||^4.0",
         "league/csv": "^9.0",
         "league/pipeline": "^1.0",
-        "frictionlessdata/tableschema": "0.1.9",
+        "frictionlessdata/tableschema": "^0.2.0",
         "symfony/event-dispatcher": "^3.4||^4.0"
     },
     "require-dev": {
