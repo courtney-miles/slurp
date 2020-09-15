@@ -27,8 +27,8 @@ use PHPUnit\DbUnit\DataSet\IDataSet;
 use PHPUnit\DbUnit\DataSet\ITable;
 use PHPUnit\DbUnit\TestCaseTrait;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class SlurpTest extends TestCase
 {
@@ -227,7 +227,7 @@ SQL
         $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')->byDefault();
         $mockDispatcher->shouldReceive('dispatch')
-            ->withArgs(static function (string $eventName, Event $event) use (&$violations) {
+            ->withArgs(static function (Event $event, string $eventName) use (&$violations) {
                 if (RecordValidatedEvent::NAME === $eventName) {
                     /** @var RecordValidatedEvent $event */
                     $violations = array_merge($violations, $event->getPayload()->getViolations());

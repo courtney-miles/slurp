@@ -23,7 +23,7 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class LoadStageTest extends TestCase
 {
@@ -132,7 +132,7 @@ class LoadStageTest extends TestCase
         $mockPayload = $this->createMockPayload(['foo'], false);
         $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(RecordLoadedEvent::NAME, Mockery::type(RecordLoadedEvent::class))
+            ->with(Mockery::type(RecordLoadedEvent::class), RecordLoadedEvent::NAME)
             ->once();
         $this->stage->setEventDispatcher($mockDispatcher);
 
@@ -147,7 +147,6 @@ class LoadStageTest extends TestCase
         $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
             ->with(
-                LoadAbortedEvent::NAME,
                 Mockery::on(
                     static function ($arg) use (&$event) {
                         if (!$arg instanceof LoadAbortedEvent) {
@@ -158,7 +157,8 @@ class LoadStageTest extends TestCase
 
                         return true;
                     }
-                )
+                ),
+                LoadAbortedEvent::NAME
             )->once();
         $this->stage->setEventDispatcher($mockDispatcher);
 

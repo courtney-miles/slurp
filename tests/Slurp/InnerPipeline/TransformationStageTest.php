@@ -22,7 +22,7 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @covers \MilesAsylum\Slurp\InnerPipeline\TransformationStage
@@ -88,7 +88,7 @@ class TransformationStageTest extends TestCase
         $mockPayload = $this->createMockPayload('foo', 123, false);
         $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(RecordTransformedEvent::NAME, Mockery::type(RecordTransformedEvent::class))
+            ->with(Mockery::type(RecordTransformedEvent::class), RecordTransformedEvent::NAME)
             ->once();
 
         $this->stage->setEventDispatcher($mockDispatcher);

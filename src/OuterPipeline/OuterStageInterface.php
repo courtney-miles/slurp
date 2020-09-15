@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace MilesAsylum\Slurp\OuterPipeline;
 
 use MilesAsylum\Slurp\Slurp;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 interface OuterStageInterface
 {

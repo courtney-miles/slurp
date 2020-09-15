@@ -22,7 +22,7 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class FiltrationStageTest extends TestCase
 {
@@ -69,7 +69,7 @@ class FiltrationStageTest extends TestCase
         $payload = new SlurpPayload();
         $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(RecordFilteredEvent::NAME, Mockery::type(RecordFilteredEvent::class))
+            ->with(Mockery::type(RecordFilteredEvent::class), RecordFilteredEvent::NAME)
             ->once();
 
         $this->mockFilter->shouldReceive('filterRecord')
