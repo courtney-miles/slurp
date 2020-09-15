@@ -40,8 +40,8 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Validator\Constraint;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class SlurpBuilderTest extends TestCase
 {

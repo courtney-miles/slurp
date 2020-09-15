@@ -29,7 +29,7 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ExtractionStageTest extends TestCase
 {
@@ -115,10 +115,10 @@ class ExtractionStageTest extends TestCase
 
         $mockDispatcher = $this->createMockDispatcher();
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(ExtractionStartedEvent::NAME, Mockery::type(ExtractionStartedEvent::class))
+            ->with(Mockery::type(ExtractionStartedEvent::class), ExtractionStartedEvent::NAME)
             ->once();
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(ExtractionEndedEvent::NAME, Mockery::type(ExtractionEndedEvent::class))
+            ->with(Mockery::type(ExtractionEndedEvent::class), ExtractionEndedEvent::NAME)
             ->once();
 
         $this->stage->setEventDispatcher($mockDispatcher);
@@ -138,7 +138,7 @@ class ExtractionStageTest extends TestCase
         $mockDispatcher = $this->createMockDispatcher();
         $mockDispatcher->shouldReceive('dispatch')->byDefault();
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(RecordProcessedEvent::NAME, Mockery::type(RecordProcessedEvent::class))
+            ->with(Mockery::type(RecordProcessedEvent::class), RecordProcessedEvent::NAME)
             ->twice();
 
         $this->stage->setEventDispatcher($mockDispatcher);
@@ -162,8 +162,8 @@ class ExtractionStageTest extends TestCase
         $mockDispatcher = $this->createMockDispatcher();
         $mockDispatcher->shouldReceive('dispatch')->byDefault();
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(ExtractionFailedEvent::NAME, Mockery::type(ExtractionFailedEvent::class))
-            ->andReturnUsing(static function ($eventName, $event) use (&$spiedEvent): void {
+            ->with(Mockery::type(ExtractionFailedEvent::class), ExtractionFailedEvent::NAME)
+            ->andReturnUsing(static function ($event, $eventName) use (&$spiedEvent): void {
                 $spiedEvent = $event;
             })
             ->once();

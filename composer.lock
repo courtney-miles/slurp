@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6a437041a624f6c0dad3e32290450e7e",
+    "content-hash": "206f6fce4d176941d4e75112ec0d85aa",
     "packages": [
         {
             "name": "frictionlessdata/tableschema",

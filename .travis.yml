@@ -16,6 +16,9 @@ matrix:
         - php: 7.3
           env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
         - php: 7.3
+        - php: 7.4
+          env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
+        - php: 7.4
           env: CHECK_PHP_SYNTAX="true"
 
 cache:
@@ -25,6 +28,8 @@ cache:
 before_script:
 - composer self-update
 - composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction
+# Ensure dev packages are up to date after --prefer-lowest may have been executed.
+- composer update mockery/mockey phpunit/phpunit --prefer-dist --no-interaction
 
 script:
 - composer validate --strict --no-check-lock

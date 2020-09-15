@@ -22,8 +22,8 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Validator\Constraint;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ValidationStageTest extends TestCase
 {
@@ -95,7 +95,7 @@ class ValidationStageTest extends TestCase
         $mockPayload = $this->createMockPayload(213, []);
         $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(RecordValidatedEvent::NAME, Mockery::type(RecordValidatedEvent::class))
+            ->with(Mockery::type(RecordValidatedEvent::class), RecordValidatedEvent::NAME)
             ->once();
 
         $this->stage->setEventDispatcher($mockDispatcher);

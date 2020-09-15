@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace MilesAsylum\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\SlurpPayload;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 interface StageInterface
 {

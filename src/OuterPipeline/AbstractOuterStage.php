@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\OuterPipeline;
 
-use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 abstract class AbstractOuterStage implements OuterStageInterface
 {
@@ -41,7 +41,7 @@ abstract class AbstractOuterStage implements OuterStageInterface
     protected function dispatch(string $eventName, Event $event): void
     {
         if (isset($this->dispatcher)) {
-            $this->dispatcher->dispatch($eventName, $event);
+            $this->dispatcher->dispatch($event, $eventName);
         }
     }
 }

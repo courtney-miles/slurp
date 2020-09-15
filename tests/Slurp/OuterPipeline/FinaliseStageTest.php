@@ -23,7 +23,7 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class FinaliseStageTest extends TestCase
 {
@@ -96,13 +96,13 @@ class FinaliseStageTest extends TestCase
         $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
             ->with(
-                ExtractionFinalisationBeginEvent::NAME,
-                Mockery::type(ExtractionFinalisationBeginEvent::class)
+                Mockery::type(ExtractionFinalisationBeginEvent::class),
+                ExtractionFinalisationBeginEvent::NAME
             )->once();
         $mockDispatcher->shouldReceive('dispatch')
             ->with(
-                ExtractionFinalisationCompleteEvent::NAME,
-                Mockery::type(ExtractionFinalisationCompleteEvent::class)
+                Mockery::type(ExtractionFinalisationCompleteEvent::class),
+                ExtractionFinalisationCompleteEvent::NAME
             )->once();
 
         $this->stage->setEventDispatcher($mockDispatcher);

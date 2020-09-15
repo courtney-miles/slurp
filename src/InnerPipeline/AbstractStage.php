@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace MilesAsylum\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\SlurpPayload;
-use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 abstract class AbstractStage implements StageInterface
 {
@@ -42,7 +42,7 @@ abstract class AbstractStage implements StageInterface
     protected function dispatch(string $eventName, Event $event): void
     {
         if (isset($this->dispatcher)) {
-            $this->dispatcher->dispatch($eventName, $event);
+            $this->dispatcher->dispatch($event, $eventName);
         }
     }
 
