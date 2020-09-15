@@ -29,7 +29,7 @@ before_script:
 - composer self-update
 - composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction
 # Ensure dev packages are up to date after --prefer-lowest may have been executed.
-- composer update mockery/mockey phpunit/phpunit --prefer-dist --no-interaction
+- composer update mockery/mockery phpunit/phpunit --prefer-dist --no-interaction
 
 script:
 - composer validate --strict --no-check-lock
