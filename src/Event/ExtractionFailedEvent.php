@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -35,17 +36,11 @@ class ExtractionFailedEvent extends Event
         $this->recordId = $recordId;
     }
 
-    /**
-     * @return string|null
-     */
     public function getReason(): ?string
     {
         return $this->reason;
     }
 
-    /**
-     * @return int|null
-     */
     public function getRecordId(): ?int
     {
         return $this->recordId;

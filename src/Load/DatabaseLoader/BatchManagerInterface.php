@@ -18,8 +18,6 @@ use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
 interface BatchManagerInterface
 {
     /**
-     * @param array $rows
-     *
      * @throws LoadRuntimeException thrown if an issue occurs persisting rows to storage
      */
     public function write(array $rows): void;

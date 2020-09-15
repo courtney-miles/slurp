@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -13,9 +14,9 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Tests\Slurp\InnerPipeline;
 
+use MilesAsylum\Slurp\Event\RecordFilteredEvent;
 use MilesAsylum\Slurp\Filter\FilterInterface;
 use MilesAsylum\Slurp\InnerPipeline\FiltrationStage;
-use MilesAsylum\Slurp\Event\RecordFilteredEvent;
 use MilesAsylum\Slurp\SlurpPayload;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;

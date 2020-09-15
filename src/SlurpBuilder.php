@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -140,9 +141,6 @@ class SlurpBuilder
     }
 
     /**
-     * @param Schema $tableSchema
-     * @param bool $validateOnly
-     *
      * @return SlurpBuilder
      */
     public function setTableSchema(Schema $tableSchema, bool $validateOnly = false): self
@@ -154,10 +152,6 @@ class SlurpBuilder
     }
 
     /**
-     * @param string $path
-     *
-     * @return Schema
-     *
      * @throws Exception\FactoryException
      */
     public function createTableSchemaFromPath(string $path): Schema
@@ -166,10 +160,6 @@ class SlurpBuilder
     }
 
     /**
-     * @param array $arr
-     *
-     * @return Schema
-     *
      * @throws Exception\FactoryException
      */
     public function createTableSchemaFromArray(array $arr): Schema
@@ -222,14 +212,7 @@ class SlurpBuilder
     }
 
     /**
-     * @param PDO $pdo
-     * @param string $table
      * @param array $fieldMappings array key is the destination column and the array value is the source column
-     * @param int $batchSize
-     * @param DmlStmtInterface|null $preCommitStmt
-     * @param string|null $database
-     *
-     * @return DatabaseLoader
      */
     public function createDatabaseLoader(
         PDO $pdo,

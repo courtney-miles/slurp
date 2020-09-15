@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -40,8 +41,6 @@ class CsvFileExtractor implements CsvFileExtractorInterface
     }
 
     /**
-     * @param string $delimiter
-     *
      * @throws Exception
      */
     public function setDelimiter(string $delimiter): void
@@ -50,8 +49,6 @@ class CsvFileExtractor implements CsvFileExtractorInterface
     }
 
     /**
-     * @param string $enclosure
-     *
      * @throws Exception
      */
     public function setEnclosure(string $enclosure): void
@@ -60,8 +57,6 @@ class CsvFileExtractor implements CsvFileExtractorInterface
     }
 
     /**
-     * @param string $escape
-     *
      * @throws Exception
      */
     public function setEscape(string $escape): void

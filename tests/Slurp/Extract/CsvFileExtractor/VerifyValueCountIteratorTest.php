@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -22,9 +23,6 @@ class VerifyValueCountIteratorTest extends TestCase
 {
     /**
      * @dataProvider getValueCountMismatchTestData
-     *
-     * @param array $values
-     * @param int $expectedCount
      *
      * @throws ValueCountMismatchException
      */

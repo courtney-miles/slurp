@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -15,8 +16,8 @@ namespace MilesAsylum\Slurp\Tests\Slurp\OuterPipeline;
 
 use ArrayObject;
 use League\Pipeline\Pipeline;
-use MilesAsylum\Slurp\Event\ExtractionFailedEvent;
 use MilesAsylum\Slurp\Event\ExtractionEndedEvent;
+use MilesAsylum\Slurp\Event\ExtractionFailedEvent;
 use MilesAsylum\Slurp\Event\ExtractionStartedEvent;
 use MilesAsylum\Slurp\Event\RecordProcessedEvent;
 use MilesAsylum\Slurp\Extract\Exception\MalformedSourceException;

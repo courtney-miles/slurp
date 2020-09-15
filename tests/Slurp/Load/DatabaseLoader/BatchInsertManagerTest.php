@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -13,8 +14,8 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
-use MilesAsylum\Slurp\Load\DatabaseLoader\QueryFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsertManager;
+use MilesAsylum\Slurp\Load\DatabaseLoader\QueryFactory;
 use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
 use MilesAsylum\Slurp\Load\Exception\MissingValueException;
 use Mockery;

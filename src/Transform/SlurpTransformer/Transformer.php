@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -40,7 +41,6 @@ class Transformer implements TransformerInterface
     }
 
     /**
-     * @param string $field
      * @param Change|Change[] $changes
      */
     public function setFieldChanges(string $field, $changes): void

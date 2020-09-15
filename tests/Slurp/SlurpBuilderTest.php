@@ -19,18 +19,18 @@ use League\Pipeline\PipelineInterface;
 use MilesAsylum\Slurp\Filter\ConstraintFiltration\ConstraintFilter;
 use MilesAsylum\Slurp\InnerPipeline\FiltrationStage;
 use MilesAsylum\Slurp\InnerPipeline\InnerProcessor;
+use MilesAsylum\Slurp\InnerPipeline\LoadStage;
+use MilesAsylum\Slurp\InnerPipeline\TransformationStage;
+use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DmlStmtInterface;
 use MilesAsylum\Slurp\Load\LoaderInterface;
+use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
+use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
 use MilesAsylum\Slurp\OuterPipeline\OuterProcessor;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpBuilder;
 use MilesAsylum\Slurp\SlurpFactory;
-use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
-use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
-use MilesAsylum\Slurp\InnerPipeline\LoadStage;
-use MilesAsylum\Slurp\InnerPipeline\TransformationStage;
-use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
 use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
@@ -131,7 +131,7 @@ class SlurpBuilderTest extends TestCase
 
     public function testCreateBuilder(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             SlurpBuilder::class,
             SlurpBuilder::create()
         );
@@ -139,7 +139,7 @@ class SlurpBuilderTest extends TestCase
 
     public function testBuild(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             Slurp::class,
             $this->builder->build()
         );
@@ -544,16 +544,6 @@ class SlurpBuilderTest extends TestCase
     }
 
     /**
-     * @param PipelineInterface $innerPipeline
-     * @param PipelineInterface $outerPipeline
-     * @param Slurp $slurp
-     * @param ExtractionStage $extractionStage
-     * @param ConstraintValidator $constraintValidator
-     * @param Transformer $transformer
-     * @param ConstraintFilter $constraintFilter
-     * @param OuterProcessor $outerProcessor
-     * @param InnerProcessor $innerProcessor
-     *
      * @return SlurpFactory|MockInterface
      */
     protected function createMockFactory(
@@ -596,8 +586,6 @@ class SlurpBuilderTest extends TestCase
     }
 
     /**
-     * @param PipelineInterface $innerPipeline
-     *
      * @return PipelineBuilder|MockInterface
      */
     protected function createMockInnerPipelineBuilder(PipelineInterface $innerPipeline)
@@ -623,8 +611,6 @@ class SlurpBuilderTest extends TestCase
     }
 
     /**
-     * @param PipelineInterface $outerPipeline
-     *
      * @return PipelineBuilder|MockInterface
      */
     protected function createMockOuterPipelineBuilder(PipelineInterface $outerPipeline)

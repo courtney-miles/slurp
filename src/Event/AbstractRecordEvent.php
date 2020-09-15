@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -28,9 +29,6 @@ class AbstractRecordEvent extends Event
         $this->payload = $payload;
     }
 
-    /**
-     * @return SlurpPayload
-     */
     public function getPayload(): SlurpPayload
     {
         return $this->payload;
