@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -64,9 +65,7 @@ class StagedLoad
     public function begin(): string
     {
         if ($this->hasBegun) {
-            throw new LogicException(
-                'Staged-load has already been begun.'
-            );
+            throw new LogicException('Staged-load has already been begun.');
         }
 
         $this->hasBegun = true;
@@ -82,9 +81,7 @@ class StagedLoad
     public function discard(): void
     {
         if (!$this->hasBegun) {
-            throw new LogicException(
-                'Staged-load cannot be discarded without first being begun.'
-            );
+            throw new LogicException('Staged-load cannot be discarded without first being begun.');
         }
 
         $this->dropTemporaryTable($this->stageTable, $this->database);
@@ -97,9 +94,7 @@ class StagedLoad
     public function commit(): void
     {
         if (!$this->hasBegun) {
-            throw new LogicException(
-                'Staged-load cannot be committed without first being begun.'
-            );
+            throw new LogicException('Staged-load cannot be committed without first being begun.');
         }
 
         $tickedTableRef = $this->createTickedTableRef($this->table, $this->database);
@@ -122,11 +117,7 @@ INSERT INTO {$tickedTableRef} ({$cols})
 SQL
             );
         } catch (PDOException $e) {
-            throw new LoadRuntimeException(
-                'PDO exception thrown when copying rows from the staging table to the destination table.',
-                0,
-                $e
-            );
+            throw new LoadRuntimeException('PDO exception thrown when copying rows from the staging table to the destination table.', 0, $e);
         }
 
         $this->dropTemporaryTable($this->stageTable, $this->database);

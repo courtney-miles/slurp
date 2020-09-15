@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -15,9 +16,9 @@ namespace MilesAsylum\Slurp\Tests\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\Event\LoadAbortedEvent;
 use MilesAsylum\Slurp\Event\RecordLoadedEvent;
+use MilesAsylum\Slurp\InnerPipeline\LoadStage;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\SlurpPayload;
-use MilesAsylum\Slurp\InnerPipeline\LoadStage;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -166,9 +167,6 @@ class LoadStageTest extends TestCase
     }
 
     /**
-     * @param array $values
-     * @param bool $hasViolations
-     *
      * @return SlurpPayload|MockInterface
      */
     protected function createMockPayload(array $values, bool $hasViolations)

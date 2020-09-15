@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -273,8 +274,6 @@ SQL
 
     /**
      * Returns the test database connection.
-     *
-     * @return Connection
      */
     protected function getConnection(): Connection
     {
@@ -283,8 +282,6 @@ SQL
 
     /**
      * Returns the test dataset.
-     *
-     * @return IDataSet
      */
     protected function getDataSet(): IDataSet
     {

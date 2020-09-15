@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -28,9 +29,6 @@ class UnknownFieldException extends \InvalidArgumentException implements Excepti
         $this->field = $field;
     }
 
-    /**
-     * @return string
-     */
     public function getField(): string
     {
         return $this->field;

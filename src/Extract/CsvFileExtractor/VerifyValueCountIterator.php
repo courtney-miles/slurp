@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -28,8 +29,6 @@ class VerifyValueCountIterator extends IteratorIterator
     }
 
     /**
-     * @return array
-     *
      * @throws ValueCountMismatchException
      */
     public function current(): array
@@ -38,11 +37,7 @@ class VerifyValueCountIterator extends IteratorIterator
 
         if (count($record) !== $this->expectedValueCount) {
             $recordId = $this->key();
-            throw ValueCountMismatchException::createMismatch(
-                $recordId,
-                count($record),
-                $this->expectedValueCount
-            );
+            throw ValueCountMismatchException::createMismatch($recordId, count($record), $this->expectedValueCount);
         }
 
         return $record;

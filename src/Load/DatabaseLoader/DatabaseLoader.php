@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -71,12 +72,7 @@ class DatabaseLoader implements LoaderInterface
     /**
      * DatabaseLoader constructor.
      *
-     * @param string $table
      * @param array $fieldMapping array key is the destination column and the array value is the source column
-     * @param LoaderFactory $dmlFactory
-     * @param int $batchSize
-     * @param DmlStmtInterface|null $preCommitStmt
-     * @param string|null $database
      */
     public function __construct(
         string $table,
@@ -95,20 +91,13 @@ class DatabaseLoader implements LoaderInterface
     }
 
     /**
-     * @param array $record
-     *
      * @throws LogicException
      * @throws LoadRuntimeException thrown if an error occurs writing rows to the database
      */
     public function loadRecord(array $record): void
     {
         if (!$this->hasBegun()) {
-            throw new LogicException(
-                sprintf(
-                    'Data cannot be loaded until %s has been called.',
-                    __CLASS__ . '::begin()'
-                )
-            );
+            throw new LogicException(sprintf('Data cannot be loaded until %s has been called.', __CLASS__ . '::begin()'));
         }
 
         if ($this->isAborted()) {

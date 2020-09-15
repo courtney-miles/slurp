@@ -15,8 +15,8 @@ namespace MilesAsylum\Slurp\OuterPipeline;
 
 use League\Pipeline\Pipeline;
 use League\Pipeline\PipelineInterface;
-use MilesAsylum\Slurp\Event\ExtractionFailedEvent;
 use MilesAsylum\Slurp\Event\ExtractionEndedEvent;
+use MilesAsylum\Slurp\Event\ExtractionFailedEvent;
 use MilesAsylum\Slurp\Event\ExtractionStartedEvent;
 use MilesAsylum\Slurp\Event\RecordProcessedEvent;
 use MilesAsylum\Slurp\Extract\Exception\MalformedSourceException;
@@ -38,9 +38,6 @@ class ExtractionStage extends AbstractOuterStage
 
     /**
      * InvokeExtractionPipeline constructor.
-     *
-     * @param PipelineInterface $innerPipeline
-     * @param callable|null $interrupt
      */
     public function __construct(PipelineInterface $innerPipeline, callable $interrupt = null)
     {
@@ -49,10 +46,6 @@ class ExtractionStage extends AbstractOuterStage
     }
 
     /**
-     * @param Slurp $slurp
-     *
-     * @return Slurp
-     *
      * @throws OuterPipelineException
      */
     public function __invoke(Slurp $slurp): Slurp

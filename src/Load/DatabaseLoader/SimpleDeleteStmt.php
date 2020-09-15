@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -78,11 +79,7 @@ class SimpleDeleteStmt implements DmlStmtInterface
             $stmt = $this->pdo->prepare(trim("DELETE FROM {$tableRefTicked} {$conditionsStr}"));
             $stmt->execute($qryParams);
         } catch (\PDOException $e) {
-            throw new LoadRuntimeException(
-                'PDO exception thrown when deleting rows.',
-                0,
-                $e
-            );
+            throw new LoadRuntimeException('PDO exception thrown when deleting rows.', 0, $e);
         }
 
         return $stmt->rowCount();

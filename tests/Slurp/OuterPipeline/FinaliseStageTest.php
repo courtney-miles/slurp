@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -16,8 +17,8 @@ namespace MilesAsylum\Slurp\Tests\Slurp\OuterPipeline;
 use MilesAsylum\Slurp\Event\ExtractionFinalisationBeginEvent;
 use MilesAsylum\Slurp\Event\ExtractionFinalisationCompleteEvent;
 use MilesAsylum\Slurp\Load\LoaderInterface;
-use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
+use MilesAsylum\Slurp\Slurp;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;

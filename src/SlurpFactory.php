@@ -20,16 +20,16 @@ use MilesAsylum\Slurp\Filter\ConstraintFiltration\ConstraintFilter;
 use MilesAsylum\Slurp\Filter\FilterInterface;
 use MilesAsylum\Slurp\InnerPipeline\FiltrationStage;
 use MilesAsylum\Slurp\InnerPipeline\InnerProcessor;
-use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
-use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
-use MilesAsylum\Slurp\Load\DatabaseLoader\DmlStmtInterface;
-use MilesAsylum\Slurp\Load\DatabaseLoader\SimpleDeleteStmt;
-use MilesAsylum\Slurp\Load\LoaderInterface;
-use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
-use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use MilesAsylum\Slurp\InnerPipeline\LoadStage;
 use MilesAsylum\Slurp\InnerPipeline\TransformationStage;
 use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
+use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
+use MilesAsylum\Slurp\Load\DatabaseLoader\DmlStmtInterface;
+use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
+use MilesAsylum\Slurp\Load\DatabaseLoader\SimpleDeleteStmt;
+use MilesAsylum\Slurp\Load\LoaderInterface;
+use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
+use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
 use MilesAsylum\Slurp\OuterPipeline\OuterProcessor;
 use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
@@ -69,10 +69,6 @@ class SlurpFactory
     }
 
     /**
-     * @param string $path
-     *
-     * @return Schema
-     *
      * @throws FactoryException
      */
     public function createTableSchemaFromPath(string $path): Schema
@@ -80,19 +76,11 @@ class SlurpFactory
         try {
             return new Schema($path);
         } catch (Throwable $e) {
-            throw new FactoryException(
-                'Error creating table schema from file path: ' . $e->getMessage(),
-                0,
-                $e
-            );
+            throw new FactoryException('Error creating table schema from file path: ' . $e->getMessage(), 0, $e);
         }
     }
 
     /**
-     * @param array $arr
-     *
-     * @return Schema
-     *
      * @throws FactoryException
      */
     public function createTableSchemaFromArray(array $arr): Schema
@@ -100,11 +88,7 @@ class SlurpFactory
         try {
             return new Schema($arr);
         } catch (Throwable $e) {
-            throw new FactoryException(
-                'Error creating table schema from array: ' . $e->getMessage(),
-                0,
-                $e
-            );
+            throw new FactoryException('Error creating table schema from array: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -138,14 +122,7 @@ class SlurpFactory
     }
 
     /**
-     * @param PDO $pdo
-     * @param string $table
      * @param array $fieldMappings array key is the destination column and the array value is the source column
-     * @param int $batchSize
-     * @param DmlStmtInterface|null $preCommitStmt
-     * @param string|null $database
-     *
-     * @return DatabaseLoader
      */
     public function createDatabaseLoader(
         PDO $pdo,

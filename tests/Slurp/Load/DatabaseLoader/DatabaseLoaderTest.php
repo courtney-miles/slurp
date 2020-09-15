@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -13,11 +14,11 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
+use MilesAsylum\Slurp\Exception\LogicException;
 use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsertManager;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
-use MilesAsylum\Slurp\Exception\LogicException;
-use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\DmlStmtInterface;
+use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\StagedLoad;
 use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
 use Mockery;
@@ -295,9 +296,6 @@ class DatabaseLoaderTest extends TestCase
     }
 
     /**
-     * @param BatchInsertManager $batchInsertManager
-     * @param StagedLoad $stagedLoad
-     *
      * @return LoaderFactory|MockInterface
      */
     protected function createMockLoaderFactory(

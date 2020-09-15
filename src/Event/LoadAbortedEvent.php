@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -32,8 +33,6 @@ class LoadAbortedEvent extends Event
 
     /**
      * The payload that caused the load to be aborted.
-     *
-     * @return SlurpPayload|null
      */
     public function getPayload(): ?SlurpPayload
     {

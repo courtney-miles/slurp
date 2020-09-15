@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -17,17 +18,17 @@ use frictionlessdata\tableschema\Schema;
 use League\Pipeline\PipelineInterface;
 use MilesAsylum\Slurp\Filter\ConstraintFiltration\ConstraintFilter;
 use MilesAsylum\Slurp\InnerPipeline\InnerProcessor;
-use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
-use MilesAsylum\Slurp\Load\DatabaseLoader\SimpleDeleteStmt;
-use MilesAsylum\Slurp\Load\LoaderInterface;
-use MilesAsylum\Slurp\OuterPipeline\OuterProcessor;
-use MilesAsylum\Slurp\Slurp;
-use MilesAsylum\Slurp\SlurpFactory;
-use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
-use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use MilesAsylum\Slurp\InnerPipeline\LoadStage;
 use MilesAsylum\Slurp\InnerPipeline\TransformationStage;
 use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
+use MilesAsylum\Slurp\Load\DatabaseLoader\DatabaseLoader;
+use MilesAsylum\Slurp\Load\DatabaseLoader\SimpleDeleteStmt;
+use MilesAsylum\Slurp\Load\LoaderInterface;
+use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
+use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
+use MilesAsylum\Slurp\OuterPipeline\OuterProcessor;
+use MilesAsylum\Slurp\Slurp;
+use MilesAsylum\Slurp\SlurpFactory;
 use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
@@ -56,7 +57,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateTransformationStage(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             TransformationStage::class,
             $this->factory->createTransformationStage(Mockery::mock(TransformerInterface::class))
         );
@@ -64,7 +65,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateSlurp(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             Slurp::class,
             $this->factory->createSlurp(Mockery::mock(PipelineInterface::class))
         );
@@ -72,7 +73,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateConstraintValidator(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             ConstraintValidator::class,
             $this->factory->createConstraintValidator()
         );
@@ -80,7 +81,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateSchemaValidator(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             SchemaValidator::class,
             $this->factory->createSchemaValidator(
                 Mockery::mock(Schema::class)
@@ -90,7 +91,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateTransformer(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             Transformer::class,
             $this->factory->createTransformer()
         );
@@ -98,7 +99,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateConstraintFilter(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             ConstraintFilter::class,
             $this->factory->createConstraintFilter()
         );
@@ -106,7 +107,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateSchemaTransformer(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             SchemaTransformer::class,
             $this->factory->createSchemaTransformer(
                 Mockery::mock(Schema::class)
@@ -116,7 +117,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateTableSchemaFromPath(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             Schema::class,
             $this->factory->createTableSchemaFromPath(
                 __DIR__ . '/_fixtures/slurp_factory_test_schema.json'
@@ -126,7 +127,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateTableSchemaFromArray(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             Schema::class,
             $this->factory->createTableSchemaFromArray(
                 ['fields' => [['name' => 'foo']]]
@@ -136,7 +137,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateLoadStage(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             LoadStage::class,
             $this->factory->createLoadStage(
                 Mockery::mock(LoaderInterface::class)
@@ -146,7 +147,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateFinaliseLoadStage(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             FinaliseStage::class,
             $this->factory->createEltFinaliseStage(
                 Mockery::mock(LoaderInterface::class)
@@ -156,7 +157,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateDatabaseLoader(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             DatabaseLoader::class,
             $this->factory->createDatabaseLoader(
                 Mockery::mock(\PDO::class),
@@ -169,7 +170,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateValidationStage(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             ValidationStage::class,
             $this->factory->createValidationStage(
                 Mockery::mock(ValidatorInterface::class)
@@ -179,7 +180,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateInvokeExtractionPipeline(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             ExtractionStage::class,
             $this->factory->createExtractionStage(
                 Mockery::mock(PipelineInterface::class)
@@ -189,7 +190,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateInvokeExtractionPipelineWithViolationAbortTypes(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             ExtractionStage::class,
             $this->factory->createExtractionStage(
                 Mockery::mock(PipelineInterface::class)
@@ -199,7 +200,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateInnerProcess(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             InnerProcessor::class,
             $this->factory->createInnerProcessor()
         );
@@ -207,7 +208,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateOuterProcess(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             OuterProcessor::class,
             $this->factory->createOuterProcessor()
         );
@@ -215,7 +216,7 @@ class SlurpFactoryTest extends TestCase
 
     public function testCreateSimpleDeleteStmt(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             SimpleDeleteStmt::class,
             $this->factory->createSimpleDeleteStmt(
                 Mockery::mock(\PDO::class),

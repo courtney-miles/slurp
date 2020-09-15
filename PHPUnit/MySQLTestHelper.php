@@ -27,9 +27,6 @@ class MySQLTestHelper
         $this->pdo = $this->connect($this->makeDsn());
     }
 
-    /**
-     * @return PDO
-     */
     public function getConnection(): PDO
     {
         return $this->pdo;

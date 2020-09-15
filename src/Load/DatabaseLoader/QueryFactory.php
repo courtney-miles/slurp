@@ -17,14 +17,6 @@ use InvalidArgumentException;
 
 class QueryFactory
 {
-    /**
-     * @param string $table
-     * @param array $columns
-     * @param int $batchSize
-     * @param string $database
-     *
-     * @return string
-     */
     public function createInsertQuery(
         string $table,
         array $columns,

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -13,8 +14,8 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Validate\ConstraintValidation;
 
-use MilesAsylum\Slurp\Validate\ValidatorInterface;
 use MilesAsylum\Slurp\Validate\FieldViolation;
+use MilesAsylum\Slurp\Validate\ValidatorInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface as SymfonyValidator;

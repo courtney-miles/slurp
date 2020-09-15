@@ -38,11 +38,6 @@ class StagedLoadTest extends TestCase
     /**
      * @dataProvider getTableRefsForBeginCommitTest
      *
-     * @param string $table
-     * @param string|null $database
-     * @param string $tickedTableRef
-     * @param string $tickedTempTableRef
-     *
      * @throws LogicException
      */
     public function testBeginThenCommit(

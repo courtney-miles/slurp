@@ -20,11 +20,6 @@ class TransformerLoader
      */
     private $loadedTransformers = [];
 
-    /**
-     * @param Change $change
-     *
-     * @return ChangeTransformerInterface
-     */
     public function loadTransformer(Change $change): ChangeTransformerInterface
     {
         if (!isset($this->loadedTransformers[$change->transformedBy()])) {

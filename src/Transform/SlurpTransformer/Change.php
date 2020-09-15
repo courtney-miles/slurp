@@ -15,8 +15,5 @@ namespace MilesAsylum\Slurp\Transform\SlurpTransformer;
 
 abstract class Change
 {
-    /**
-     * @return string
-     */
     abstract public function transformedBy(): string;
 }

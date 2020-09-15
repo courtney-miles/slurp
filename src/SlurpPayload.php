@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -40,40 +41,28 @@ class SlurpPayload
 
     protected $loadAborted = false;
 
-    /**
-     * @return int
-     */
     public function getRecordId(): ?int
     {
         return $this->recordId;
     }
 
-    /**
-     * @param int $recordId
-     */
     public function setRecordId(int $recordId): void
     {
         $this->recordId = $recordId;
     }
 
-    /**
-     * @return array
-     */
     public function getRecord(): array
     {
         return $this->record;
     }
 
-    /**
-     * @param array $record
-     */
     public function setRecord(array $record): void
     {
         $this->record = $record;
     }
 
     /**
-     * @param $name
+     * @param string|int|float $name
      *
      * @return mixed|null
      */
@@ -82,6 +71,9 @@ class SlurpPayload
         return $this->record[$name] ?? null;
     }
 
+    /**
+     * @param string|int|float $value
+     */
     public function setFieldValue(string $name, $value): void
     {
         $this->record[$name] = $value;
@@ -90,9 +82,7 @@ class SlurpPayload
     public function replaceFieldValue(string $name, $value): void
     {
         if (!$this->hasField($name)) {
-            throw new InvalidArgumentException(
-                "Unable to replace value for $name. A value does not exists for $name."
-            );
+            throw new InvalidArgumentException("Unable to replace value for $name. A value does not exists for $name.");
         }
 
         $this->setFieldValue($name, $value);
@@ -118,7 +108,7 @@ class SlurpPayload
         }
 
         foreach ($this->violations as $violation) {
-            if ($violation->getField() == $field) {
+            if ($violation->getField() === $field) {
                 return true;
             }
         }
@@ -157,33 +147,21 @@ class SlurpPayload
         return false;
     }
 
-    /**
-     * @return bool
-     */
     public function isFiltered(): bool
     {
         return $this->filtered;
     }
 
-    /**
-     * @param bool $filtered
-     */
     public function setFiltered(bool $filtered): void
     {
         $this->filtered = $filtered;
     }
 
-    /**
-     * @return bool
-     */
     public function isLoadAborted(): bool
     {
         return $this->loadAborted;
     }
 
-    /**
-     * @param bool $loadAborted
-     */
     public function setLoadAborted(bool $loadAborted): void
     {
         $this->loadAborted = $loadAborted;

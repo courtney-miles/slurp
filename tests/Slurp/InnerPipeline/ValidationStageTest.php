@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -14,8 +15,8 @@ declare(strict_types=1);
 namespace MilesAsylum\Slurp\Tests\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\Event\RecordValidatedEvent;
-use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\InnerPipeline\ValidationStage;
+use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -113,10 +114,6 @@ class ValidationStageTest extends TestCase
     }
 
     /**
-     * @param int $recordId
-     * @param array $record
-     * @param bool $isFiltered
-     *
      * @return SlurpPayload|MockInterface
      */
     public function createMockPayload(int $recordId, array $record, bool $isFiltered = false)

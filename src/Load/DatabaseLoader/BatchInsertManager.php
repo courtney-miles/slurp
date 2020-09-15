@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -66,8 +67,6 @@ class BatchInsertManager implements BatchManagerInterface
     }
 
     /**
-     * @param array[] $rows
-     *
      * @throws LoadRuntimeException thrown if an error occurs writing rows to the database
      */
     public function write(array $rows): void
@@ -78,11 +77,7 @@ class BatchInsertManager implements BatchManagerInterface
             try {
                 $stmt->execute($this->convertRowCollectionToParams($rows));
             } catch (PDOException $e) {
-                throw new LoadRuntimeException(
-                    'PDO exception thrown when inserting batch of records into staging table.',
-                    0,
-                    $e
-                );
+                throw new LoadRuntimeException('PDO exception thrown when inserting batch of records into staging table.', 0, $e);
             }
         }
     }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -14,8 +15,8 @@ declare(strict_types=1);
 namespace MilesAsylum\Slurp\Tests\Slurp\InnerPipeline;
 
 use MilesAsylum\Slurp\Event\RecordTransformedEvent;
-use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\InnerPipeline\TransformationStage;
+use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Transform\TransformerInterface;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -107,10 +108,6 @@ class TransformationStageTest extends TestCase
     }
 
     /**
-     * @param string $field
-     * @param $value
-     * @param bool $hasViolation
-     *
      * @return MockInterface|SlurpPayload
      */
     protected function createMockPayload(string $field, $value, bool $hasViolation): MockInterface

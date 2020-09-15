@@ -25,9 +25,6 @@ class CallbackChange extends Change
         $this->changeCallback = $changeCallback;
     }
 
-    /**
-     * @return string
-     */
     public function transformedBy(): string
     {
         return CallbackTransformer::class;

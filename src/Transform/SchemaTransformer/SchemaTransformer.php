@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -38,8 +39,7 @@ class SchemaTransformer implements TransformerInterface
     }
 
     /**
-     * @param string $field
-     * @param $value
+     * @param mixed $value
      *
      * @return mixed
      *
@@ -56,21 +56,13 @@ class SchemaTransformer implements TransformerInterface
         try {
             $value = $schemaField->castValue($value);
         } catch (Throwable $e) {
-            throw new TransformationException(
-                'An error occurred transforming a field:' . $e->getMessage(),
-                0,
-                $e
-            );
+            throw new TransformationException('An error occurred transforming a field:' . $e->getMessage(), 0, $e);
         }
 
         return $value;
     }
 
     /**
-     * @param array $record
-     *
-     * @return array|mixed[]
-     *
      * @throws TransformationException
      */
     public function transformRecord(array $record): array
@@ -78,11 +70,7 @@ class SchemaTransformer implements TransformerInterface
         try {
             $record = $this->tableSchema->castRow($record);
         } catch (Throwable $e) {
-            throw new TransformationException(
-                'An error occurred transforming a record: ' . $e->getMessage(),
-                0,
-                $e
-            );
+            throw new TransformationException('An error occurred transforming a record: ' . $e->getMessage(), 0, $e);
         }
 
         foreach ($record as $fieldName => $value) {
@@ -112,9 +100,7 @@ class SchemaTransformer implements TransformerInterface
     }
 
     /**
-     * @param $name
-     *
-     * @return BaseField|null
+     * @param mixed $name
      */
     protected function getField($name): ?BaseField
     {

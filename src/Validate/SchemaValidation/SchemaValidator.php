@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -18,9 +19,9 @@ use frictionlessdata\tableschema\Fields\BaseField;
 use frictionlessdata\tableschema\Schema;
 use frictionlessdata\tableschema\SchemaValidationError;
 use MilesAsylum\Slurp\Exception\UnknownFieldException;
+use MilesAsylum\Slurp\Validate\FieldViolation;
 use MilesAsylum\Slurp\Validate\RecordViolation;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
-use MilesAsylum\Slurp\Validate\FieldViolation;
 
 class SchemaValidator implements ValidatorInterface
 {

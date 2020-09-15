@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Courtney Miles
  *
@@ -68,7 +69,6 @@ class SchemaTransformerTest extends TestCase
     /**
      * @dataProvider getComplexTypeConversionTestData
      *
-     * @param string $fieldClass
      * @param mixed $complexValue
      * @param mixed $scalarValue
      *
@@ -85,7 +85,7 @@ class SchemaTransformerTest extends TestCase
             ->with($fieldName)
             ->andReturn(Mockery::mock($fieldClass));
 
-        $this->assertSame(
+        self::assertSame(
             [$fieldName => $scalarValue],
             $this->schemaTransformer->transformRecord(['anything'])
         );

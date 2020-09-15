@@ -44,9 +44,6 @@ class TransformerLoaderTest extends TestCase
 
 class Scratch extends Change
 {
-    /**
-     * @return string
-     */
     public function transformedBy(): string
     {
         return ScratchTransformer::class;
