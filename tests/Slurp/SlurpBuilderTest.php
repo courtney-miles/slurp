@@ -697,7 +697,7 @@ class SlurpBuilderTest extends TestCase
     {
         $mockInnerProcessor = Mockery::mock(InnerProcessor::class);
 
-        return$mockInnerProcessor;
+        return $mockInnerProcessor;
     }
 
     /**
