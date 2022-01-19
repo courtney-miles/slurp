@@ -5,8 +5,6 @@
  *
  * @see https://github.com/courtney-miles/slurp
  *
- * @package milesasylum/slurp
- *
  * @license MIT
  */
 
@@ -22,31 +20,25 @@ use MilesAsylum\Slurp\SlurpBuilder;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\CallbackChange;
 use MilesAsylum\Slurp\Validate\RecordViolation;
 use Mockery;
-use PHPUnit\DbUnit\Database\Connection;
-use PHPUnit\DbUnit\DataSet\IDataSet;
-use PHPUnit\DbUnit\DataSet\ITable;
-use PHPUnit\DbUnit\TestCaseTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class SlurpTest extends TestCase
 {
-    use TestCaseTrait;
-
     protected static $pdo;
-
     protected static $table;
+    protected static $dbHelper;
 
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
 
-        $m = new MySQLTestHelper();
-        $m->raiseTestSchema();
+        self::$dbHelper = new MySQLTestHelper();
+        self::$dbHelper->raiseTestSchema();
 
-        self::$pdo = $m->getConnection();
-        self::$pdo->exec('USE ' . $m->getDatabaseName());
+        self::$pdo = self::$dbHelper->getConnection();
+        self::$pdo->exec('USE ' . self::$dbHelper->getDatabaseName());
 
         self::$table = 'tbl_foo';
         $table = self::$table;
@@ -60,6 +52,12 @@ CREATE TABLE `{$table}` (
 ) COLLATE ascii_general_ci
 SQL
         );
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        self::$dbHelper->truncateTable(self::$table);
     }
 
     public function testBasicLoad(): void
@@ -80,18 +78,14 @@ SQL
         $slurp = $sb->build();
         $slurp->process($cfe);
 
-        $table = $this->fetchQueryTable(self::$table);
-        $expectedTable = $this->createArrayDataSet(
-            [
-                self::$table => [
-                    ['name' => 'foo', 'date' => '2018-01-01', 'value' => '123.00'],
-                    ['name' => 'bar', 'date' => '2018-01-02', 'value' => '234.00'],
-                    ['name' => 'baz', 'date' => '2018-01-03', 'value' => '345.00'],
-                ],
-            ]
-        )->getTable(self::$table);
+        $actualRows = self::$dbHelper->selectAllFromTable(self::$table);
+        $expectedRows = [
+                ['name' => 'foo', 'date' => '2018-01-01', 'value' => '123.00'],
+                ['name' => 'bar', 'date' => '2018-01-02', 'value' => '234.00'],
+                ['name' => 'baz', 'date' => '2018-01-03', 'value' => '345.00'],
+            ];
 
-        self::assertTablesEqual($expectedTable, $table);
+        self::assertSame($expectedRows, $actualRows);
     }
 
     public function testBasicLoadUnevenBatch(): void
@@ -112,18 +106,14 @@ SQL
         $slurp = $sb->build();
         $slurp->process($cfe);
 
-        $table = $this->fetchQueryTable(self::$table);
-        $expectedTable = $this->createArrayDataSet(
-            [
-                self::$table => [
-                    ['name' => 'foo', 'date' => '2018-01-01', 'value' => '123.00'],
-                    ['name' => 'bar', 'date' => '2018-01-02', 'value' => '234.00'],
-                    ['name' => 'baz', 'date' => '2018-01-03', 'value' => '345.00'],
-                ],
-            ]
-        )->getTable(self::$table);
+        $actualRows = self::$dbHelper->selectAllFromTable(self::$table);
+        $expectedRows = [
+            ['name' => 'foo', 'date' => '2018-01-01', 'value' => '123.00'],
+            ['name' => 'bar', 'date' => '2018-01-02', 'value' => '234.00'],
+            ['name' => 'baz', 'date' => '2018-01-03', 'value' => '345.00'],
+        ];
 
-        self::assertTablesEqual($expectedTable, $table);
+        self::assertSame($expectedRows, $actualRows);
     }
 
     public function testBasicLoadWithTransform(): void
@@ -152,18 +142,14 @@ SQL
         $slurp = $sb->build();
         $slurp->process($cfe);
 
-        $table = $this->fetchQueryTable(self::$table);
-        $expectedTable = $this->createArrayDataSet(
-            [
-                self::$table => [
-                    ['name' => 'FOO', 'date' => '2018-01-01', 'value' => '123.00'],
-                    ['name' => 'BAR', 'date' => '2018-01-02', 'value' => '234.00'],
-                    ['name' => 'BAZ', 'date' => '2018-01-03', 'value' => '345.00'],
-                ],
-            ]
-        )->getTable('tbl_foo');
+        $actualRows = self::$dbHelper->selectAllFromTable(self::$table);
+        $expectedRows = [
+            ['name' => 'FOO', 'date' => '2018-01-01', 'value' => '123.00'],
+            ['name' => 'BAR', 'date' => '2018-01-02', 'value' => '234.00'],
+            ['name' => 'BAZ', 'date' => '2018-01-03', 'value' => '345.00'],
+        ];
 
-        self::assertTablesEqual($expectedTable, $table);
+        self::assertSame($expectedRows, $actualRows);
     }
 
     public function testAllTypesFromSchema(): void
@@ -201,24 +187,20 @@ SQL
         $cfe->loadHeadersFromFile();
         $slurp->process($cfe);
 
-        $table = $this->fetchQueryTable('all_types');
-        $expectedTable = $this->createArrayDataSet(
+        $actualRows = self::$dbHelper->selectAllFromTable('all_types');
+        $expectedRows = [
             [
-                'all_types' => [
-                    [
-                        'a_string' => 'foo',
-                        'a_number' => 123.45,
-                        'an_integer' => 234,
-                        'a_boolean' => 1,
-                        'a_date' => '2018-01-01',
-                        'a_time' => '12:34:56',
-                        'a_datetime' => '2018-01-01 12:34:56',
-                    ],
-                ],
-            ]
-        )->getTable('all_types');
+                'a_string' => 'foo',
+                'a_number' => '123.45',
+                'an_integer' => '234',
+                'a_boolean' => '1',
+                'a_date' => '2018-01-01',
+                'a_time' => '12:34:56',
+                'a_datetime' => '2018-01-01 12:34:56',
+            ],
+        ];
 
-        self::assertTablesEqual($expectedTable, $table);
+        self::assertSame($expectedRows, $actualRows);
     }
 
     public function testValidateAgainstSchemaWithMissingColumns(): void
@@ -229,7 +211,7 @@ SQL
         $mockDispatcher->shouldReceive('dispatch')
             ->withArgs(static function (Event $event, string $eventName) use (&$violations) {
                 if (RecordValidatedEvent::NAME === $eventName) {
-                    /** @var RecordValidatedEvent $event */
+                    assert($event instanceof RecordValidatedEvent);
                     $violations = array_merge($violations, $event->getPayload()->getViolations());
 
                     return true;
@@ -260,33 +242,5 @@ SQL
         $this->assertCount(1, $violations);
         $violation = array_pop($violations);
         $this->assertInstanceOf(RecordViolation::class, $violation);
-    }
-
-    protected function fetchQueryTable($tableName): ITable
-    {
-        return $this->getConnection()->createQueryTable(
-            $tableName,
-            <<<SQL
-SELECT * FROM `{$tableName}`
-SQL
-        );
-    }
-
-    /**
-     * Returns the test database connection.
-     */
-    protected function getConnection(): Connection
-    {
-        return $this->createDefaultDBConnection(self::$pdo, $_ENV['TESTS_SLURP_DBADAPTER_MYSQL_DATABASE']);
-    }
-
-    /**
-     * Returns the test dataset.
-     */
-    protected function getDataSet(): IDataSet
-    {
-        return $this->createArrayDataSet(
-            ['tbl_foo' => []]
-        );
     }
 }

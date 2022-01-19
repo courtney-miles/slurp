@@ -4,8 +4,6 @@
  *
  * @see https://github.com/courtney-miles/slurp
  *
- * @package milesasylum/slurp
- *
  * @license MIT
  */
 
@@ -20,7 +18,7 @@ class MySQLTestHelper
     /**
      * @var PDO
      */
-    protected $pdo;
+    private $pdo;
 
     public function __construct()
     {
@@ -74,7 +72,20 @@ SQL
         );
     }
 
-    protected function makeDsn(): string
+    public function selectAllFromTable(string $table): array
+    {
+        return $this->pdo->query(<<<SQL
+SELECT * FROM `$table`
+SQL
+        )->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function truncateTable(string $table): void
+    {
+        $this->pdo->exec("TRUNCATE TABLE `$table`");
+    }
+
+    private function makeDsn(): string
     {
         $dsn = sprintf(
             'mysql:host=%s;port=%d',
@@ -85,7 +96,7 @@ SQL
         return $dsn;
     }
 
-    protected function connect($dsn): PDO
+    private function connect(string $dsn): PDO
     {
         $pdo = new PDO($dsn, $this->getDatabaseUser(), $this->getDatabasePassword());
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
