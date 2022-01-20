@@ -52,7 +52,7 @@ jobs:
               run: composer run-script style-check
               if: matrix.php-version != '7.1'
 
-            - name: Run tests for PHP ${{ matrix.php-version }} with most recent dependencies
+            - name: Run tests for PHP ${{ matrix.php-version }}
               run: composer run-script test
               env:
                   TESTS_SLURP_DBADAPTER_MYSQL_HOST: 127.0.0.1
