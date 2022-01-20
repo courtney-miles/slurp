@@ -5,3 +5,6 @@
 /build/coverage-report/
 /phpunit.xml
 /.php_cs.dist
+/.php-cs-fixer.cache
+/.phpunit.result.cache
+/composer.lock
