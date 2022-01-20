@@ -21,7 +21,7 @@ jobs:
                     - 3306:3306
                 options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
-        name: Slurp PHP ${{ matrix.php-version }} test
+        name: Slurp PHP ${{ matrix.php-version }} with composer ${{ matrix.composer-flag }} test
 
         steps:
             - uses: actions/checkout@v2
@@ -46,7 +46,7 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-php-
             - name: Install dependencies
-              run: composer install ${{ matrix.composer-flag }} --no-progress
+              run: composer update ${{ matrix.composer-flag }} --no-progress
 
             - name: Run Code Style Check for PHP ${{ matrix.php-version }}
               run: composer run-script style-check
