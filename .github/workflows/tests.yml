@@ -46,7 +46,7 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-php-
             - name: Install dependencies
-              run: composer install ${{ composer-flag }} --no-progress
+              run: composer install ${{ matrix.composer-flag }} --no-progress
 
             - name: Run Code Style Check for PHP ${{ matrix.php-version }}
               run: composer run-script style-check
