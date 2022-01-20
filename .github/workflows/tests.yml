@@ -58,12 +58,6 @@ jobs:
                   TESTS_SLURP_DBADAPTER_MYSQL_HOST: 127.0.0.1
                   TESTS_SLURP_DBADAPTER_MYSQL_PORT: ${{ job.services.mysql.ports[3306] }}
 
-            -   name: Run tests for PHP ${{ matrix.php-version }} with most recent compatability
-                    run: composer run-script test
-                    env:
-                        TESTS_SLURP_DBADAPTER_MYSQL_HOST: 127.0.0.1
-                        TESTS_SLURP_DBADAPTER_MYSQL_PORT: ${{ job.services.mysql.ports[3306] }}
-
             - name: Submit test coverage to Coveralls
               run: vendor/bin/php-coveralls
               env:
