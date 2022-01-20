@@ -4,21 +4,21 @@ on:
         branches: [ main, release ]
     pull_request:
         branches: [ main, release ]
-services:
-    mysql:
-        image: mysql:5.7
-        env:
-            MYSQL_ALLOW_EMPTY_PASSWORD: yes
-            MYSQL_DATABASE: slurp_testing
-        ports:
-            - 3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 jobs:
     build:
         runs-on: ubuntu-latest
         strategy:
             matrix:
                 php-version: ['7.2', '7.3', '7.4']
+        services:
+            mysql:
+                image: mysql:5.7
+                env:
+                    MYSQL_ALLOW_EMPTY_PASSWORD: yes
+                    MYSQL_DATABASE: slurp_testing
+                ports:
+                    - 3306:3306
+                options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
         name: Slurp PHP ${{ matrix.php-version }} test
 
