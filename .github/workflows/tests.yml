@@ -9,8 +9,10 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php-version: ['7.2', '7.3', '7.4']
-                composer-flag: ['--prefer-dist', '--prefer-stable --prefer-lowest', ]
+                php-version: ['7.2', '7.3', '7.4', '8.0']
+                composer-flag:
+                    - '--prefer-dist'
+#                    - '--prefer-stable --prefer-lowest'
         services:
             mysql:
                 image: mysql:5.7

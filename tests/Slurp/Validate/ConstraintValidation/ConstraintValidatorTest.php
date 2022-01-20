@@ -65,7 +65,7 @@ class ConstraintValidatorTest extends TestCase
 
         $violations = $this->validator->validateField($recordId, $field, $value);
 
-        $this->assertInternalType('array', $violations);
+        $this->assertIsArray($violations);
         $this->assertCount(1, $violations);
 
         $violation = array_pop($violations);
@@ -91,7 +91,7 @@ class ConstraintValidatorTest extends TestCase
 
         $violations = $this->validator->validateRecord($recordId, [$field => $value, 'col_two' => 'bar']);
 
-        $this->assertInternalType('array', $violations);
+        $this->assertIsArray($violations);
         $this->assertCount(1, $violations);
 
         $violation = array_pop($violations);
