@@ -45,8 +45,11 @@ jobs:
                   key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
                   restore-keys: |
                       ${{ runner.os }}-php-
-            - name: Install dependencies
-              run: composer update ${{ matrix.composer-flag }} --no-progress
+            - name: Install Composer dependencies
+              run: composer update ${{ matrix.composer-flag }} --no-interaction --no-progress
+
+            - name: Update Composer Dev dependencies only
+              run: composer update mockery/mockery phpunit/phpunit friendsofphp/php-cs-fixer --prefer-dist --no-interaction --no-progress
 
             - name: Run Code Style Check for PHP ${{ matrix.php-version }}
               run: composer run-script style-check
