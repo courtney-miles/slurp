@@ -59,7 +59,7 @@ class SchemaValidatorTest extends TestCase
 
         $violations = $this->validator->validateField($recordId, $field, $value);
 
-        $this->assertInternalType('array', $violations);
+        $this->assertIsArray($violations);
         $this->assertCount(1, $violations);
 
         $violation = array_pop($violations);
@@ -95,7 +95,7 @@ class SchemaValidatorTest extends TestCase
 
         $violations = $this->validator->validateRecord($recordId, $record);
 
-        $this->assertInternalType('array', $violations);
+        $this->assertIsArray($violations);
         $this->assertCount(1, $violations);
 
         $violation = array_pop($violations);
@@ -117,7 +117,7 @@ class SchemaValidatorTest extends TestCase
 
         $violations = $this->validator->validateRecord(1, $record);
 
-        $this->assertInternalType('array', $violations);
+        $this->assertIsArray($violations);
         $this->assertCount(1, $violations);
 
         $violation = array_pop($violations);
@@ -138,7 +138,7 @@ class SchemaValidatorTest extends TestCase
 
         $violations = $this->validator->validateRecord(1, $record);
 
-        $this->assertInternalType('array', $violations);
+        $this->assertIsArray($violations);
         $this->assertCount(1, $violations);
 
         $violation = array_pop($violations);
@@ -164,7 +164,7 @@ class SchemaValidatorTest extends TestCase
         $this->validator->validateRecord(1, $record);
         $violations = $this->validator->validateRecord(2, $record);
 
-        $this->assertInternalType('array', $violations);
+        $this->assertIsArray($violations);
         $this->assertCount(1, $violations);
 
         $violation = array_pop($violations);

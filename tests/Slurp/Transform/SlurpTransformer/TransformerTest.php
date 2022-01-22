@@ -20,7 +20,6 @@ use MilesAsylum\Slurp\Transform\SlurpTransformer\TransformerLoader;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
-use PHPUnit\Framework\Error\Warning;
 use PHPUnit\Framework\TestCase;
 
 class TransformerTest extends TestCase
@@ -107,7 +106,7 @@ class TransformerTest extends TestCase
 
     public function testTransformUndefinedFieldTriggersWarning(): void
     {
-        $this->expectException(Warning::class);
+        $this->expectWarning();
         $this->expectExceptionMessage(
             'Unable to apply transformation for field \'bar\'. The supplied record did not contain this field.'
         )
@@ -170,7 +169,7 @@ class TransformerTest extends TestCase
         $this->assertSame([$field => $newValueTwo], $this->transformer->transformRecord([$field => $value]));
     }
 
-    protected function stubTransformerLoader(
+    private function stubTransformerLoader(
         MockInterface $mockLoader,
         Change $change,
         ChangeTransformerInterface $changeTransformer

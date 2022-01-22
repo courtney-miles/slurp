@@ -54,6 +54,8 @@ class DatabaseExtractorTest extends TestCase
             ->andReturn($this->mockStmt);
         $this->mockStmt->shouldReceive('execute')
             ->with($qryParams);
+        $this->mockStmt->shouldReceive('getIterator')
+            ->andReturn(Mockery::mock(Iterator::class));
 
         $dbExtractor = new DatabaseExtractor(
             $this->mockPdo,

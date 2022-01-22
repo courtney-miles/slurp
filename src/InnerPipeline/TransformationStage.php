@@ -4,8 +4,6 @@
  *
  * @see https://github.com/courtney-miles/slurp
  *
- * @package milesasylum/slurp
- *
  * @license MIT
  */
 
@@ -23,9 +21,6 @@ class TransformationStage extends AbstractStage
      * @var TransformerInterface
      */
     private $transformer;
-
-    const STATE_BEGIN = 'begin_transformation';
-    const STATE_END = 'end_transformation';
 
     public function __construct(TransformerInterface $transformer)
     {
