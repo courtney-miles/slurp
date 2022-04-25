@@ -4,8 +4,6 @@
  *
  * @see https://github.com/courtney-miles/slurp
  *
- * @package milesasylum/slurp
- *
  * @license MIT
  */
 
@@ -15,6 +13,8 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Extract\CsvFileExtractor;
 
 use League\Csv\Reader;
 use MilesAsylum\Slurp\Extract\CsvFileExtractor\CsvFileExtractor;
+use MilesAsylum\Slurp\Extract\Exception\DuplicateFieldValueException;
+use MilesAsylum\Slurp\Extract\Exception\DuplicatePrimaryKeyValueException;
 use MilesAsylum\Slurp\Extract\Exception\ValueCountMismatchException;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -139,7 +139,48 @@ class CsvFileExtractorTest extends TestCase
         }
     }
 
-    public function setUpMockReader(MockInterface $mockReader, array $rows): void
+    public function testExceptionOnNotUniqueField(): void
+    {
+        $this->expectException(DuplicateFieldValueException::class);
+
+        $csvRows = [
+            ['dup_pk', 123],
+            ['dup_pk', 234],
+        ];
+
+        $this->setUpMockReader($this->mockReader, $csvRows);
+        $sut = $this->createCsvFileExtractor($this->mockReader, [], ['uniq_col']);
+        $sut->setHeaders(['uniq_col', 'col_2']);
+
+        foreach ($sut as $rowId => $row) {
+            // Do nothing.
+        }
+    }
+
+    public function testExceptionOnNotUniquePrimaryKey(): void
+    {
+        $this->expectException(DuplicatePrimaryKeyValueException::class);
+
+        $csvRows = [
+            ['dup_pk', 123],
+            ['dup_pk', 234],
+        ];
+
+        $this->setUpMockReader($this->mockReader, $csvRows);
+        $sut = $this->createCsvFileExtractor($this->mockReader, ['pk_col']);
+        $sut->setHeaders(['pk_col', 'col_2']);
+
+        foreach ($sut as $rowId => $row) {
+            // Do nothing.
+        }
+    }
+
+    private function createCsvFileExtractor(Reader $csvReader, $primaryKey = [], $uniqueFields = []): CsvFileExtractor
+    {
+        return new CsvFileExtractor($csvReader, $primaryKey, $uniqueFields);
+    }
+
+    private function setUpMockReader(MockInterface $mockReader, array $rows): void
     {
         $mockReader->shouldReceive('fetchOne')
             ->withNoArgs()

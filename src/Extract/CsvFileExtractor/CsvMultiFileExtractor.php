@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Extract\CsvFileExtractor;
 
+use MilesAsylum\Slurp\SlurpFactory;
+
 class CsvMultiFileExtractor implements CsvFileExtractorInterface
 {
     /**
@@ -27,6 +29,10 @@ class CsvMultiFileExtractor implements CsvFileExtractorInterface
         }
     }
 
+    /**
+     * @deprecated
+     * @see SlurpFactory::createCsvMultiFileExtractor()
+     */
     public static function createFromPaths(array $paths)
     {
         $extractors = [];
