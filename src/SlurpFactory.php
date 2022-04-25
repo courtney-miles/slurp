@@ -4,8 +4,6 @@
  *
  * @see https://github.com/courtney-miles/slurp
  *
- * @package milesasylum/slurp
- *
  * @license MIT
  */
 
@@ -14,8 +12,11 @@ declare(strict_types=1);
 namespace MilesAsylum\Slurp;
 
 use frictionlessdata\tableschema\Schema;
+use League\Csv\Reader;
 use League\Pipeline\PipelineInterface;
 use MilesAsylum\Slurp\Exception\FactoryException;
+use MilesAsylum\Slurp\Extract\CsvFileExtractor\CsvFileExtractor;
+use MilesAsylum\Slurp\Extract\CsvFileExtractor\CsvMultiFileExtractor;
 use MilesAsylum\Slurp\Filter\ConstraintFiltration\ConstraintFilter;
 use MilesAsylum\Slurp\Filter\FilterInterface;
 use MilesAsylum\Slurp\InnerPipeline\FiltrationStage;
@@ -43,6 +44,32 @@ use Throwable;
 
 class SlurpFactory
 {
+    public function createCsvFileExtractor(string $path, Schema $schema): CsvFileExtractor
+    {
+        $primaryKeys = $schema->primaryKey();
+        $uniqueFields = $this->getUniqueFieldNamesFromSchema($schema);
+
+        return new CsvFileExtractor(
+            Reader::createFromPath($path),
+            $primaryKeys,
+            $uniqueFields
+        );
+    }
+
+    /**
+     * @param string[] $paths
+     */
+    public function createCsvMultiFileExtractor(array $paths, Schema $schema): CsvMultiFileExtractor
+    {
+        $extractors = [];
+
+        foreach ($paths as $path) {
+            $extractors[] = $this->createCsvFileExtractor($path, $schema);
+        }
+
+        return new CsvMultiFileExtractor($extractors);
+    }
+
     public function createValidationStage(ValidatorInterface $validator): ValidationStage
     {
         return new ValidationStage($validator);
@@ -171,5 +198,21 @@ class SlurpFactory
         string $database = null
     ): SimpleDeleteStmt {
         return new SimpleDeleteStmt($pdo, $table, $conditions, $database);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getUniqueFieldNamesFromSchema(Schema $schema): array
+    {
+        $uniqueFields = [];
+
+        foreach ($schema->fields() as $field) {
+            if ($field->unique()) {
+                $uniqueFields[] = $field->name();
+            }
+        }
+
+        return $uniqueFields;
     }
 }

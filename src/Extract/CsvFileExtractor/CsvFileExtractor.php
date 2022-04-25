@@ -5,8 +5,6 @@
  *
  * @see https://github.com/courtney-miles/slurp
  *
- * @package milesasylum/slurp
- *
  * @license MIT
  */
 
@@ -18,6 +16,7 @@ use CallbackFilterIterator;
 use Iterator;
 use League\Csv\Exception;
 use League\Csv\Reader;
+use MilesAsylum\Slurp\SlurpFactory;
 
 class CsvFileExtractor implements CsvFileExtractorInterface
 {
@@ -30,11 +29,21 @@ class CsvFileExtractor implements CsvFileExtractorInterface
 
     private $headerOffset;
 
-    public function __construct(Reader $csvReader)
+    private $primaryKeys;
+
+    private $uniqueFields;
+
+    public function __construct(Reader $csvReader, array $primaryKeys = [], array $uniqueFields = [])
     {
         $this->csvReader = $csvReader;
+        $this->primaryKeys = $primaryKeys;
+        $this->uniqueFields = $uniqueFields;
     }
 
+    /**
+     * @deprecated
+     * @see SlurpFactory::createCsvFileExtractor()
+     */
     public static function createFromPath(string $path): self
     {
         return new static(Reader::createFromPath($path));
@@ -96,6 +105,14 @@ class CsvFileExtractor implements CsvFileExtractorInterface
 
         if (!empty($headers)) {
             $records = new MapIterator($records, $headers);
+        }
+
+        if (count($this->primaryKeys)) {
+            $records = new EnforcePrimaryKeyIterator($records, $this->primaryKeys);
+        }
+
+        if (count($this->uniqueFields)) {
+            $records = new EnforceUniqueFieldIterator($records, $this->uniqueFields);
         }
 
         return $records;
