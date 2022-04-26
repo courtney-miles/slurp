@@ -19,7 +19,7 @@ use MilesAsylum\Slurp\Event\ExtractionEndedEvent;
 use MilesAsylum\Slurp\Event\ExtractionFailedEvent;
 use MilesAsylum\Slurp\Event\ExtractionStartedEvent;
 use MilesAsylum\Slurp\Event\RecordProcessedEvent;
-use MilesAsylum\Slurp\Extract\Exception\MalformedSourceException;
+use MilesAsylum\Slurp\Extract\Exception\ExtractionException;
 use MilesAsylum\Slurp\OuterPipeline\Exception\OuterPipelineException;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
@@ -58,7 +58,6 @@ class ExtractionStage extends AbstractOuterStage
             throw new OuterPipelineException(sprintf('An extractor has not been set for %s.', Slurp::class));
         }
 
-        $iterator = new \IteratorIterator($extractor->getIterator());
         $previousRecordId = null;
 
         try {
@@ -87,7 +86,7 @@ class ExtractionStage extends AbstractOuterStage
 
                 $previousRecordId = $id;
             }
-        } catch (MalformedSourceException $e) {
+        } catch (ExtractionException $e) {
             $slurp->abort();
             $this->dispatch(
                 ExtractionFailedEvent::NAME,

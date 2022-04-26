@@ -20,7 +20,7 @@ use MilesAsylum\Slurp\Event\ExtractionEndedEvent;
 use MilesAsylum\Slurp\Event\ExtractionFailedEvent;
 use MilesAsylum\Slurp\Event\ExtractionStartedEvent;
 use MilesAsylum\Slurp\Event\RecordProcessedEvent;
-use MilesAsylum\Slurp\Extract\Exception\MalformedSourceException;
+use MilesAsylum\Slurp\Extract\Exception\ExtractionException;
 use MilesAsylum\Slurp\Extract\ExtractorInterface;
 use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use MilesAsylum\Slurp\Slurp;
@@ -216,7 +216,7 @@ class ExtractionStageTest extends TestCase
                     return parent::current();
                 }
 
-                throw new MalformedSourceException($this->exceptionMessage);
+                throw new ExtractionException($this->exceptionMessage);
             }
         };
 
