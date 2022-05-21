@@ -31,11 +31,11 @@ class EnforceUniqueFieldIterator extends IteratorIterator
                 continue;
             }
 
-            if (in_array($value, $this->uniqueFieldValues[$field], false)) {
+            if (isset($this->uniqueFieldValues[$field][$value])) {
                 throw DuplicateFieldValueException::create($field, $value, $this->key());
             }
 
-            $this->uniqueFieldValues[$field][] = $value;
+            $this->uniqueFieldValues[$field][$value] = true;
         }
 
         return parent::current();

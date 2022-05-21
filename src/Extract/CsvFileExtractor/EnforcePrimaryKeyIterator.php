@@ -36,13 +36,27 @@ class EnforcePrimaryKeyIterator extends IteratorIterator
         }
 
         $pkValues = array_values($pkValues);
+        $normPkValues = self::normalisePrimaryKeysValue($pkValues);
 
-        if (in_array($pkValues, $this->primaryKeyFieldsValues, false)) {
+        if (isset($this->primaryKeyFieldsValues[$normPkValues])) {
             throw DuplicatePrimaryKeyValueException::create($this->primaryKeyFields, $pkValues, $this->key());
         }
 
-        $this->primaryKeyFieldsValues[] = $pkValues;
+        $this->primaryKeyFieldsValues[$normPkValues] = true;
 
         return parent::current();
+    }
+
+    private static function normalisePrimaryKeysValue(array $primaryKeyValues): string
+    {
+        return implode(
+            ':',
+            array_map(
+                static function ($value) {
+                    return addcslashes((string) $value, '\:');
+                },
+                $primaryKeyValues
+            )
+        );
     }
 }

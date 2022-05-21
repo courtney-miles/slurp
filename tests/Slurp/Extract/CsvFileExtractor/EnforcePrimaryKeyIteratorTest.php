@@ -45,4 +45,29 @@ class EnforcePrimaryKeyIteratorTest extends TestCase
             // Do nothing
         }
     }
+
+    public function testCannotTrickAFalseUniqueMatchWhenValuesContainNormalisationSeparator(): void
+    {
+        $rows = [
+            ['pk_1' => 'foo', 'pk_2' => 'bar:'],
+            ['pk_1' => 'foo:bar', 'pk_2' => ''],
+        ];
+        $sut = new EnforcePrimaryKeyIterator(
+            new \ArrayIterator($rows),
+            ['pk_1', 'pk_2']
+        );
+        $sut->rewind();
+
+        try {
+            foreach ($sut as $record) {
+                // Do nothing
+            }
+        } catch (\Throwable $e) {
+            self::fail('Enforcement of primary was tricked into a false match.');
+        }
+
+        // Perform an assertion to avoid warning of risky test, and ensure
+        // the test increments the assertion count.
+        self::assertTrue(true);
+    }
 }
