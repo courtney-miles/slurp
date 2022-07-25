@@ -10,6 +10,7 @@ jobs:
         strategy:
             matrix:
                 php-version: ['7.2', '7.3', '7.4', '8.0']
+                symfony-pkg-version: ['^4.0', '^5.0', '^6.0']
                 composer-flag:
                     - '--prefer-dist'
                     - '--prefer-stable --prefer-lowest'
@@ -23,7 +24,7 @@ jobs:
                     - 3306:3306
                 options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
-        name: Test PHP ${{ matrix.php-version }} / composer ${{ matrix.composer-flag }}
+        name: Test PHP ${{ matrix.php-version }} / Symfony ${{ matrix.symfony-pkg-version }} / composer ${{ matrix.composer-flag }}
 
         steps:
             - uses: actions/checkout@v2
@@ -48,7 +49,7 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-php-
             - name: Install Composer dependencies
-              run: composer update ${{ matrix.composer-flag }} --no-interaction --no-progress
+              run: composer update ${{ matrix.composer-flag }} -W --with "symfony/*":"${{ matrix.symfony-pkg-version }}" --no-interaction --no-progress
 
             # This may be necessary for older dev packages that do not have
             #   upper PHP compatibility version constraints.
