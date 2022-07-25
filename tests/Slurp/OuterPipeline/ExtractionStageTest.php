@@ -1,15 +1,5 @@
 <?php
 
-/**
- * @author Courtney Miles
- *
- * @see https://github.com/courtney-miles/slurp
- *
- * @package milesasylum/slurp
- *
- * @license MIT
- */
-
 declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Tests\Slurp\OuterPipeline;
@@ -160,11 +150,16 @@ class ExtractionStageTest extends TestCase
         $this->mockPipeline->shouldReceive('__invoke');
 
         $mockDispatcher = $this->createMockDispatcher();
-        $mockDispatcher->shouldReceive('dispatch')->byDefault();
+        $mockDispatcher->shouldReceive('dispatch')
+            ->andReturnUsing(static function ($event, $eventName) {
+                return $event;
+            })->byDefault();
         $mockDispatcher->shouldReceive('dispatch')
             ->with(Mockery::type(ExtractionFailedEvent::class), ExtractionFailedEvent::NAME)
-            ->andReturnUsing(static function ($event, $eventName) use (&$spiedEvent): void {
+            ->andReturnUsing(static function ($event, $eventName) use (&$spiedEvent) {
                 $spiedEvent = $event;
+
+                return $event;
             })
             ->once();
         $this->stage->setEventDispatcher($mockDispatcher);
