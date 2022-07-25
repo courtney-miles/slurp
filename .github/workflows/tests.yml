@@ -49,7 +49,7 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-php-
             - name: Install Composer dependencies
-              run: composer update ${{ matrix.composer-flag }} -W --with "symfony/*":"${{ matrix.symfony-pkg-version }}" --no-interaction --no-progress
+              run: composer update ${{ matrix.composer-flag }} -W --with "symfony/validator":"${{ matrix.symfony-pkg-version }}" --no-interaction --no-progress
 
             # This may be necessary for older dev packages that do not have
             #   upper PHP compatibility version constraints.
