@@ -19,7 +19,7 @@
         "league/csv": "^9.0",
         "league/pipeline": "^1.0",
         "frictionlessdata/tableschema": "^1.1.1",
-        "symfony/event-dispatcher": "^4.3"
+        "symfony/event-dispatcher": ">=4.0 <6.2"
     },
     "require-dev": {
         "php-coveralls/php-coveralls": "^2.1",
