@@ -117,7 +117,7 @@ class SlurpFactoryTest extends TestCase
         self::assertInstanceOf(
             Schema::class,
             $this->factory->createTableSchemaFromPath(
-                __DIR__.'/_fixtures/slurp_factory_test_schema.json'
+                __DIR__ . '/_fixtures/slurp_factory_test_schema.json'
             )
         );
     }

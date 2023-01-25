@@ -114,7 +114,7 @@ class SlurpFactory
         try {
             return new Schema($path);
         } catch (Throwable $e) {
-            throw new FactoryException('Error creating table schema from file path: '.$e->getMessage(), 0, $e);
+            throw new FactoryException('Error creating table schema from file path: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -126,7 +126,7 @@ class SlurpFactory
         try {
             return new Schema($arr);
         } catch (Throwable $e) {
-            throw new FactoryException('Error creating table schema from array: '.$e->getMessage(), 0, $e);
+            throw new FactoryException('Error creating table schema from array: ' . $e->getMessage(), 0, $e);
         }
     }
 
