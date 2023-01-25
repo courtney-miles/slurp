@@ -32,6 +32,7 @@ use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use PDO;
 use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class SlurpBuilder
@@ -131,12 +132,12 @@ class SlurpBuilder
         $this->factory = $slurpFactory;
     }
 
-    public static function create(): self
+    public static function create(?ConstraintValidatorFactoryInterface $constraintValidatorFactory = null): self
     {
         return new static(
             new PipelineBuilder(),
             new PipelineBuilder(),
-            new SlurpFactory()
+            new SlurpFactory($constraintValidatorFactory)
         );
     }
 

@@ -5,11 +5,8 @@
  *
  * @see https://github.com/courtney-miles/slurp
  *
- * @package milesasylum/slurp
- *
  * @license MIT
  */
-
 declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Tests\Slurp;
@@ -120,7 +117,7 @@ class SlurpFactoryTest extends TestCase
         self::assertInstanceOf(
             Schema::class,
             $this->factory->createTableSchemaFromPath(
-                __DIR__ . '/_fixtures/slurp_factory_test_schema.json'
+                __DIR__.'/_fixtures/slurp_factory_test_schema.json'
             )
         );
     }

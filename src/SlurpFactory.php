@@ -39,11 +39,22 @@ use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
 use PDO;
+use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
 use Symfony\Component\Validator\Validation;
 use Throwable;
 
 class SlurpFactory
 {
+    /**
+     * @var ConstraintValidatorFactoryInterface|null
+     */
+    private $constraintValidatorFactory;
+
+    public function __construct(?ConstraintValidatorFactoryInterface $constraintValidatorFactory = null)
+    {
+        $this->constraintValidatorFactory = $constraintValidatorFactory;
+    }
+
     public function createCsvFileExtractor(string $path, Schema $schema): CsvFileExtractor
     {
         $primaryKeys = $schema->primaryKey();
@@ -103,7 +114,7 @@ class SlurpFactory
         try {
             return new Schema($path);
         } catch (Throwable $e) {
-            throw new FactoryException('Error creating table schema from file path: ' . $e->getMessage(), 0, $e);
+            throw new FactoryException('Error creating table schema from file path: '.$e->getMessage(), 0, $e);
         }
     }
 
@@ -115,14 +126,20 @@ class SlurpFactory
         try {
             return new Schema($arr);
         } catch (Throwable $e) {
-            throw new FactoryException('Error creating table schema from array: ' . $e->getMessage(), 0, $e);
+            throw new FactoryException('Error creating table schema from array: '.$e->getMessage(), 0, $e);
         }
     }
 
     public function createConstraintValidator(): ConstraintValidator
     {
+        $validationBuilder = Validation::createValidatorBuilder();
+
+        if (null !== $this->constraintValidatorFactory) {
+            $validationBuilder->setConstraintValidatorFactory($this->constraintValidatorFactory);
+        }
+
         return new ConstraintValidator(
-            Validation::createValidator()
+            $validationBuilder->getValidator()
         );
     }
 
