@@ -30,7 +30,6 @@ use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
-use PDO;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -140,9 +139,6 @@ class SlurpBuilder
         );
     }
 
-    /**
-     * @return SlurpBuilder
-     */
     public function setTableSchema(Schema $tableSchema, bool $validateOnly = false): self
     {
         $this->tableSchema = $tableSchema;
@@ -215,7 +211,7 @@ class SlurpBuilder
      * @param array $fieldMappings array key is the destination column and the array value is the source column
      */
     public function createDatabaseLoader(
-        PDO $pdo,
+        \PDO $pdo,
         string $table,
         array $fieldMappings,
         int $batchSize = 100,

@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp;
 
-use InvalidArgumentException;
 use MilesAsylum\Slurp\Validate\ViolationInterface;
 
 class SlurpPayload
@@ -82,7 +81,7 @@ class SlurpPayload
     public function replaceFieldValue(string $name, $value): void
     {
         if (!$this->hasField($name)) {
-            throw new InvalidArgumentException("Unable to replace value for $name. A value does not exists for $name.");
+            throw new \InvalidArgumentException("Unable to replace value for $name. A value does not exists for $name.");
         }
 
         $this->setFieldValue($name, $value);

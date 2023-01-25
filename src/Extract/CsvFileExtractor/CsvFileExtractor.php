@@ -12,8 +12,6 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Extract\CsvFileExtractor;
 
-use CallbackFilterIterator;
-use Iterator;
 use League\Csv\Exception;
 use League\Csv\Reader;
 use MilesAsylum\Slurp\SlurpFactory;
@@ -87,15 +85,15 @@ class CsvFileExtractor implements CsvFileExtractorInterface
         $this->headers = $headers;
     }
 
-    public function getIterator(): Iterator
+    public function getIterator(): \Iterator
     {
         return $this->prepareRecords($this->csvReader->getRecords(), $this->headers);
     }
 
-    protected function prepareRecords(Iterator $records, array $headers): Iterator
+    protected function prepareRecords(\Iterator $records, array $headers): \Iterator
     {
         if (null !== $this->headerOffset) {
-            $records = new CallbackFilterIterator($records, function (array $record, int $offset): bool {
+            $records = new \CallbackFilterIterator($records, function (array $record, int $offset): bool {
                 return $offset !== $this->headerOffset;
             });
         }

@@ -16,13 +16,11 @@ namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Exception\LogicException;
 use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
-use PDO;
-use PDOException;
 
 class StagedLoad
 {
     /**
-     * @var PDO
+     * @var \PDO
      */
     private $pdo;
 
@@ -48,7 +46,7 @@ class StagedLoad
      */
     private $database;
 
-    public function __construct(PDO $pdo, string $table, array $columns, string $database = null)
+    public function __construct(\PDO $pdo, string $table, array $columns, string $database = null)
     {
         $this->pdo = $pdo;
         $this->table = $table;
@@ -116,7 +114,7 @@ INSERT INTO {$tickedTableRef} ({$cols})
   ON DUPLICATE KEY UPDATE {$updateValuesStr}
 SQL
             );
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new LoadRuntimeException('PDO exception thrown when copying rows from the staging table to the destination table.', 0, $e);
         }
 

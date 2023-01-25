@@ -18,11 +18,8 @@ use MilesAsylum\Slurp\Load\DatabaseLoader\BatchInsertManager;
 use MilesAsylum\Slurp\Load\DatabaseLoader\QueryFactory;
 use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
 use MilesAsylum\Slurp\Load\Exception\MissingValueException;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
-use PDO;
-use PDOStatement;
 use PHPUnit\Framework\TestCase;
 
 class BatchInsertManagerTest extends TestCase
@@ -35,7 +32,7 @@ class BatchInsertManagerTest extends TestCase
     protected $batchInsUpdStmt;
 
     /**
-     * @var PDO|MockInterface
+     * @var \PDO|MockInterface
      */
     protected $mockPdo;
 
@@ -60,8 +57,8 @@ class BatchInsertManagerTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockPdo = Mockery::mock(PDO::class);
-        $this->mockQueryFactory = Mockery::mock(QueryFactory::class);
+        $this->mockPdo = \Mockery::mock(\PDO::class);
+        $this->mockQueryFactory = \Mockery::mock(QueryFactory::class);
 
         $this->batchInsUpdStmt = new BatchInsertManager(
             $this->mockPdo,
@@ -84,7 +81,7 @@ class BatchInsertManagerTest extends TestCase
             ->with($this->table, $this->columns, count($rows), $this->database)
             ->andReturn($dummyQuery);
 
-        $mockStmt = Mockery::mock(PDOStatement::class);
+        $mockStmt = \Mockery::mock(\PDOStatement::class);
         $this->mockPdo->shouldReceive('prepare')
             ->with($dummyQuery)
             ->andReturn($mockStmt);
@@ -113,7 +110,7 @@ class BatchInsertManagerTest extends TestCase
             ->andReturn($dummyQuery)
             ->once();
 
-        $mockStmt = Mockery::mock(PDOStatement::class);
+        $mockStmt = \Mockery::mock(\PDOStatement::class);
         $this->mockPdo->shouldReceive('prepare')
             ->with($dummyQuery)
             ->andReturn($mockStmt)
@@ -140,7 +137,7 @@ class BatchInsertManagerTest extends TestCase
         $this->mockQueryFactory->shouldReceive('createInsertQuery')
             ->byDefault();
 
-        $mockStmt = Mockery::mock(PDOStatement::class);
+        $mockStmt = \Mockery::mock(\PDOStatement::class);
         $this->mockPdo->shouldReceive('prepare')
             ->andReturn($mockStmt);
 
@@ -156,7 +153,7 @@ class BatchInsertManagerTest extends TestCase
         $this->mockQueryFactory->shouldReceive('createInsertQuery')
             ->byDefault();
 
-        $mockStmt = Mockery::mock(PDOStatement::class);
+        $mockStmt = \Mockery::mock(\PDOStatement::class);
         $this->mockPdo->shouldReceive('prepare')
             ->andReturn($mockStmt);
 
@@ -173,7 +170,7 @@ class BatchInsertManagerTest extends TestCase
         $this->mockQueryFactory->shouldReceive('createInsertQuery')
             ->byDefault();
 
-        $mockStmt = Mockery::mock(PDOStatement::class);
+        $mockStmt = \Mockery::mock(\PDOStatement::class);
         $this->mockPdo->shouldReceive('prepare')
             ->andReturn($mockStmt);
 
@@ -191,7 +188,7 @@ class BatchInsertManagerTest extends TestCase
         $this->mockQueryFactory->shouldReceive('createInsertQuery')
             ->byDefault();
 
-        $mockStmt = Mockery::mock(PDOStatement::class);
+        $mockStmt = \Mockery::mock(\PDOStatement::class);
         $this->mockPdo->shouldReceive('prepare')
             ->andReturn($mockStmt);
 

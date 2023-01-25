@@ -13,17 +13,14 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Extract\CsvFileExtractor;
 
-use IteratorIterator;
-use Traversable;
-
-class MapIterator extends IteratorIterator
+class MapIterator extends \IteratorIterator
 {
     /**
      * @var array
      */
     private $headers;
 
-    public function __construct(Traversable $iterator, array $headers)
+    public function __construct(\Traversable $iterator, array $headers)
     {
         parent::__construct($iterator);
         $this->headers = $headers;
