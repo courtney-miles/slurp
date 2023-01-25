@@ -38,10 +38,21 @@ use MilesAsylum\Slurp\Transform\TransformerInterface;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
+use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
 use Symfony\Component\Validator\Validation;
 
 class SlurpFactory
 {
+    /**
+     * @var ConstraintValidatorFactoryInterface|null
+     */
+    private $constraintValidatorFactory;
+
+    public function __construct(?ConstraintValidatorFactoryInterface $constraintValidatorFactory = null)
+    {
+        $this->constraintValidatorFactory = $constraintValidatorFactory;
+    }
+
     public function createCsvFileExtractor(string $path, Schema $schema): CsvFileExtractor
     {
         $primaryKeys = $schema->primaryKey();
@@ -119,8 +130,14 @@ class SlurpFactory
 
     public function createConstraintValidator(): ConstraintValidator
     {
+        $validationBuilder = Validation::createValidatorBuilder();
+
+        if (null !== $this->constraintValidatorFactory) {
+            $validationBuilder->setConstraintValidatorFactory($this->constraintValidatorFactory);
+        }
+
         return new ConstraintValidator(
-            Validation::createValidator()
+            $validationBuilder->getValidator()
         );
     }
 
