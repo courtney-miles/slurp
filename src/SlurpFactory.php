@@ -38,9 +38,7 @@ use MilesAsylum\Slurp\Transform\TransformerInterface;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
-use PDO;
 use Symfony\Component\Validator\Validation;
-use Throwable;
 
 class SlurpFactory
 {
@@ -102,7 +100,7 @@ class SlurpFactory
     {
         try {
             return new Schema($path);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             throw new FactoryException('Error creating table schema from file path: ' . $e->getMessage(), 0, $e);
         }
     }
@@ -114,7 +112,7 @@ class SlurpFactory
     {
         try {
             return new Schema($arr);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             throw new FactoryException('Error creating table schema from array: ' . $e->getMessage(), 0, $e);
         }
     }
@@ -152,7 +150,7 @@ class SlurpFactory
      * @param array $fieldMappings array key is the destination column and the array value is the source column
      */
     public function createDatabaseLoader(
-        PDO $pdo,
+        \PDO $pdo,
         string $table,
         array $fieldMappings,
         int $batchSize = 100,
@@ -192,7 +190,7 @@ class SlurpFactory
     }
 
     public function createSimpleDeleteStmt(
-        PDO $pdo,
+        \PDO $pdo,
         string $table,
         array $conditions = [],
         string $database = null

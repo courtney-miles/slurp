@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Validate\SchemaValidation;
 
-use Exception;
 use frictionlessdata\tableschema\Fields\BaseField;
 use frictionlessdata\tableschema\Schema;
 use frictionlessdata\tableschema\SchemaValidationError;
@@ -23,7 +22,6 @@ use MilesAsylum\Slurp\Validate\FieldViolation;
 use MilesAsylum\Slurp\Validate\RecordViolation;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use MilesAsylum\Slurp\Validate\ViolationInterface;
-use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -41,7 +39,7 @@ class SchemaValidatorTest extends TestCase
 
     public function setUp(): void
     {
-        $this->mockTableSchema = Mockery::mock(Schema::class);
+        $this->mockTableSchema = \Mockery::mock(Schema::class);
         $this->validator = new SchemaValidator($this->mockTableSchema);
     }
 
@@ -52,7 +50,7 @@ class SchemaValidatorTest extends TestCase
         $value = 'bar';
         $message = 'Oops!';
 
-        $mockValidationError = Mockery::mock(SchemaValidationError::class);
+        $mockValidationError = \Mockery::mock(SchemaValidationError::class);
         $mockValidationError->shouldReceive('getMessage')
             ->andReturn($message);
         $this->stubSchemaValidationFieldError($field, $value, $this->mockTableSchema, [$mockValidationError]);
@@ -80,11 +78,11 @@ class SchemaValidatorTest extends TestCase
         $record = [$badField => $badValue, $goodField => $goodValue];
 
         $mockFields = [
-            Mockery::mock(BaseField::class, ['name' => $badField, 'unique' => false]),
-            Mockery::mock(BaseField::class, ['name' => $goodField, 'unique' => false]),
+            \Mockery::mock(BaseField::class, ['name' => $badField, 'unique' => false]),
+            \Mockery::mock(BaseField::class, ['name' => $goodField, 'unique' => false]),
         ];
 
-        $mockValidationError = Mockery::mock(SchemaValidationError::class);
+        $mockValidationError = \Mockery::mock(SchemaValidationError::class);
         $mockValidationError->extraDetails = [
             'field' => $badField,
             'value' => $badValue,
@@ -107,8 +105,8 @@ class SchemaValidatorTest extends TestCase
     public function testValidateRecordWithMissingField(): void
     {
         $mockFields = [
-            Mockery::mock(BaseField::class, ['name' => 'col_a', 'unique' => false]),
-            Mockery::mock(BaseField::class, ['name' => 'col_b', 'unique' => false]),
+            \Mockery::mock(BaseField::class, ['name' => 'col_a', 'unique' => false]),
+            \Mockery::mock(BaseField::class, ['name' => 'col_b', 'unique' => false]),
         ];
 
         $record = ['col_a' => 123];
@@ -129,7 +127,7 @@ class SchemaValidatorTest extends TestCase
     public function testValidateRecordWithExtraField(): void
     {
         $mockFields = [
-            Mockery::mock(BaseField::class, ['name' => 'col_a', 'unique' => false]),
+            \Mockery::mock(BaseField::class, ['name' => 'col_a', 'unique' => false]),
         ];
 
         $record = ['col_a' => 123, 'col_b' => 234];
@@ -152,7 +150,7 @@ class SchemaValidatorTest extends TestCase
         $field = 'id';
         $record = [$field => 123];
 
-        $mockUniqueField = Mockery::mock(BaseField::class);
+        $mockUniqueField = \Mockery::mock(BaseField::class);
         $mockUniqueField->shouldReceive('name')
             ->andReturn($field);
         $mockUniqueField->shouldReceive('unique')
@@ -185,7 +183,7 @@ class SchemaValidatorTest extends TestCase
 
         $this->mockTableSchema->shouldReceive('field')
             ->with($field)
-            ->andThrow(Exception::class);
+            ->andThrow(\Exception::class);
 
         $this->validator->validateField(123, $field, 234);
     }
@@ -196,7 +194,7 @@ class SchemaValidatorTest extends TestCase
         MockInterface $mockTableSchema,
         array $validationErrors
     ): void {
-        $mockSchemaField = Mockery::mock(BaseField::class);
+        $mockSchemaField = \Mockery::mock(BaseField::class);
         $mockSchemaField->shouldReceive('validateValue')
             ->with($value)
             ->andReturn($validationErrors);

@@ -17,7 +17,6 @@ use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\ChangeTransformerInterface;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\TransformerLoader;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -38,7 +37,7 @@ class TransformerTest extends TestCase
 
     public function setUp(): void
     {
-        $this->mockLoader = Mockery::mock(TransformerLoader::class);
+        $this->mockLoader = \Mockery::mock(TransformerLoader::class);
 
         $this->transformer = new Transformer($this->mockLoader);
     }
@@ -49,8 +48,8 @@ class TransformerTest extends TestCase
         $value = 123;
         $newValue = 321;
 
-        $mockChange = Mockery::mock(Change::class);
-        $mockChangeTransformer = Mockery::mock(ChangeTransformerInterface::class);
+        $mockChange = \Mockery::mock(Change::class);
+        $mockChangeTransformer = \Mockery::mock(ChangeTransformerInterface::class);
         $mockChangeTransformer->shouldReceive('transform')
             ->with($value, $mockChange)
             ->andReturn($newValue);
@@ -67,8 +66,8 @@ class TransformerTest extends TestCase
         $value = 123;
         $newValue = 321;
 
-        $mockChange = Mockery::mock(Change::class);
-        $mockChangeTransformer = Mockery::mock(ChangeTransformerInterface::class);
+        $mockChange = \Mockery::mock(Change::class);
+        $mockChangeTransformer = \Mockery::mock(ChangeTransformerInterface::class);
         $mockChangeTransformer->shouldReceive('transform')
             ->with($value, $mockChange)
             ->andReturn($newValue);
@@ -91,8 +90,8 @@ class TransformerTest extends TestCase
     {
         $record = ['foo' => 123];
 
-        $mockChange = Mockery::mock(Change::class);
-        $mockChangeTransformer = Mockery::mock(ChangeTransformerInterface::class);
+        $mockChange = \Mockery::mock(Change::class);
+        $mockChangeTransformer = \Mockery::mock(ChangeTransformerInterface::class);
         $mockChangeTransformer->shouldReceive('transform')
             ->never();
         $this->stubTransformerLoader($this->mockLoader, $mockChange, $mockChangeTransformer);
@@ -112,8 +111,8 @@ class TransformerTest extends TestCase
         )
         ;
 
-        $mockChange = Mockery::mock(Change::class);
-        $mockChangeTransformer = Mockery::mock(ChangeTransformerInterface::class);
+        $mockChange = \Mockery::mock(Change::class);
+        $mockChangeTransformer = \Mockery::mock(ChangeTransformerInterface::class);
         $mockChangeTransformer->shouldReceive('transform')
             ->never();
         $this->stubTransformerLoader($this->mockLoader, $mockChange, $mockChangeTransformer);
@@ -128,9 +127,9 @@ class TransformerTest extends TestCase
         $value = 123;
         $newValueOne = 321;
         $newValueTwo = 654;
-        $mockChangeOne = Mockery::mock(Change::class);
-        $mockChangeTwo = Mockery::mock(Change::class);
-        $mockChangeTransformer = Mockery::mock(ChangeTransformerInterface::class);
+        $mockChangeOne = \Mockery::mock(Change::class);
+        $mockChangeTwo = \Mockery::mock(Change::class);
+        $mockChangeTransformer = \Mockery::mock(ChangeTransformerInterface::class);
         $mockChangeTransformer->shouldReceive('transform')
             ->with($value, $mockChangeOne)
             ->andReturn($newValueOne);
@@ -151,9 +150,9 @@ class TransformerTest extends TestCase
         $field = 'foo';
         $value = 123;
         $newValueTwo = 654;
-        $mockChangeOne = Mockery::mock(Change::class);
-        $mockChangeTwo = Mockery::mock(Change::class);
-        $mockChangeTransformer = Mockery::mock(ChangeTransformerInterface::class);
+        $mockChangeOne = \Mockery::mock(Change::class);
+        $mockChangeTwo = \Mockery::mock(Change::class);
+        $mockChangeTransformer = \Mockery::mock(ChangeTransformerInterface::class);
         $mockChangeTransformer->shouldReceive('transform')
             ->with($value, $mockChangeOne)
             ->never();

@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Extract\CsvFileExtractor;
 
-use IteratorIterator;
 use MilesAsylum\Slurp\Extract\Exception\DuplicateFieldValueException;
-use Traversable;
 
-class EnforceUniqueFieldIterator extends IteratorIterator
+class EnforceUniqueFieldIterator extends \IteratorIterator
 {
     /**
      * @var array<string, array>
      */
     private $uniqueFieldValues;
 
-    public function __construct(Traversable $iterator, array $uniqueFields)
+    public function __construct(\Traversable $iterator, array $uniqueFields)
     {
         parent::__construct($iterator);
 

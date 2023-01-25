@@ -18,7 +18,6 @@ use MilesAsylum\Slurp\Event\RecordFilteredEvent;
 use MilesAsylum\Slurp\Filter\FilterInterface;
 use MilesAsylum\Slurp\InnerPipeline\FiltrationStage;
 use MilesAsylum\Slurp\SlurpPayload;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -42,7 +41,7 @@ class FiltrationStageTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockFilter = Mockery::mock(FilterInterface::class);
+        $this->mockFilter = \Mockery::mock(FilterInterface::class);
         $this->mockFilter->shouldReceive('filterRecord')
             ->andReturn(false)
             ->byDefault();
@@ -67,9 +66,9 @@ class FiltrationStageTest extends TestCase
     public function testDispatchEventOnFiltered(): void
     {
         $payload = new SlurpPayload();
-        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(Mockery::type(RecordFilteredEvent::class), RecordFilteredEvent::NAME)
+            ->with(\Mockery::type(RecordFilteredEvent::class), RecordFilteredEvent::NAME)
             ->once();
 
         $this->mockFilter->shouldReceive('filterRecord')
@@ -82,7 +81,7 @@ class FiltrationStageTest extends TestCase
     public function testDoNotDispatchEventOnNotFiltered(): void
     {
         $payload = new SlurpPayload();
-        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')->never();
 
         $this->mockFilter->shouldReceive('filterRecord')

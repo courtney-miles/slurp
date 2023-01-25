@@ -19,7 +19,6 @@ use MilesAsylum\Slurp\Event\ExtractionFinalisationCompleteEvent;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\OuterPipeline\FinaliseStage;
 use MilesAsylum\Slurp\Slurp;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -93,15 +92,15 @@ class FinaliseStageTest extends TestCase
 
     public function testFinalisationEventsDispatched(): void
     {
-        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
             ->with(
-                Mockery::type(ExtractionFinalisationBeginEvent::class),
+                \Mockery::type(ExtractionFinalisationBeginEvent::class),
                 ExtractionFinalisationBeginEvent::NAME
             )->once();
         $mockDispatcher->shouldReceive('dispatch')
             ->with(
-                Mockery::type(ExtractionFinalisationCompleteEvent::class),
+                \Mockery::type(ExtractionFinalisationCompleteEvent::class),
                 ExtractionFinalisationCompleteEvent::NAME
             )->once();
 
@@ -115,7 +114,7 @@ class FinaliseStageTest extends TestCase
      */
     protected function createMockLoader(): MockInterface
     {
-        $mockLoader = Mockery::mock(LoaderInterface::class);
+        $mockLoader = \Mockery::mock(LoaderInterface::class);
         $mockLoader->shouldReceive('hasBegun')
             ->andReturn(true)
             ->byDefault();
@@ -133,7 +132,7 @@ class FinaliseStageTest extends TestCase
      */
     protected function createMockSlurp(): MockInterface
     {
-        $mockSlurp = Mockery::mock(Slurp::class);
+        $mockSlurp = \Mockery::mock(Slurp::class);
         $mockSlurp->shouldReceive('isAborted')
             ->andReturn(false)
             ->byDefault();

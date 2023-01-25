@@ -16,14 +16,11 @@ namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
 use MilesAsylum\Slurp\Load\Exception\MissingValueException;
-use PDO;
-use PDOException;
-use PDOStatement;
 
 class BatchInsertManager implements BatchManagerInterface
 {
     /**
-     * @var PDO
+     * @var \PDO
      */
     protected $pdo;
 
@@ -43,7 +40,7 @@ class BatchInsertManager implements BatchManagerInterface
     private $queryFactory;
 
     /**
-     * @var PDOStatement[]
+     * @var \PDOStatement[]
      */
     private $preparedBatchStmts = [];
 
@@ -53,7 +50,7 @@ class BatchInsertManager implements BatchManagerInterface
     private $database;
 
     public function __construct(
-        PDO $pdo,
+        \PDO $pdo,
         string $table,
         array $columns,
         QueryFactory $queryFactory,
@@ -76,13 +73,13 @@ class BatchInsertManager implements BatchManagerInterface
 
             try {
                 $stmt->execute($this->convertRowCollectionToParams($rows));
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 throw new LoadRuntimeException('PDO exception thrown when inserting batch of records into staging table.', 0, $e);
             }
         }
     }
 
-    protected function getPreparedBatchStmt($count): PDOStatement
+    protected function getPreparedBatchStmt($count): \PDOStatement
     {
         if (!isset($this->preparedBatchStmts[$count])) {
             $this->preparedBatchStmts[$count] = $this->pdo->prepare(

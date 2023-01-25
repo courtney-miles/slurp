@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Extract\CsvFileExtractor;
 
-use IteratorIterator;
 use MilesAsylum\Slurp\Extract\Exception\DuplicatePrimaryKeyValueException;
 
-class EnforcePrimaryKeyIterator extends IteratorIterator
+class EnforcePrimaryKeyIterator extends \IteratorIterator
 {
     private $primaryKeyFieldsValues = [];
 

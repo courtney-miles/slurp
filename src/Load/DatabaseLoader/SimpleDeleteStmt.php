@@ -15,12 +15,11 @@ declare(strict_types=1);
 namespace MilesAsylum\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
-use PDO;
 
 class SimpleDeleteStmt implements DmlStmtInterface
 {
     /**
-     * @var PDO
+     * @var \PDO
      */
     private $pdo;
 
@@ -39,7 +38,7 @@ class SimpleDeleteStmt implements DmlStmtInterface
      */
     private $database;
 
-    public function __construct(PDO $pdo, string $table, array $conditions = [], string $database = null)
+    public function __construct(\PDO $pdo, string $table, array $conditions = [], string $database = null)
     {
         $this->pdo = $pdo;
         $this->table = $table;

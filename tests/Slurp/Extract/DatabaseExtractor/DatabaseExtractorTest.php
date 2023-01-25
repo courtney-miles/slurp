@@ -13,13 +13,9 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Extract\DatabaseExtractor;
 
-use Iterator;
 use MilesAsylum\Slurp\Extract\DatabaseExtractor\DatabaseExtractor;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
-use PDO;
-use PDOStatement;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseExtractorTest extends TestCase
@@ -27,12 +23,12 @@ class DatabaseExtractorTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     /**
-     * @var PDO|MockInterface
+     * @var \PDO|MockInterface
      */
     protected $mockPdo;
 
     /**
-     * @var PDOStatement|MockInterface
+     * @var \PDOStatement|MockInterface
      */
     protected $mockStmt;
 
@@ -40,8 +36,8 @@ class DatabaseExtractorTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockPdo = Mockery::mock(PDO::class);
-        $this->mockStmt = Mockery::mock(PDOStatement::class);
+        $this->mockPdo = \Mockery::mock(\PDO::class);
+        $this->mockStmt = \Mockery::mock(\PDOStatement::class);
     }
 
     public function testGetIterator(): void
@@ -55,7 +51,7 @@ class DatabaseExtractorTest extends TestCase
         $this->mockStmt->shouldReceive('execute')
             ->with($qryParams);
         $this->mockStmt->shouldReceive('getIterator')
-            ->andReturn(Mockery::mock(Iterator::class));
+            ->andReturn(\Mockery::mock(\Iterator::class));
 
         $dbExtractor = new DatabaseExtractor(
             $this->mockPdo,
@@ -63,6 +59,6 @@ class DatabaseExtractorTest extends TestCase
             $qryParams
         );
 
-        $this->assertInstanceOf(Iterator::class, $dbExtractor->getIterator());
+        $this->assertInstanceOf(\Iterator::class, $dbExtractor->getIterator());
     }
 }

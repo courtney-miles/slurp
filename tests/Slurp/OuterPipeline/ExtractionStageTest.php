@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Tests\Slurp\OuterPipeline;
 
-use ArrayObject;
 use League\Pipeline\Pipeline;
 use MilesAsylum\Slurp\Event\ExtractionEndedEvent;
 use MilesAsylum\Slurp\Event\ExtractionFailedEvent;
@@ -15,7 +14,6 @@ use MilesAsylum\Slurp\Extract\ExtractorInterface;
 use MilesAsylum\Slurp\OuterPipeline\ExtractionStage;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -44,8 +42,8 @@ class ExtractionStageTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockPipeline = Mockery::mock(Pipeline::class);
-        $this->mockSlurp = Mockery::mock(Slurp::class);
+        $this->mockPipeline = \Mockery::mock(Pipeline::class);
+        $this->mockSlurp = \Mockery::mock(Slurp::class);
 
         $this->stage = new ExtractionStage($this->mockPipeline);
     }
@@ -53,7 +51,7 @@ class ExtractionStageTest extends TestCase
     public function testIterateExtractionOnInvoke(): void
     {
         $rows = [['foo', 123], ['bar', 234]];
-        $mockExtractor = Mockery::mock(ExtractorInterface::class);
+        $mockExtractor = \Mockery::mock(ExtractorInterface::class);
         $this->stubExtractorContent($mockExtractor, $rows);
         $this->mockSlurp->shouldReceive('getExtractor')->andReturn($mockExtractor);
         $this->mockPipeline->shouldReceive('__invoke')
@@ -84,13 +82,13 @@ class ExtractionStageTest extends TestCase
         $interrupt = static function (Slurp $slurp, SlurpPayload $payload) {
             return true;
         };
-        $mockExtractor = Mockery::mock(ExtractorInterface::class);
+        $mockExtractor = \Mockery::mock(ExtractorInterface::class);
         $this->stubExtractorContent($mockExtractor, $rows);
         $this->mockSlurp->shouldReceive('getExtractor')->andReturn($mockExtractor);
         $this->mockSlurp->shouldReceive('abort')->once();
 
         $this->mockPipeline->shouldReceive('__invoke')
-            ->with(Mockery::type(SlurpPayload::class))
+            ->with(\Mockery::type(SlurpPayload::class))
             ->once();
 
         $stage = new ExtractionStage($this->mockPipeline, $interrupt);
@@ -99,16 +97,16 @@ class ExtractionStageTest extends TestCase
 
     public function testDispatchExtractionStartedAndEndedEvents(): void
     {
-        $mockExtractor = Mockery::mock(ExtractorInterface::class);
+        $mockExtractor = \Mockery::mock(ExtractorInterface::class);
         $this->stubExtractorContent($mockExtractor, []);
         $this->mockSlurp->shouldReceive('getExtractor')->andReturn($mockExtractor);
 
         $mockDispatcher = $this->createMockDispatcher();
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(Mockery::type(ExtractionStartedEvent::class), ExtractionStartedEvent::NAME)
+            ->with(\Mockery::type(ExtractionStartedEvent::class), ExtractionStartedEvent::NAME)
             ->once();
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(Mockery::type(ExtractionEndedEvent::class), ExtractionEndedEvent::NAME)
+            ->with(\Mockery::type(ExtractionEndedEvent::class), ExtractionEndedEvent::NAME)
             ->once();
 
         $this->stage->setEventDispatcher($mockDispatcher);
@@ -119,7 +117,7 @@ class ExtractionStageTest extends TestCase
     public function testDispatchRecordProcessedEvent(): void
     {
         $rows = [['foo', 123], ['bar', 234]];
-        $mockExtractor = Mockery::mock(ExtractorInterface::class);
+        $mockExtractor = \Mockery::mock(ExtractorInterface::class);
         $this->stubExtractorContent($mockExtractor, $rows);
 
         $this->mockSlurp->shouldReceive('getExtractor')->andReturn($mockExtractor);
@@ -128,7 +126,7 @@ class ExtractionStageTest extends TestCase
         $mockDispatcher = $this->createMockDispatcher();
         $mockDispatcher->shouldReceive('dispatch')->byDefault();
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(Mockery::type(RecordProcessedEvent::class), RecordProcessedEvent::NAME)
+            ->with(\Mockery::type(RecordProcessedEvent::class), RecordProcessedEvent::NAME)
             ->twice();
 
         $this->stage->setEventDispatcher($mockDispatcher);
@@ -143,7 +141,7 @@ class ExtractionStageTest extends TestCase
         $exceptionMessage = 'Fubar';
         /** @var ExtractionFailedEvent|null $spiedEvent This is used to capture the event so we can perform assertions against it. */
         $spiedEvent = null;
-        $mockExtractor = Mockery::mock(ExtractorInterface::class);
+        $mockExtractor = \Mockery::mock(ExtractorInterface::class);
         $this->stubExtractorContentWithException($mockExtractor, $rows, $exceptionAtCount, $exceptionMessage);
         $this->mockSlurp->shouldReceive('getExtractor')->andReturn($mockExtractor);
         $this->mockSlurp->shouldReceive('abort')->once();
@@ -155,7 +153,7 @@ class ExtractionStageTest extends TestCase
                 return $event;
             })->byDefault();
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(Mockery::type(ExtractionFailedEvent::class), ExtractionFailedEvent::NAME)
+            ->with(\Mockery::type(ExtractionFailedEvent::class), ExtractionFailedEvent::NAME)
             ->andReturnUsing(static function ($event, $eventName) use (&$spiedEvent) {
                 $spiedEvent = $event;
 
@@ -176,13 +174,13 @@ class ExtractionStageTest extends TestCase
      */
     protected function createMockDispatcher(): MockInterface
     {
-        return Mockery::mock(EventDispatcherInterface::class);
+        return \Mockery::mock(EventDispatcherInterface::class);
     }
 
     protected function stubExtractorContent(MockInterface $mockExtractor, array $rowValues): void
     {
         $mockExtractor->shouldReceive('getIterator')
-            ->andReturn(new ArrayObject($rowValues));
+            ->andReturn(new \ArrayObject($rowValues));
     }
 
     protected function stubExtractorContentWithException(
@@ -202,7 +200,7 @@ class ExtractionStageTest extends TestCase
             {
                 $this->exceptionAtCount = $exceptionAtCount;
                 $this->exceptionMessage = $exceptionMessage;
-                parent::__construct(new ArrayObject($rows));
+                parent::__construct(new \ArrayObject($rows));
             }
 
             public function current()

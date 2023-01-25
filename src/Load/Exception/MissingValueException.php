@@ -13,10 +13,9 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Load\Exception;
 
-use InvalidArgumentException;
 use MilesAsylum\Slurp\Exception\ExceptionInterface;
 
-class MissingValueException extends InvalidArgumentException implements ExceptionInterface
+class MissingValueException extends \InvalidArgumentException implements ExceptionInterface
 {
     public static function createMissing(int $recordId, array $missingFields): self
     {

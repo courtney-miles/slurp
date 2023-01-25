@@ -15,10 +15,8 @@ namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
 use MilesAsylum\Slurp\Load\DatabaseLoader\SimpleDeleteStmt;
 use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
-use PDO;
 use PHPUnit\Framework\TestCase;
 
 class SimpleDeleteStmtTest extends TestCase
@@ -26,7 +24,7 @@ class SimpleDeleteStmtTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     /**
-     * @var PDO|MockInterface
+     * @var \PDO|MockInterface
      */
     protected $mockPdo;
 
@@ -39,8 +37,8 @@ class SimpleDeleteStmtTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockPdo = Mockery::mock(PDO::class);
-        $this->mockDelStmt = Mockery::mock(\PDOStatement::class);
+        $this->mockPdo = \Mockery::mock(\PDO::class);
+        $this->mockDelStmt = \Mockery::mock(\PDOStatement::class);
         $this->mockDelStmt->shouldReceive('execute')
             ->byDefault();
         $this->mockDelStmt->shouldReceive('rowCount')

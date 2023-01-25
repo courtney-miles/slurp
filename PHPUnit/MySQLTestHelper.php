@@ -11,12 +11,10 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\PHPUnit;
 
-use PDO;
-
 class MySQLTestHelper
 {
     /**
-     * @var PDO
+     * @var \PDO
      */
     private $pdo;
 
@@ -25,7 +23,7 @@ class MySQLTestHelper
         $this->pdo = $this->connect($this->makeDsn());
     }
 
-    public function getConnection(): PDO
+    public function getConnection(): \PDO
     {
         return $this->pdo;
     }
@@ -77,7 +75,7 @@ SQL
         return $this->pdo->query(<<<SQL
 SELECT * FROM `$table`
 SQL
-        )->fetchAll(PDO::FETCH_ASSOC);
+        )->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function truncateTable(string $table): void
@@ -96,10 +94,10 @@ SQL
         return $dsn;
     }
 
-    private function connect(string $dsn): PDO
+    private function connect(string $dsn): \PDO
     {
-        $pdo = new PDO($dsn, $this->getDatabaseUser(), $this->getDatabasePassword());
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo = new \PDO($dsn, $this->getDatabaseUser(), $this->getDatabasePassword());
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         return $pdo;
     }

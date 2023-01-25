@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace MilesAsylum\Slurp\Tests\Slurp\Filter\ConstraintFiltration;
 
 use MilesAsylum\Slurp\Filter\ConstraintFiltration\ConstraintFilter;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -29,7 +28,7 @@ class ConstraintFilterTest extends TestCase
 
     public function setUp(): void
     {
-        $this->mockValidator = Mockery::mock(ValidatorInterface::class);
+        $this->mockValidator = \Mockery::mock(ValidatorInterface::class);
         $this->filter = new ConstraintFilter($this->mockValidator);
     }
 
@@ -70,7 +69,7 @@ class ConstraintFilterTest extends TestCase
      */
     private function createMockConstraint(): MockInterface
     {
-        return Mockery::mock(Constraint::class);
+        return \Mockery::mock(Constraint::class);
     }
 
     private function mockValidatorValidateExpectations(
@@ -89,7 +88,7 @@ class ConstraintFilterTest extends TestCase
      */
     private function createMockViolationList(array $violations = []): MockInterface
     {
-        $mockViolationList = Mockery::mock(ConstraintViolationListInterface::class);
+        $mockViolationList = \Mockery::mock(ConstraintViolationListInterface::class);
         $mockViolationList->shouldReceive('count')
             ->andReturn(count($violations));
 

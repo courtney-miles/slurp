@@ -35,7 +35,6 @@ use MilesAsylum\Slurp\Transform\TransformerInterface;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
 use MilesAsylum\Slurp\Validate\ValidatorInterface;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
@@ -59,7 +58,7 @@ class SlurpFactoryTest extends TestCase
     {
         self::assertInstanceOf(
             TransformationStage::class,
-            $this->factory->createTransformationStage(Mockery::mock(TransformerInterface::class))
+            $this->factory->createTransformationStage(\Mockery::mock(TransformerInterface::class))
         );
     }
 
@@ -67,7 +66,7 @@ class SlurpFactoryTest extends TestCase
     {
         self::assertInstanceOf(
             Slurp::class,
-            $this->factory->createSlurp(Mockery::mock(PipelineInterface::class))
+            $this->factory->createSlurp(\Mockery::mock(PipelineInterface::class))
         );
     }
 
@@ -84,7 +83,7 @@ class SlurpFactoryTest extends TestCase
         self::assertInstanceOf(
             SchemaValidator::class,
             $this->factory->createSchemaValidator(
-                Mockery::mock(Schema::class)
+                \Mockery::mock(Schema::class)
             )
         );
     }
@@ -110,7 +109,7 @@ class SlurpFactoryTest extends TestCase
         self::assertInstanceOf(
             SchemaTransformer::class,
             $this->factory->createSchemaTransformer(
-                Mockery::mock(Schema::class)
+                \Mockery::mock(Schema::class)
             )
         );
     }
@@ -140,7 +139,7 @@ class SlurpFactoryTest extends TestCase
         self::assertInstanceOf(
             LoadStage::class,
             $this->factory->createLoadStage(
-                Mockery::mock(LoaderInterface::class)
+                \Mockery::mock(LoaderInterface::class)
             )
         );
     }
@@ -150,7 +149,7 @@ class SlurpFactoryTest extends TestCase
         self::assertInstanceOf(
             FinaliseStage::class,
             $this->factory->createEltFinaliseStage(
-                Mockery::mock(LoaderInterface::class)
+                \Mockery::mock(LoaderInterface::class)
             )
         );
     }
@@ -160,7 +159,7 @@ class SlurpFactoryTest extends TestCase
         self::assertInstanceOf(
             DatabaseLoader::class,
             $this->factory->createDatabaseLoader(
-                Mockery::mock(\PDO::class),
+                \Mockery::mock(\PDO::class),
                 'foo',
                 [],
                 10
@@ -173,7 +172,7 @@ class SlurpFactoryTest extends TestCase
         self::assertInstanceOf(
             ValidationStage::class,
             $this->factory->createValidationStage(
-                Mockery::mock(ValidatorInterface::class)
+                \Mockery::mock(ValidatorInterface::class)
             )
         );
     }
@@ -183,7 +182,7 @@ class SlurpFactoryTest extends TestCase
         self::assertInstanceOf(
             ExtractionStage::class,
             $this->factory->createExtractionStage(
-                Mockery::mock(PipelineInterface::class)
+                \Mockery::mock(PipelineInterface::class)
             )
         );
     }
@@ -193,7 +192,7 @@ class SlurpFactoryTest extends TestCase
         self::assertInstanceOf(
             ExtractionStage::class,
             $this->factory->createExtractionStage(
-                Mockery::mock(PipelineInterface::class)
+                \Mockery::mock(PipelineInterface::class)
             )
         );
     }
@@ -219,7 +218,7 @@ class SlurpFactoryTest extends TestCase
         self::assertInstanceOf(
             SimpleDeleteStmt::class,
             $this->factory->createSimpleDeleteStmt(
-                Mockery::mock(\PDO::class),
+                \Mockery::mock(\PDO::class),
                 'my_tbl',
                 [],
                 'my_db'

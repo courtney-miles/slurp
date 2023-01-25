@@ -16,7 +16,6 @@ namespace MilesAsylum\Slurp\Tests\Slurp\OuterPipeline;
 use MilesAsylum\Slurp\OuterPipeline\OuterProcessor;
 use MilesAsylum\Slurp\OuterPipeline\OuterStageInterface;
 use MilesAsylum\Slurp\Slurp;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -39,7 +38,7 @@ class OuterProcessorTest extends TestCase
 
     public function testNoInterruption(): void
     {
-        $mockSlurp = Mockery::mock(Slurp::class);
+        $mockSlurp = \Mockery::mock(Slurp::class);
         $mockSlurp->shouldReceive('isAborted')
             ->andReturn(false);
 
@@ -59,7 +58,7 @@ class OuterProcessorTest extends TestCase
     public function testInterruptOnAbort(): void
     {
         $abort = false;
-        $mockSlurp = Mockery::mock(Slurp::class);
+        $mockSlurp = \Mockery::mock(Slurp::class);
         $mockSlurp->shouldReceive('isAborted')
             ->andReturnUsing(static function () use (&$abort) {
                 return $abort;
@@ -85,7 +84,7 @@ class OuterProcessorTest extends TestCase
      */
     protected function createMockStage(): MockInterface
     {
-        $mockStage = Mockery::mock(OuterStageInterface::class);
+        $mockStage = \Mockery::mock(OuterStageInterface::class);
 
         return $mockStage;
     }

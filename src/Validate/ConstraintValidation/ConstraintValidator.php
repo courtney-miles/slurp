@@ -38,7 +38,6 @@ class ConstraintValidator implements ValidatorInterface
     }
 
     /**
-     * @param $field
      * @param Constraint|Constraint[] $constraints
      */
     public function setFieldConstraints(string $field, $constraints): void
