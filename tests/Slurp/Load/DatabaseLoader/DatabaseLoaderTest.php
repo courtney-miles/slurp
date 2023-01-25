@@ -21,10 +21,8 @@ use MilesAsylum\Slurp\Load\DatabaseLoader\DmlStmtInterface;
 use MilesAsylum\Slurp\Load\DatabaseLoader\LoaderFactory;
 use MilesAsylum\Slurp\Load\DatabaseLoader\StagedLoad;
 use MilesAsylum\Slurp\Load\Exception\LoadRuntimeException;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
-use PDO;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseLoaderTest extends TestCase
@@ -47,7 +45,7 @@ class DatabaseLoaderTest extends TestCase
     protected $mockStagedLoad;
 
     /**
-     * @var PDO|MockInterface
+     * @var \PDO|MockInterface
      */
     protected $mockPdo;
 
@@ -182,7 +180,7 @@ class DatabaseLoaderTest extends TestCase
 
     public function testCallPreCommitDmlOnFinalise(): void
     {
-        $mockPreCommitDml = Mockery::mock(DmlStmtInterface::class);
+        $mockPreCommitDml = \Mockery::mock(DmlStmtInterface::class);
 
         $mockPreCommitDml->shouldReceive('execute')
             ->once();
@@ -302,7 +300,7 @@ class DatabaseLoaderTest extends TestCase
         BatchInsertManager $batchInsertManager,
         StagedLoad $stagedLoad
     ): MockInterface {
-        $mockLoaderFactory = Mockery::mock(LoaderFactory::class);
+        $mockLoaderFactory = \Mockery::mock(LoaderFactory::class);
         $mockLoaderFactory->shouldReceive('createBatchInsertManager')
             ->withAnyArgs()
             ->andReturn($batchInsertManager)
@@ -320,7 +318,7 @@ class DatabaseLoaderTest extends TestCase
      */
     protected function createMockStagedLoad(): MockInterface
     {
-        $mockStagedLoad = Mockery::mock(StagedLoad::class);
+        $mockStagedLoad = \Mockery::mock(StagedLoad::class);
         $mockStagedLoad->shouldReceive('begin')
             ->byDefault();
         $mockStagedLoad->shouldReceive('discard')
@@ -334,7 +332,7 @@ class DatabaseLoaderTest extends TestCase
      */
     protected function createMockBatchInsertManager(): MockInterface
     {
-        $mockBatchInsertManager = Mockery::mock(BatchInsertManager::class);
+        $mockBatchInsertManager = \Mockery::mock(BatchInsertManager::class);
 
         return $mockBatchInsertManager;
     }

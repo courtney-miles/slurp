@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Validate\SchemaValidation;
 
-use Exception;
 use frictionlessdata\tableschema\Fields\BaseField;
 use frictionlessdata\tableschema\Schema;
 use frictionlessdata\tableschema\SchemaValidationError;
@@ -59,7 +58,7 @@ class SchemaValidator implements ValidatorInterface
 
         try {
             $schemaField = $this->tableSchema->field($field);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new UnknownFieldException($field, 'Unknown field ' . $field . '.');
         }
 

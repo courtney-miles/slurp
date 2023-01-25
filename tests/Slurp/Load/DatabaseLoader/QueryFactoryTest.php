@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Load\DatabaseLoader;
 
-use InvalidArgumentException;
 use MilesAsylum\Slurp\Load\DatabaseLoader\QueryFactory;
 use PHPUnit\Framework\TestCase;
 
@@ -65,7 +64,7 @@ SQL;
 
     public function testExceptionOnNoColumns(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('One or more columns must be supplied.');
 
         (new QueryFactory())->createInsertQuery('foo', []);
@@ -73,7 +72,7 @@ SQL;
 
     public function testExceptionOnBatchSizeLessThanOne(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The batch size cannot be less than 1.');
 
         (new QueryFactory())->createInsertQuery('foo', ['col_alpha'], 0);

@@ -36,7 +36,6 @@ use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Transformer;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
 use MilesAsylum\Slurp\Validate\SchemaValidation\SchemaValidator;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -147,11 +146,11 @@ class SlurpBuilderTest extends TestCase
 
     public function testSetTableSchema(): void
     {
-        $mockTableSchema = Mockery::mock(Schema::class);
-        $mockValidationStage = Mockery::mock(ValidationStage::class);
+        $mockTableSchema = \Mockery::mock(Schema::class);
+        $mockValidationStage = \Mockery::mock(ValidationStage::class);
         $mockTransformationStage = $this->createMockTransformationStage();
-        $mockSchemaValidator = Mockery::mock(SchemaValidator::class);
-        $mockSchemaTransformer = Mockery::mock(SchemaTransformer::class);
+        $mockSchemaValidator = \Mockery::mock(SchemaValidator::class);
+        $mockSchemaTransformer = \Mockery::mock(SchemaTransformer::class);
 
         $this->mockFactory->shouldReceive('createSchemaValidator')
             ->with($mockTableSchema)
@@ -179,9 +178,9 @@ class SlurpBuilderTest extends TestCase
 
     public function testSetTableSchemaValidateOnly(): void
     {
-        $mockTableSchema = Mockery::mock(Schema::class);
-        $mockValidationStage = Mockery::mock(ValidationStage::class);
-        $mockSchemaValidator = Mockery::mock(SchemaValidator::class);
+        $mockTableSchema = \Mockery::mock(Schema::class);
+        $mockValidationStage = \Mockery::mock(ValidationStage::class);
+        $mockSchemaValidator = \Mockery::mock(SchemaValidator::class);
 
         $this->mockFactory->shouldReceive('createSchemaValidator')
             ->with($mockTableSchema)
@@ -201,7 +200,7 @@ class SlurpBuilderTest extends TestCase
     public function testCreateTableSchemaFromPath(): void
     {
         $path = '/foo/bar.json';
-        $mockTableSchema = Mockery::mock(Schema::class);
+        $mockTableSchema = \Mockery::mock(Schema::class);
 
         $this->mockFactory->shouldReceive('createTableSchemaFromPath')
             ->with($path)
@@ -213,7 +212,7 @@ class SlurpBuilderTest extends TestCase
     public function testCreateTableSchemaFromArray(): void
     {
         $array = ['foo'];
-        $mockTableSchema = Mockery::mock(Schema::class);
+        $mockTableSchema = \Mockery::mock(Schema::class);
 
         $this->mockFactory->shouldReceive('createTableSchemaFromArray')
             ->with($array)
@@ -224,8 +223,8 @@ class SlurpBuilderTest extends TestCase
 
     public function testAddValidationConstraint(): void
     {
-        $mockConstraint = Mockery::mock(Constraint::class);
-        $mockValidationStage = Mockery::mock(ValidationStage::class);
+        $mockConstraint = \Mockery::mock(Constraint::class);
+        $mockValidationStage = \Mockery::mock(ValidationStage::class);
 
         $this->mockConstraintValidator->shouldReceive('setFieldConstraints')
             ->with('foo', $mockConstraint)
@@ -246,9 +245,9 @@ class SlurpBuilderTest extends TestCase
 
     public function testAddMultipleValidationConstraint(): void
     {
-        $mockConstraintOne = Mockery::mock(Constraint::class);
-        $mockConstraintTwo = Mockery::mock(Constraint::class);
-        $mockValidationStage = Mockery::mock(ValidationStage::class);
+        $mockConstraintOne = \Mockery::mock(Constraint::class);
+        $mockConstraintTwo = \Mockery::mock(Constraint::class);
+        $mockValidationStage = \Mockery::mock(ValidationStage::class);
 
         $this->mockFactory->shouldReceive('createConstraintValidator')
             ->andReturn($this->mockConstraintValidator)
@@ -277,8 +276,8 @@ class SlurpBuilderTest extends TestCase
 
     public function testAddTransformationChange(): void
     {
-        $mockChange = Mockery::mock(Change::class);
-        $mockTransformationStage = Mockery::mock(TransformationStage::class);
+        $mockChange = \Mockery::mock(Change::class);
+        $mockTransformationStage = \Mockery::mock(TransformationStage::class);
 
         $this->mockTransformer->shouldReceive('addFieldChange')
             ->with('foo', $mockChange)
@@ -296,9 +295,9 @@ class SlurpBuilderTest extends TestCase
 
     public function testAddMultipleTransformationChange(): void
     {
-        $mockChangeOne = Mockery::mock(Change::class);
-        $mockChangeTwo = Mockery::mock(Change::class);
-        $mockTransformationStage = Mockery::mock(TransformationStage::class);
+        $mockChangeOne = \Mockery::mock(Change::class);
+        $mockChangeTwo = \Mockery::mock(Change::class);
+        $mockTransformationStage = \Mockery::mock(TransformationStage::class);
 
         $this->mockTransformer->shouldReceive('addFieldChange')
             ->with('foo', $mockChangeOne)
@@ -321,8 +320,8 @@ class SlurpBuilderTest extends TestCase
 
     public function testAddFiltrationConstraint(): void
     {
-        $mockConstraint = Mockery::mock(Constraint::class);
-        $mockFiltrationStage = Mockery::mock(FiltrationStage::class);
+        $mockConstraint = \Mockery::mock(Constraint::class);
+        $mockFiltrationStage = \Mockery::mock(FiltrationStage::class);
 
         $this->mockConstraintFilter->shouldReceive('setFieldConstraints')
             ->with('foo', $mockConstraint)
@@ -343,9 +342,9 @@ class SlurpBuilderTest extends TestCase
 
     public function testAddMultipleFilterConstraints(): void
     {
-        $mockConstraintOne = Mockery::mock(Constraint::class);
-        $mockConstraintTwo = Mockery::mock(Constraint::class);
-        $mockFiltrationStage = Mockery::mock(FiltrationStage::class);
+        $mockConstraintOne = \Mockery::mock(Constraint::class);
+        $mockConstraintTwo = \Mockery::mock(Constraint::class);
+        $mockFiltrationStage = \Mockery::mock(FiltrationStage::class);
 
         $this->mockFactory->shouldReceive('createConstraintFilter')
             ->andReturn($this->mockConstraintFilter)
@@ -374,10 +373,10 @@ class SlurpBuilderTest extends TestCase
 
     public function testAddLoader(): void
     {
-        $mockLoader = Mockery::mock(LoaderInterface::class);
+        $mockLoader = \Mockery::mock(LoaderInterface::class);
 
         $mockLoadStage = $this->createMockLoadStage();
-        $mockFinaliseStage = Mockery::mock(FinaliseStage::class);
+        $mockFinaliseStage = \Mockery::mock(FinaliseStage::class);
 
         $this->mockFactory->shouldReceive('createLoadStage')
             ->with($mockLoader)
@@ -399,13 +398,13 @@ class SlurpBuilderTest extends TestCase
 
     public function testCreateDatabaseLoader(): void
     {
-        $mockPdo = Mockery::mock(\PDO::class);
+        $mockPdo = \Mockery::mock(\PDO::class);
         $table = 'foo';
         $fieldMappings = [];
         $batchSize = 10;
-        $mockPreCommitStmt = Mockery::mock(DmlStmtInterface::class);
+        $mockPreCommitStmt = \Mockery::mock(DmlStmtInterface::class);
 
-        $mockDbLoader = Mockery::mock(DatabaseLoader::class);
+        $mockDbLoader = \Mockery::mock(DatabaseLoader::class);
 
         $this->mockFactory->shouldReceive('createDatabaseLoader')
             ->with(
@@ -480,7 +479,7 @@ class SlurpBuilderTest extends TestCase
             ->with($mockDispatcher)
             ->once();
 
-        $this->builder->addTransformationChange('foo', Mockery::mock(Change::class))
+        $this->builder->addTransformationChange('foo', \Mockery::mock(Change::class))
             ->setEventDispatcher($mockDispatcher)
             ->build();
     }
@@ -497,7 +496,7 @@ class SlurpBuilderTest extends TestCase
             ->andReturn($mockValidationStage)
             ->byDefault();
 
-        $this->builder->addValidationConstraint('foo', Mockery::mock(Constraint::class))
+        $this->builder->addValidationConstraint('foo', \Mockery::mock(Constraint::class))
             ->setEventDispatcher($mockDispatcher)
             ->build();
     }
@@ -507,7 +506,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockValidationStage()
     {
-        $mockValidationStage = Mockery::mock(ValidationStage::class);
+        $mockValidationStage = \Mockery::mock(ValidationStage::class);
 
         return $mockValidationStage;
     }
@@ -517,7 +516,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockLoader()
     {
-        $mockLoader = Mockery::mock(LoaderInterface::class);
+        $mockLoader = \Mockery::mock(LoaderInterface::class);
 
         return $mockLoader;
     }
@@ -527,7 +526,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockLoadStage()
     {
-        $mockLoadStage = Mockery::mock(LoadStage::class);
+        $mockLoadStage = \Mockery::mock(LoadStage::class);
 
         return $mockLoadStage;
     }
@@ -537,7 +536,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockTransformationStage()
     {
-        $mockTransformationStage = Mockery::mock(TransformationStage::class);
+        $mockTransformationStage = \Mockery::mock(TransformationStage::class);
         $mockTransformationStage->shouldReceive('setEventDispatcher')->byDefault();
 
         return $mockTransformationStage;
@@ -557,7 +556,7 @@ class SlurpBuilderTest extends TestCase
         OuterProcessor $outerProcessor,
         InnerProcessor $innerProcessor
     ) {
-        $mockFactory = Mockery::mock(SlurpFactory::class);
+        $mockFactory = \Mockery::mock(SlurpFactory::class);
         $mockFactory->shouldReceive('createSlurp')
             ->with($outerPipeline)
             ->andReturn($slurp)
@@ -590,7 +589,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockInnerPipelineBuilder(PipelineInterface $innerPipeline)
     {
-        $mockInnerPipelineBuilder = Mockery::mock(PipelineBuilder::class);
+        $mockInnerPipelineBuilder = \Mockery::mock(PipelineBuilder::class);
         $mockInnerPipelineBuilder->shouldReceive('add')
             ->byDefault();
         $mockInnerPipelineBuilder->shouldReceive('build')
@@ -605,7 +604,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockPipeline()
     {
-        $mockPipeline = Mockery::mock(PipelineInterface::class);
+        $mockPipeline = \Mockery::mock(PipelineInterface::class);
 
         return $mockPipeline;
     }
@@ -615,7 +614,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockOuterPipelineBuilder(PipelineInterface $outerPipeline)
     {
-        $mockOuterPipelineBuilder = Mockery::mock(PipelineBuilder::class);
+        $mockOuterPipelineBuilder = \Mockery::mock(PipelineBuilder::class);
 
         $mockOuterPipelineBuilder->shouldReceive('add')
             ->byDefault();
@@ -631,7 +630,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockExtractionStage()
     {
-        $mockExtractionStage = Mockery::mock(ExtractionStage::class);
+        $mockExtractionStage = \Mockery::mock(ExtractionStage::class);
         $mockExtractionStage->shouldReceive('setEventDispatcher')
             ->byDefault();
 
@@ -643,7 +642,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockSlurp()
     {
-        $mockSlurp = Mockery::mock(Slurp::class);
+        $mockSlurp = \Mockery::mock(Slurp::class);
 
         return $mockSlurp;
     }
@@ -653,7 +652,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockConstraintValidator()
     {
-        $mockConstraintValidator = Mockery::mock(ConstraintValidator::class);
+        $mockConstraintValidator = \Mockery::mock(ConstraintValidator::class);
         $mockConstraintValidator->shouldReceive('setFieldConstraints')
             ->byDefault();
 
@@ -665,7 +664,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockTransformer()
     {
-        $mockTransformer = Mockery::mock(Transformer::class);
+        $mockTransformer = \Mockery::mock(Transformer::class);
 
         return $mockTransformer;
     }
@@ -675,7 +674,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockConstraintFilter()
     {
-        $mockConstraintFilter = Mockery::mock(ConstraintFilter::class);
+        $mockConstraintFilter = \Mockery::mock(ConstraintFilter::class);
 
         return $mockConstraintFilter;
     }
@@ -685,7 +684,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockOuterProcessor()
     {
-        $mockOuterProcessor = Mockery::mock(OuterProcessor::class);
+        $mockOuterProcessor = \Mockery::mock(OuterProcessor::class);
 
         return $mockOuterProcessor;
     }
@@ -695,7 +694,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockInnerProcessor()
     {
-        $mockInnerProcessor = Mockery::mock(InnerProcessor::class);
+        $mockInnerProcessor = \Mockery::mock(InnerProcessor::class);
 
         return $mockInnerProcessor;
     }
@@ -705,7 +704,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockEventDispatcher()
     {
-        return Mockery::mock(EventDispatcherInterface::class);
+        return \Mockery::mock(EventDispatcherInterface::class);
     }
 
     /**
@@ -713,7 +712,7 @@ class SlurpBuilderTest extends TestCase
      */
     protected function createMockFinaliseStage()
     {
-        $mockFinaliseStage = Mockery::mock(FinaliseStage::class);
+        $mockFinaliseStage = \Mockery::mock(FinaliseStage::class);
         $mockFinaliseStage->shouldReceive('setEventDispatcher')
             ->byDefault();
 

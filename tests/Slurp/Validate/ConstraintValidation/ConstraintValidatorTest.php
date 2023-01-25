@@ -17,7 +17,6 @@ use MilesAsylum\Slurp\PHPUnit\StubValidatorTrait;
 use MilesAsylum\Slurp\Validate\ConstraintValidation\ConstraintValidator;
 use MilesAsylum\Slurp\Validate\FieldViolation;
 use MilesAsylum\Slurp\Validate\ViolationInterface;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -44,7 +43,7 @@ class ConstraintValidatorTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->mockValidator = Mockery::mock(ValidatorInterface::class);
+        $this->mockValidator = \Mockery::mock(ValidatorInterface::class);
         $this->validator = new ConstraintValidator($this->mockValidator);
     }
 
@@ -56,8 +55,8 @@ class ConstraintValidatorTest extends TestCase
         $constraints = [new NotBlank()];
         $message = 'Oops!';
 
-        $mockViolationList = Mockery::mock(ConstraintViolationListInterface::class);
-        $mockViolation = Mockery::mock(ConstraintViolationInterface::class);
+        $mockViolationList = \Mockery::mock(ConstraintViolationListInterface::class);
+        $mockViolation = \Mockery::mock(ConstraintViolationInterface::class);
         $mockViolation->shouldReceive('getMessage')->andReturn($message);
         $this->stubValidator($value, $constraints, $this->mockValidator, $mockViolationList, [$mockViolation]);
 
@@ -82,8 +81,8 @@ class ConstraintValidatorTest extends TestCase
         $constraints = [new NotBlank()];
         $message = 'Oops!';
 
-        $mockViolationList = Mockery::mock(ConstraintViolationListInterface::class);
-        $mockViolation = Mockery::mock(ConstraintViolationInterface::class);
+        $mockViolationList = \Mockery::mock(ConstraintViolationListInterface::class);
+        $mockViolation = \Mockery::mock(ConstraintViolationInterface::class);
         $mockViolation->shouldReceive('getMessage')->andReturn($message);
         $this->stubValidator($value, $constraints, $this->mockValidator, $mockViolationList, [$mockViolation]);
 

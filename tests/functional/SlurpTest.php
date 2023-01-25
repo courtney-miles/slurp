@@ -19,7 +19,6 @@ use MilesAsylum\Slurp\PHPUnit\MySQLTestHelper;
 use MilesAsylum\Slurp\SlurpBuilder;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\CallbackChange;
 use MilesAsylum\Slurp\Validate\RecordViolation;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -206,7 +205,7 @@ SQL
     public function testValidateAgainstSchemaWithMissingColumns(): void
     {
         $violations = [];
-        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')->byDefault();
         $mockDispatcher->shouldReceive('dispatch')
             ->withArgs(static function (Event $event, string $eventName) use (&$violations) {

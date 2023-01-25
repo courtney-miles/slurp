@@ -13,12 +13,10 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Tests\Slurp;
 
-use InvalidArgumentException;
 use MilesAsylum\Slurp\PHPUnit\StubValidatorTrait;
 use MilesAsylum\Slurp\SlurpPayload;
 use MilesAsylum\Slurp\Validate\FieldViolation;
 use MilesAsylum\Slurp\Validate\RecordViolation;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
@@ -70,7 +68,7 @@ class SlurpPayloadTest extends TestCase
 
     public function testExceptionOnReplaceUnknownValue(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         $payload = new SlurpPayload();
         $payload->replaceFieldValue('foo', 234);
@@ -104,7 +102,7 @@ class SlurpPayloadTest extends TestCase
     {
         $payload = new SlurpPayload();
 
-        $mockViolation = Mockery::mock(FieldViolation::class);
+        $mockViolation = \Mockery::mock(FieldViolation::class);
         $payload->addViolations([$mockViolation]);
 
         $this->assertTrue($payload->hasViolations(FieldViolation::class));
@@ -114,7 +112,7 @@ class SlurpPayloadTest extends TestCase
     {
         $payload = new SlurpPayload();
 
-        $mockViolation = Mockery::mock(FieldViolation::class);
+        $mockViolation = \Mockery::mock(FieldViolation::class);
         $payload->addViolations([$mockViolation]);
 
         $this->assertFalse($payload->hasViolations(RecordViolation::class));
@@ -123,7 +121,7 @@ class SlurpPayloadTest extends TestCase
     public function testAddFirstViolations(): void
     {
         $payload = new SlurpPayload();
-        $mockViolation = Mockery::mock(FieldViolation::class);
+        $mockViolation = \Mockery::mock(FieldViolation::class);
         $payload->addViolations([$mockViolation]);
 
         $this->assertTrue($payload->hasViolations());
@@ -133,7 +131,7 @@ class SlurpPayloadTest extends TestCase
     public function testValueHasViolation(): void
     {
         $payload = new SlurpPayload();
-        $mockViolation = Mockery::mock(FieldViolation::class);
+        $mockViolation = \Mockery::mock(FieldViolation::class);
         $mockViolation->shouldReceive('getField')
             ->andReturn('foo');
         $payload->addViolations([$mockViolation]);
@@ -144,7 +142,7 @@ class SlurpPayloadTest extends TestCase
     public function testValueHasNotViolation(): void
     {
         $payload = new SlurpPayload();
-        $mockViolation = Mockery::mock(FieldViolation::class);
+        $mockViolation = \Mockery::mock(FieldViolation::class);
         $mockViolation->shouldReceive('getField')
             ->andReturn('foo');
         $payload->addViolations([$mockViolation]);

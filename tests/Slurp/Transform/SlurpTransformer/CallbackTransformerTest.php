@@ -17,7 +17,6 @@ use MilesAsylum\Slurp\Transform\Exception\UnexpectedTypeException;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\CallbackChange;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\CallbackTransformer;
 use MilesAsylum\Slurp\Transform\SlurpTransformer\Change;
-use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class CallbackTransformerTest extends TestCase
@@ -43,6 +42,6 @@ class CallbackTransformerTest extends TestCase
 
         $transformer = new CallbackTransformer();
 
-        $transformer->transform('foo', Mockery::mock(Change::class));
+        $transformer->transform('foo', \Mockery::mock(Change::class));
     }
 }

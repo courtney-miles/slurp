@@ -15,14 +15,12 @@ declare(strict_types=1);
 namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SchemaTransformer;
 
 use Carbon\Carbon;
-use Exception;
 use frictionlessdata\tableschema\Fields\DateField;
 use frictionlessdata\tableschema\Fields\DatetimeField;
 use frictionlessdata\tableschema\Fields\TimeField;
 use frictionlessdata\tableschema\Schema;
 use MilesAsylum\Slurp\Transform\Exception\TransformationException;
 use MilesAsylum\Slurp\Transform\SchemaTransformer\SchemaTransformer;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -43,7 +41,7 @@ class SchemaTransformerTest extends TestCase
 
     public function setUp(): void
     {
-        $this->mockSchema = Mockery::mock(Schema::class);
+        $this->mockSchema = \Mockery::mock(Schema::class);
         $this->schemaTransformer = new SchemaTransformer($this->mockSchema);
     }
 
@@ -83,7 +81,7 @@ class SchemaTransformerTest extends TestCase
             ->andReturn([$fieldName => $complexValue]);
         $this->mockSchema->shouldReceive('field')
             ->with($fieldName)
-            ->andReturn(Mockery::mock($fieldClass));
+            ->andReturn(\Mockery::mock($fieldClass));
 
         self::assertSame(
             [$fieldName => $scalarValue],
@@ -112,7 +110,7 @@ class SchemaTransformerTest extends TestCase
         $record = ['foo' => 123];
         $this->mockSchema->shouldReceive('castRow')
             ->with($record)
-            ->andThrow(Exception::class, $msg);
+            ->andThrow(\Exception::class, $msg);
 
         $this->schemaTransformer->transformRecord($record);
     }

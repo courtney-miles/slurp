@@ -19,7 +19,6 @@ use MilesAsylum\Slurp\Event\RecordLoadedEvent;
 use MilesAsylum\Slurp\InnerPipeline\LoadStage;
 use MilesAsylum\Slurp\Load\LoaderInterface;
 use MilesAsylum\Slurp\SlurpPayload;
-use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -43,7 +42,7 @@ class LoadStageTest extends TestCase
     {
         parent::setUp();
 
-        $this->mockLoader = Mockery::mock(LoaderInterface::class);
+        $this->mockLoader = \Mockery::mock(LoaderInterface::class);
         $this->mockLoader->shouldReceive('loadRecord')->byDefault();
         $this->mockLoader->shouldReceive('abort')->byDefault();
         $this->mockLoader->shouldReceive('hasBegun')
@@ -130,9 +129,9 @@ class LoadStageTest extends TestCase
     public function testDispatchEventOnLoad(): void
     {
         $mockPayload = $this->createMockPayload(['foo'], false);
-        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
-            ->with(Mockery::type(RecordLoadedEvent::class), RecordLoadedEvent::NAME)
+            ->with(\Mockery::type(RecordLoadedEvent::class), RecordLoadedEvent::NAME)
             ->once();
         $this->stage->setEventDispatcher($mockDispatcher);
 
@@ -144,10 +143,10 @@ class LoadStageTest extends TestCase
         /** @var LoadAbortedEvent $event */
         $event = null;
         $mockPayload = $this->createMockPayload(['foo'], true);
-        $mockDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $mockDispatcher = \Mockery::mock(EventDispatcherInterface::class);
         $mockDispatcher->shouldReceive('dispatch')
             ->with(
-                Mockery::on(
+                \Mockery::on(
                     static function ($arg) use (&$event) {
                         if (!$arg instanceof LoadAbortedEvent) {
                             return false;
@@ -172,7 +171,7 @@ class LoadStageTest extends TestCase
     protected function createMockPayload(array $values, bool $hasViolations)
     {
         /** @var SlurpPayload|MockInterface $mockPayload */
-        $mockPayload = Mockery::mock(SlurpPayload::class);
+        $mockPayload = \Mockery::mock(SlurpPayload::class);
         $mockPayload->shouldReceive('getRecord')
             ->andReturn($values);
         $mockPayload->shouldReceive('hasViolations')

@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Extract\CsvFileExtractor;
 
-use ArrayIterator;
 use MilesAsylum\Slurp\Extract\CsvFileExtractor\VerifyValueCountIterator;
 use MilesAsylum\Slurp\Extract\Exception\ValueCountMismatchException;
 use PHPUnit\Framework\TestCase;
@@ -38,7 +37,7 @@ class VerifyValueCountIteratorTest extends TestCase
         );
 
         $iterator = new VerifyValueCountIterator(
-            new ArrayIterator([$values]),
+            new \ArrayIterator([$values]),
             $expectedCount
         );
 

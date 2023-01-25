@@ -13,9 +13,8 @@ declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Extract\Exception;
 
-use Exception;
 use MilesAsylum\Slurp\Exception\ExceptionInterface;
 
-class ExtractionException extends Exception implements ExceptionInterface
+class ExtractionException extends \Exception implements ExceptionInterface
 {
 }
