@@ -98,6 +98,7 @@ SQL
     {
         $pdo = new \PDO($dsn, $this->getDatabaseUser(), $this->getDatabasePassword());
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(\PDO::ATTR_STRINGIFY_FETCHES, true);
 
         return $pdo;
     }

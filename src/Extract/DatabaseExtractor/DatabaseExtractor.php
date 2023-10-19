@@ -39,7 +39,7 @@ class DatabaseExtractor implements ExtractorInterface
         $this->queryParams = $queryParams;
     }
 
-    public function getIterator(): iterable
+    public function getIterator(): \Traversable
     {
         $this->queryStmt->execute($this->queryParams);
 

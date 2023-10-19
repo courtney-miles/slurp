@@ -26,6 +26,7 @@ class MapIterator extends \IteratorIterator
         $this->headers = $headers;
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         $record = parent::current();

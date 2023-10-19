@@ -9,7 +9,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php-version: ['7.2', '7.3', '7.4', '8.0']
+                php-version: ['7.2', '7.3', '7.4', '8.0', '8.1']
                 symfony-pkg-version: ['^4.0', '^5.0', '^6.0']
                 composer-flag:
                     - '--prefer-dist'
@@ -21,6 +21,8 @@ jobs:
                       symfony-pkg-version: '^6.0'
                     - php-version: '7.4'
                       symfony-pkg-version: '^6.0'
+                    - php-version: '8.1'
+                      composer-flag: '--prefer-stable --prefer-lowest'
         services:
             mysql:
                 image: mysql:5.7
@@ -53,7 +55,7 @@ jobs:
               with:
                   path: vendor
                   key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-                  restore-keys: |
+                  restore-keys: |1
                       ${{ runner.os }}-php-
             - name: Install Composer dependencies
               run: composer update ${{ matrix.composer-flag }} -W --with symfony/validator:"${{ matrix.symfony-pkg-version }}" --with symfony/event-dispatcher:"${{ matrix.symfony-pkg-version }}" --no-interaction --no-progress
@@ -61,11 +63,11 @@ jobs:
             # This may be necessary for older dev packages that do not have
             #   upper PHP compatibility version constraints.
             - name: Update Composer Dev dependencies
-              run: composer update mockery/mockery --prefer-dist --no-interaction --no-progress
+              run: composer update phpunit/phpunit mockery/mockery --prefer-dist --no-interaction --no-progress
 
             - name: Run Code Style Check for PHP ${{ matrix.php-version }}
               run: composer run-script style-check
-              if: matrix.php-version != '7.1'
+              if: matrix.php-version == '8.0'
 
             - name: Run tests for PHP ${{ matrix.php-version }}
               run: composer run-script test
@@ -77,4 +79,4 @@ jobs:
               run: vendor/bin/php-coveralls
               env:
                   COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              if: success() && matrix.php-version == '7.4' && matrix.composer-flag == '--prefer-dist'
+              if: success() && matrix.php-version == '8.0' && matrix.composer-flag == '--prefer-dist'

@@ -45,9 +45,6 @@ class ConstraintValidator implements ValidatorInterface
         $this->fieldConstraints[$field] = $constraints;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function validateField(int $recordId, string $field, $value): array
     {
         $violations = [];
@@ -64,9 +61,6 @@ class ConstraintValidator implements ValidatorInterface
         return $violations;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function validateRecord(int $recordId, array $record): array
     {
         $violations = [];

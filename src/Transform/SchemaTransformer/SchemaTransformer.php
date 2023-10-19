@@ -37,10 +37,6 @@ class SchemaTransformer implements TransformerInterface
     }
 
     /**
-     * @param mixed $value
-     *
-     * @return mixed
-     *
      * @throws TransformationException
      */
     public function transformField(string $field, $value)
@@ -97,9 +93,6 @@ class SchemaTransformer implements TransformerInterface
         return $record;
     }
 
-    /**
-     * @param mixed $name
-     */
     protected function getField($name): ?BaseField
     {
         try {

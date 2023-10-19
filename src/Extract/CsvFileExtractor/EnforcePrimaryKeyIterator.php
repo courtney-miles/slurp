@@ -21,6 +21,7 @@ class EnforcePrimaryKeyIterator extends \IteratorIterator
     /**
      * @throws DuplicatePrimaryKeyValueException
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         $currentRecord = parent::current();

@@ -16,8 +16,6 @@ namespace MilesAsylum\Slurp\Validate;
 interface ValidatorInterface
 {
     /**
-     * @param mixed $value
-     *
      * @return ViolationInterface[]
      */
     public function validateField(int $recordId, string $field, $value): array;
