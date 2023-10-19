@@ -61,7 +61,7 @@ jobs:
             # This may be necessary for older dev packages that do not have
             #   upper PHP compatibility version constraints.
             - name: Update Composer Dev dependencies
-              run: composer update mockery/mockery --prefer-dist --no-interaction --no-progress
+              run: composer update phpunit/phpunit mockery/mockery --prefer-dist --no-interaction --no-progress
 
             - name: Run Code Style Check for PHP ${{ matrix.php-version }}
               run: composer run-script style-check
