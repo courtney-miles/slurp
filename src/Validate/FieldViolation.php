@@ -25,9 +25,6 @@ class FieldViolation implements ViolationInterface
      */
     private $field;
 
-    /**
-     * @var mixed
-     */
     private $value;
 
     /**

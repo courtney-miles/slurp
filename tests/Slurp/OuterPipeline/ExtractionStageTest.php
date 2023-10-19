@@ -203,6 +203,7 @@ class ExtractionStageTest extends TestCase
                 parent::__construct(new \ArrayObject($rows));
             }
 
+            #[\ReturnTypeWillChange]
             public function current()
             {
                 if ($this->key() !== $this->exceptionAtCount) {

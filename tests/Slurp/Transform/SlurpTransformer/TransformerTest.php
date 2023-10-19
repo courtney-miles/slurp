@@ -103,13 +103,15 @@ class TransformerTest extends TestCase
         );
     }
 
+    /**
+     * @requires PHPUnit < 10.0.0
+     */
     public function testTransformUndefinedFieldTriggersWarning(): void
     {
         $this->expectWarning();
         $this->expectExceptionMessage(
             'Unable to apply transformation for field \'bar\'. The supplied record did not contain this field.'
-        )
-        ;
+        );
 
         $mockChange = \Mockery::mock(Change::class);
         $mockChangeTransformer = \Mockery::mock(ChangeTransformerInterface::class);

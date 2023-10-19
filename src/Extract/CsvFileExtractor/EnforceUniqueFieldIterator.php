@@ -20,6 +20,7 @@ class EnforceUniqueFieldIterator extends \IteratorIterator
         $this->uniqueFieldValues = array_fill_keys($uniqueFields, []);
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         $currentRecord = parent::current();

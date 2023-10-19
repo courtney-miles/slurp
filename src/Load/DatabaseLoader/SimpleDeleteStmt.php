@@ -46,9 +46,6 @@ class SimpleDeleteStmt implements DmlStmtInterface
         $this->database = $database;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function execute(): int
     {
         $conditionsStr = null;

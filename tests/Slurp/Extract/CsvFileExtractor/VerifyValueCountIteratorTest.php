@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
 class VerifyValueCountIteratorTest extends TestCase
 {
     /**
-     * @dataProvider getValueCountMismatchTestData
+     * @dataProvider provideValueCountMismatchTestData
      *
      * @throws ValueCountMismatchException
      */
@@ -45,7 +45,7 @@ class VerifyValueCountIteratorTest extends TestCase
         $iterator->current();
     }
 
-    public function getValueCountMismatchTestData(): array
+    public static function provideValueCountMismatchTestData(): array
     {
         return [
             [[123, 234], 1],

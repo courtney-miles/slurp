@@ -49,9 +49,6 @@ class SchemaValidator implements ValidatorInterface
         $this->tableSchema = $tableSchema;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function validateField(int $recordId, string $field, $value): array
     {
         $violations = [];
@@ -74,9 +71,6 @@ class SchemaValidator implements ValidatorInterface
         return $violations;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function validateRecord(int $recordId, array $record): array
     {
         $violations = [];

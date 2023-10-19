@@ -36,7 +36,7 @@ class StagedLoadTest extends TestCase
     }
 
     /**
-     * @dataProvider getTableRefsForBeginCommitTest
+     * @dataProvider provideTableRefsForBeginCommitTest
      *
      * @throws LogicException
      */
@@ -89,7 +89,7 @@ SQL;
         );
     }
 
-    public function getTableRefsForBeginCommitTest(): array
+    public static function provideTableRefsForBeginCommitTest(): array
     {
         return [
             ['my_tbl', null, '`my_tbl`', '`_my_tbl_stage`'],

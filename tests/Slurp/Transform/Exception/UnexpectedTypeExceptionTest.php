@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 class UnexpectedTypeExceptionTest extends TestCase
 {
     /**
-     * @dataProvider getConstructorArgs
+     * @dataProvider provideConstructorArgs
      */
     public function testConstructMessage($value, $expectedType, $expectedMessage): void
     {
@@ -28,7 +28,7 @@ class UnexpectedTypeExceptionTest extends TestCase
         $this->assertSame($expectedMessage, $e->getMessage());
     }
 
-    public function getConstructorArgs(): array
+    public static function provideConstructorArgs(): array
     {
         return [
             ['foo', \stdClass::class, 'Expected argument of type "stdClass", "string" given'],

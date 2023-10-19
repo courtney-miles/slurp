@@ -82,7 +82,7 @@ class CsvMultiFileExtractor implements CsvFileExtractorInterface
         }
     }
 
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         $iterator = new \AppendIterator();
 

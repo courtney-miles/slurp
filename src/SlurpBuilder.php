@@ -131,7 +131,7 @@ class SlurpBuilder
         $this->factory = $slurpFactory;
     }
 
-    public static function create(?ConstraintValidatorFactoryInterface $constraintValidatorFactory = null): self
+    public static function create(ConstraintValidatorFactoryInterface $constraintValidatorFactory = null): self
     {
         return new static(
             new PipelineBuilder(),

@@ -48,7 +48,7 @@ class SlurpFactory
      */
     private $constraintValidatorFactory;
 
-    public function __construct(?ConstraintValidatorFactoryInterface $constraintValidatorFactory = null)
+    public function __construct(ConstraintValidatorFactoryInterface $constraintValidatorFactory = null)
     {
         $this->constraintValidatorFactory = $constraintValidatorFactory;
     }

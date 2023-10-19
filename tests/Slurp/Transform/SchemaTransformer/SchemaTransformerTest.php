@@ -1,15 +1,5 @@
 <?php
 
-/**
- * @author Courtney Miles
- *
- * @see https://github.com/courtney-miles/slurp
- *
- * @package milesasylum/slurp
- *
- * @license MIT
- */
-
 declare(strict_types=1);
 
 namespace MilesAsylum\Slurp\Tests\Slurp\Transform\SchemaTransformer;
@@ -65,10 +55,7 @@ class SchemaTransformerTest extends TestCase
     }
 
     /**
-     * @dataProvider getComplexTypeConversionTestData
-     *
-     * @param mixed $complexValue
-     * @param mixed $scalarValue
+     * @dataProvider provideComplexTypeConversionTestData
      *
      * @throws TransformationException
      */
@@ -89,7 +76,7 @@ class SchemaTransformerTest extends TestCase
         );
     }
 
-    public function getComplexTypeConversionTestData(): array
+    public static function provideComplexTypeConversionTestData(): array
     {
         return [
             [TimeField::class, [12, 23, 34], '12:23:34'],
