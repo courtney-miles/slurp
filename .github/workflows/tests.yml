@@ -21,6 +21,8 @@ jobs:
                       symfony-pkg-version: '^6.0'
                     - php-version: '7.4'
                       symfony-pkg-version: '^6.0'
+                    - php-version: '8.1'
+                      composer-flag: '--prefer-stable --prefer-lowest'
         services:
             mysql:
                 image: mysql:5.7
@@ -57,7 +59,6 @@ jobs:
                       ${{ runner.os }}-php-
             - name: Install Composer dependencies
               run: composer update ${{ matrix.composer-flag }} -W --with symfony/validator:"${{ matrix.symfony-pkg-version }}" --with symfony/event-dispatcher:"${{ matrix.symfony-pkg-version }}" --no-interaction --no-progress
-              if: matrix.php-version != '8.1'
 
             # This may be necessary for older dev packages that do not have
             #   upper PHP compatibility version constraints.
