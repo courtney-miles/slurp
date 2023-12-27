@@ -88,10 +88,10 @@ class ExtractionStage extends AbstractOuterStage
                 $previousRecordId = $id;
             }
         } catch (MissingPrimaryKeyException $e) {
-            $this->dispatchExtractionFailedEvent($e, $previousRecordId);
+            $this->dispatchExtractionFailedEvent($e, $previousRecordId + 1);
         } catch (ExtractionException $e) {
             $slurp->abort();
-            $this->dispatchExtractionFailedEvent($e, $previousRecordId);
+            $this->dispatchExtractionFailedEvent($e, $previousRecordId + 1);
         }
 
         $this->dispatch(ExtractionEndedEvent::NAME, new ExtractionEndedEvent());
@@ -99,11 +99,11 @@ class ExtractionStage extends AbstractOuterStage
         return $slurp;
     }
 
-    public function dispatchExtractionFailedEvent(ExtractionException $e, int|null $previousRecordId): void
+    private function dispatchExtractionFailedEvent(ExtractionException $e, int $recordId): void
     {
         $this->dispatch(
             ExtractionFailedEvent::NAME,
-            new ExtractionFailedEvent($e->getMessage(), $previousRecordId + 1)
+            new ExtractionFailedEvent($e->getMessage(), $recordId)
         );
     }
 }
