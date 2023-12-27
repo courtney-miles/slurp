@@ -20,6 +20,7 @@ use MilesAsylum\Slurp\Event\ExtractionFailedEvent;
 use MilesAsylum\Slurp\Event\ExtractionStartedEvent;
 use MilesAsylum\Slurp\Event\RecordProcessedEvent;
 use MilesAsylum\Slurp\Extract\Exception\ExtractionException;
+use MilesAsylum\Slurp\Extract\Exception\MissingPrimaryKeyException;
 use MilesAsylum\Slurp\OuterPipeline\Exception\OuterPipelineException;
 use MilesAsylum\Slurp\Slurp;
 use MilesAsylum\Slurp\SlurpPayload;
@@ -86,16 +87,23 @@ class ExtractionStage extends AbstractOuterStage
 
                 $previousRecordId = $id;
             }
+        } catch (MissingPrimaryKeyException $e) {
+            $this->dispatchExtractionFailedEvent($e, $previousRecordId);
         } catch (ExtractionException $e) {
             $slurp->abort();
-            $this->dispatch(
-                ExtractionFailedEvent::NAME,
-                new ExtractionFailedEvent($e->getMessage(), $previousRecordId + 1)
-            );
+            $this->dispatchExtractionFailedEvent($e, $previousRecordId);
         }
 
         $this->dispatch(ExtractionEndedEvent::NAME, new ExtractionEndedEvent());
 
         return $slurp;
+    }
+
+    public function dispatchExtractionFailedEvent(ExtractionException $e, int|null $previousRecordId): void
+    {
+        $this->dispatch(
+            ExtractionFailedEvent::NAME,
+            new ExtractionFailedEvent($e->getMessage(), $previousRecordId + 1)
+        );
     }
 }
