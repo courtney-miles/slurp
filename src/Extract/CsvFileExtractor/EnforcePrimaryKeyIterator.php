@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MilesAsylum\Slurp\Extract\CsvFileExtractor;
 
 use MilesAsylum\Slurp\Extract\Exception\DuplicatePrimaryKeyValueException;
+use MilesAsylum\Slurp\Extract\Exception\MissingPrimaryKeyException;
 
 class EnforcePrimaryKeyIterator extends \IteratorIterator
 {
@@ -29,7 +30,7 @@ class EnforcePrimaryKeyIterator extends \IteratorIterator
 
         foreach ($this->primaryKeyFields as $pkField) {
             if (!array_key_exists($pkField, $currentRecord)) {
-                throw new \InvalidArgumentException('The supplied record does not contain the primary key field ' . $pkField . '.');
+                throw new MissingPrimaryKeyException('The supplied record does not contain the primary key field ' . $pkField . '.');
             }
 
             $pkValues[$pkField] = $currentRecord[$pkField];
