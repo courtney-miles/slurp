@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          bootstrap="./PHPUnit/bootstrap.php"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.4/phpunit.xsd"
+         cacheDirectory=".phpunit.cache"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+>
     <php>
         <ini name="display_errors" value="On" />
         <ini name="error_reporting" value="E_ALL" />
@@ -20,9 +23,10 @@
             <directory>./tests/functional/</directory>
         </testsuite>
     </testsuites>
-    <coverage processUncoveredFiles="true">
+    <coverage />
+    <source>
         <include>
             <directory suffix=".php">./src/</directory>
         </include>
-    </coverage>
+    </source>
 </phpunit>
