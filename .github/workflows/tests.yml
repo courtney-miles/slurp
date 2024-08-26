@@ -67,7 +67,7 @@ jobs:
 
             - name: Run Code Style Check for PHP ${{ matrix.php-version }}
               run: composer run-script style-check
-              if: matrix.php-version == '8.2' && matrix.composer-flag == '--prefer-dist'
+              if: matrix.php-version == '8.2' && matrix.composer-flag == '--prefer-dist' && matrix.symfony-pkg-version == '^5.0'
 
             - name: Run tests for PHP ${{ matrix.php-version }}
               run: composer run-script test
