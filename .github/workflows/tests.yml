@@ -23,6 +23,11 @@ jobs:
                       symfony-pkg-version: '^6.0'
                     - php-version: '8.1'
                       composer-flag: '--prefer-stable --prefer-lowest'
+                      # Lowest version of nesbot/carbon dependency is not compatible with PHP >=8.2
+                    - php-version: '8.2'
+                      composer-flag: '--prefer-stable --prefer-lowest'
+                    - php-version: '8.3'
+                      composer-flag: '--prefer-stable --prefer-lowest'
         services:
             mysql:
                 image: mysql:5.7
