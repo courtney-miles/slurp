@@ -79,4 +79,4 @@ jobs:
               run: vendor/bin/php-coveralls
               env:
                   COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              if: success() && matrix.php-version == '8.0' && matrix.composer-flag == '--prefer-dist'
+              if: success() && matrix.php-version == '8.2' && matrix.composer-flag == '--prefer-dist' && matrix.symfony-pkg-version == '^6.0'
