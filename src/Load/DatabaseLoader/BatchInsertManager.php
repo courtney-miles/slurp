@@ -54,7 +54,7 @@ class BatchInsertManager implements BatchManagerInterface
         string $table,
         array $columns,
         QueryFactory $queryFactory,
-        string $database = null
+        ?string $database = null
     ) {
         $this->pdo = $pdo;
         $this->table = $table;

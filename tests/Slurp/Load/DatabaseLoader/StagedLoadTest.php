@@ -103,7 +103,7 @@ SQL;
         $this->createStagedLoad($this->mockPdo, 'my_tbl', ['col_a'], null)->commit();
     }
 
-    protected function createStagedLoad(\PDO $pdo, string $table, array $columns, string $database = null): StagedLoad
+    protected function createStagedLoad(\PDO $pdo, string $table, array $columns, ?string $database = null): StagedLoad
     {
         return new StagedLoad($pdo, $table, $columns, $database);
     }

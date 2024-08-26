@@ -4,7 +4,7 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
     <php>
         <ini name="display_errors" value="On" />
-        <ini name="error_reporting" value="E_ALL" />
+        <ini name="error_reporting" value="24575" />
         <env name="TESTS_SLURP_DBADAPTER_MYSQL_ENABLED" value="true" />
         <env name="TESTS_SLURP_DBADAPTER_MYSQL_HOST" value="mysql" />
         <env name="TESTS_SLURP_DBADAPTER_MYSQL_USERNAME" value="root" />

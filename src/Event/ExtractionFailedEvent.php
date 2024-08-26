@@ -30,7 +30,7 @@ class ExtractionFailedEvent extends Event
      */
     private $recordId;
 
-    public function __construct(string $reason = null, int $recordId = null)
+    public function __construct(?string $reason = null, ?int $recordId = null)
     {
         $this->reason = $reason;
         $this->recordId = $recordId;

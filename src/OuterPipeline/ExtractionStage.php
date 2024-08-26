@@ -40,7 +40,7 @@ class ExtractionStage extends AbstractOuterStage
     /**
      * InvokeExtractionPipeline constructor.
      */
-    public function __construct(PipelineInterface $innerPipeline, callable $interrupt = null)
+    public function __construct(PipelineInterface $innerPipeline, ?callable $interrupt = null)
     {
         $this->innerPipeline = $innerPipeline;
         $this->interrupt = $interrupt;

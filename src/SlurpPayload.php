@@ -127,7 +127,7 @@ class SlurpPayload
         $this->violations[] = $violation;
     }
 
-    public function hasViolations(string $classType = null): bool
+    public function hasViolations(?string $classType = null): bool
     {
         if (empty($this->violations)) {
             return false;

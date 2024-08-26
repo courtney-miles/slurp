@@ -79,10 +79,10 @@ SQL
 
         $actualRows = self::$dbHelper->selectAllFromTable(self::$table);
         $expectedRows = [
-                ['name' => 'foo', 'date' => '2018-01-01', 'value' => '123.00'],
-                ['name' => 'bar', 'date' => '2018-01-02', 'value' => '234.00'],
-                ['name' => 'baz', 'date' => '2018-01-03', 'value' => '345.00'],
-            ];
+            ['name' => 'foo', 'date' => '2018-01-01', 'value' => '123.00'],
+            ['name' => 'bar', 'date' => '2018-01-02', 'value' => '234.00'],
+            ['name' => 'baz', 'date' => '2018-01-03', 'value' => '345.00'],
+        ];
 
         self::assertSame($expectedRows, $actualRows);
     }
@@ -226,11 +226,11 @@ SQL
         $slurp = $sb->setTableSchema(
             $sb->createTableSchemaFromArray(
                 [
-                   'fields' => [
-                       ['name' => 'col_a'],
-                       ['name' => 'col_b'],
-                       ['name' => 'col_c'],
-                   ],
+                    'fields' => [
+                        ['name' => 'col_a'],
+                        ['name' => 'col_b'],
+                        ['name' => 'col_c'],
+                    ],
                 ]
             )
         )->setEventDispatcher($mockDispatcher)

@@ -38,7 +38,7 @@ class SimpleDeleteStmt implements DmlStmtInterface
      */
     private $database;
 
-    public function __construct(\PDO $pdo, string $table, array $conditions = [], string $database = null)
+    public function __construct(\PDO $pdo, string $table, array $conditions = [], ?string $database = null)
     {
         $this->pdo = $pdo;
         $this->table = $table;

@@ -46,7 +46,7 @@ class StagedLoad
      */
     private $database;
 
-    public function __construct(\PDO $pdo, string $table, array $columns, string $database = null)
+    public function __construct(\PDO $pdo, string $table, array $columns, ?string $database = null)
     {
         $this->pdo = $pdo;
         $this->table = $table;
@@ -123,7 +123,7 @@ SQL
         $this->hasBegun = false;
     }
 
-    protected function createTemporaryTable($likeTable, $asTable, string $database = null): void
+    protected function createTemporaryTable($likeTable, $asTable, ?string $database = null): void
     {
         $tickedAsTable = $this->createTickedTableRef($asTable, $database);
         $tickedLikeTable = $this->createTickedTableRef($likeTable, $database);
@@ -134,7 +134,7 @@ SQL
         );
     }
 
-    protected function dropTemporaryTable(string $table, string $database = null): void
+    protected function dropTemporaryTable(string $table, ?string $database = null): void
     {
         $tickedTableRef = $this->createTickedTableRef($table, $database);
         $this->pdo->exec(<<<SQL
@@ -143,7 +143,7 @@ SQL
         );
     }
 
-    protected function createTickedTableRef(string $table, string $database = null): string
+    protected function createTickedTableRef(string $table, ?string $database = null): string
     {
         $tableRefTicked = "`{$table}`";
 

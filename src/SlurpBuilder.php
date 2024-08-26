@@ -131,7 +131,7 @@ class SlurpBuilder
         $this->factory = $slurpFactory;
     }
 
-    public static function create(ConstraintValidatorFactoryInterface $constraintValidatorFactory = null): self
+    public static function create(?ConstraintValidatorFactoryInterface $constraintValidatorFactory = null): self
     {
         return new static(
             new PipelineBuilder(),
@@ -216,8 +216,8 @@ class SlurpBuilder
         string $table,
         array $fieldMappings,
         int $batchSize = 100,
-        DmlStmtInterface $preCommitStmt = null,
-        string $database = null
+        ?DmlStmtInterface $preCommitStmt = null,
+        ?string $database = null
     ): DatabaseLoader {
         return $this->factory->createDatabaseLoader(
             $pdo,
