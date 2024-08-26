@@ -19,7 +19,7 @@ class QueryFactory
         string $table,
         array $columns,
         int $batchSize = 1,
-        string $database = null
+        ?string $database = null
     ): string {
         if (empty($columns)) {
             throw new \InvalidArgumentException('One or more columns must be supplied.');

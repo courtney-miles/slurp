@@ -79,8 +79,8 @@ class DatabaseLoader implements LoaderInterface
         array $fieldMapping,
         LoaderFactory $dmlFactory,
         int $batchSize = 100,
-        DmlStmtInterface $preCommitStmt = null,
-        string $database = null
+        ?DmlStmtInterface $preCommitStmt = null,
+        ?string $database = null
     ) {
         $this->loaderFactory = $dmlFactory;
         $this->table = $table;

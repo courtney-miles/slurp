@@ -63,11 +63,11 @@ jobs:
             # This may be necessary for older dev packages that do not have
             #   upper PHP compatibility version constraints.
             - name: Update Composer Dev dependencies
-              run: composer update phpunit/phpunit mockery/mockery --prefer-dist --no-interaction --no-progress
+              run: composer update phpunit/phpunit mockery/mockery friendsofphp/php-cs-fixer --prefer-dist --no-interaction --no-progress
 
             - name: Run Code Style Check for PHP ${{ matrix.php-version }}
               run: composer run-script style-check
-              if: matrix.php-version == '8.2' && matrix.composer-flag == '--prefer-dist' && matrix.symfony-pkg-version == '^5.0'
+              if: matrix.php-version == '8.2' && matrix.composer-flag == '--prefer-dist' && matrix.symfony-pkg-version == '^6.0'
 
             - name: Run tests for PHP ${{ matrix.php-version }}
               run: composer run-script test

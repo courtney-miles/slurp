@@ -26,7 +26,7 @@ class LoadAbortedEvent extends Event
 
     public const NAME = 'slurp.load.aborted';
 
-    public function __construct(SlurpPayload $payload = null)
+    public function __construct(?SlurpPayload $payload = null)
     {
         $this->payload = $payload;
     }

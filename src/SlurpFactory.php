@@ -48,7 +48,7 @@ class SlurpFactory
      */
     private $constraintValidatorFactory;
 
-    public function __construct(ConstraintValidatorFactoryInterface $constraintValidatorFactory = null)
+    public function __construct(?ConstraintValidatorFactoryInterface $constraintValidatorFactory = null)
     {
         $this->constraintValidatorFactory = $constraintValidatorFactory;
     }
@@ -171,8 +171,8 @@ class SlurpFactory
         string $table,
         array $fieldMappings,
         int $batchSize = 100,
-        DmlStmtInterface $preCommitStmt = null,
-        string $database = null
+        ?DmlStmtInterface $preCommitStmt = null,
+        ?string $database = null
     ): DatabaseLoader {
         return new DatabaseLoader(
             $table,
@@ -186,7 +186,7 @@ class SlurpFactory
 
     public function createExtractionStage(
         PipelineInterface $innerPipeline,
-        callable $interrupt = null
+        ?callable $interrupt = null
     ): ExtractionStage {
         return new ExtractionStage($innerPipeline, $interrupt);
     }
@@ -210,7 +210,7 @@ class SlurpFactory
         \PDO $pdo,
         string $table,
         array $conditions = [],
-        string $database = null
+        ?string $database = null
     ): SimpleDeleteStmt {
         return new SimpleDeleteStmt($pdo, $table, $conditions, $database);
     }
