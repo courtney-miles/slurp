@@ -10,17 +10,27 @@ jobs:
         strategy:
             matrix:
                 php-version: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
-                symfony-pkg-version: ['^4.0', '^5.0', '^6.0']
+                symfony-pkg-version: ['^4.0', '^5.0', '^6.0', '^7.0']
                 composer-flag:
                     - '--prefer-dist'
                     - '--prefer-stable --prefer-lowest'
                 exclude:
                     - php-version: '7.2'
                       symfony-pkg-version: '^6.0'
+                    - php-version: '7.2'
+                      symfony-pkg-version: '^7.0'
                     - php-version: '7.3'
                       symfony-pkg-version: '^6.0'
+                    - php-version: '7.3'
+                      symfony-pkg-version: '^7.0'
                     - php-version: '7.4'
                       symfony-pkg-version: '^6.0'
+                    - php-version: '7.4'
+                      symfony-pkg-version: '^7.0'
+                    - php-version: '8.0'
+                      symfony-pkg-version: '^7.0'
+                    - php-version: '8.1'
+                      symfony-pkg-version: '^7.0'
                     - php-version: '8.1'
                       composer-flag: '--prefer-stable --prefer-lowest'
                       # Lowest version of nesbot/carbon dependency is not compatible with PHP >=8.2
