@@ -16,6 +16,7 @@ $config->setRules([
         'void_return' => true,
         'compact_nullable_typehint' => true,
         'combine_consecutive_issets' => true,
+        'trailing_comma_in_multiline' => false,
     ])
     ->setFinder($finder);
 
