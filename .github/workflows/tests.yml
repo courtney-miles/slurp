@@ -27,6 +27,8 @@ jobs:
                       symfony-pkg-version: '^6.0'
                     - php-version: '7.4'
                       symfony-pkg-version: '^7.0'
+                    - php-version: '8.0'
+                      symfony-pkg-version: '^7.0'
                     - php-version: '8.1'
                       symfony-pkg-version: '^7.0'
                     - php-version: '8.1'
