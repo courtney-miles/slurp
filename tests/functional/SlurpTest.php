@@ -71,7 +71,7 @@ SQL
             )
         );
         $cfe = new CsvFileExtractor(
-            Reader::createFromPath(__DIR__ . '/csv/simple.csv')
+            Reader::from(__DIR__ . '/csv/simple.csv')
         );
         $cfe->loadHeadersFromFile();
         $slurp = $sb->build();
@@ -99,7 +99,7 @@ SQL
             ) // Batches of 2 will leave one row left over.
         );
         $cfe = new CsvFileExtractor(
-            Reader::createFromPath(__DIR__ . '/csv/simple.csv')
+            Reader::from(__DIR__ . '/csv/simple.csv')
         );
         $cfe->loadHeadersFromFile();
         $slurp = $sb->build();
@@ -135,7 +135,7 @@ SQL
         );
 
         $cfe = new CsvFileExtractor(
-            Reader::createFromPath(__DIR__ . '/csv/simple.csv')
+            Reader::from(__DIR__ . '/csv/simple.csv')
         );
         $cfe->loadHeadersFromFile();
         $slurp = $sb->build();
