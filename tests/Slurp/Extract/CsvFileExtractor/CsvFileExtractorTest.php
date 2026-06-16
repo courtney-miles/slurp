@@ -182,8 +182,8 @@ class CsvFileExtractorTest extends TestCase
 
     private function setUpMockReader(MockInterface $mockReader, array $rows): void
     {
-        $mockReader->shouldReceive('fetchOne')
-            ->withNoArgs()
+        $mockReader->shouldReceive('nth')
+            ->with(0)
             ->andReturn($rows[0]);
 
         $mockReader->shouldReceive('getRecords')

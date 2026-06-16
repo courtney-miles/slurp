@@ -44,7 +44,7 @@ class CsvFileExtractor implements CsvFileExtractorInterface
      */
     public static function createFromPath(string $path): self
     {
-        return new static(Reader::createFromPath($path));
+        return new static(Reader::from($path));
     }
 
     /**
@@ -76,7 +76,7 @@ class CsvFileExtractor implements CsvFileExtractorInterface
      */
     public function loadHeadersFromFile(): void
     {
-        $this->headers = $this->csvReader->fetchOne();
+        $this->headers = $this->csvReader->nth(0);
         $this->headerOffset = 0;
     }
 
@@ -98,7 +98,7 @@ class CsvFileExtractor implements CsvFileExtractorInterface
             });
         }
 
-        $valueCount = !empty($headers) ? count($headers) : count($this->csvReader->fetchOne());
+        $valueCount = !empty($headers) ? count($headers) : count($this->csvReader->nth(0));
         $records = new VerifyValueCountIterator($records, $valueCount);
 
         if (!empty($headers)) {
