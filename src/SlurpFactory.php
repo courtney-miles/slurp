@@ -60,7 +60,7 @@ class SlurpFactory
         $uniqueFields = $this->getUniqueFieldNamesFromSchema($schema);
 
         return new CsvFileExtractor(
-            Reader::createFromPath($path),
+            Reader::from($path),
             $primaryKeys,
             $uniqueFields
         );
