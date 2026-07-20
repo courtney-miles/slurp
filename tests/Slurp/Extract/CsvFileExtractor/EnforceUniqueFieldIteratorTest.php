@@ -44,4 +44,34 @@ class EnforceUniqueFieldIteratorTest extends TestCase
             // Do nothing
         }
     }
+
+    /**
+     * When CsvMultiFileExtractor wraps multiple iterators in an
+     * AppendIterator, PHP's AppendIterator invokes current() twice on the
+     * first record of each appended iterator. The side-effectful uniqueness
+     * check in current() must not throw a false duplicate on the second call.
+     */
+    public function testDoesNotFalsePositiveWhenCurrentCalledTwiceForSameKeyViaAppendIterator(): void
+    {
+        $rows = [
+            ['foo' => 123, 'bar' => 'abc'],
+            ['foo' => 234, 'bar' => 'def'],
+        ];
+        $sut = new EnforceUniqueFieldIterator(
+            new \ArrayIterator($rows),
+            ['foo']
+        );
+
+        $appendIterator = new \AppendIterator();
+        $appendIterator->append($sut);
+
+        $iterated = [];
+        foreach ($appendIterator as $key => $record) {
+            $iterated[] = $record;
+        }
+
+        self::assertCount(2, $iterated);
+        self::assertSame($rows[0], $iterated[0]);
+        self::assertSame($rows[1], $iterated[1]);
+    }
 }

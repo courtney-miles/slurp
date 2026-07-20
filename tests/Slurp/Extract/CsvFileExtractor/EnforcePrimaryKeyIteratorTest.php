@@ -70,4 +70,57 @@ class EnforcePrimaryKeyIteratorTest extends TestCase
         // the test increments the assertion count.
         self::assertTrue(true);
     }
+
+    /**
+     * When CsvMultiFileExtractor wraps multiple iterators in an
+     * AppendIterator, PHP's AppendIterator invokes current() twice on the
+     * first record of each appended iterator. The side-effectful PK check
+     * in current() must not throw a false duplicate on the second call.
+     *
+     * @see https://github.com/courtney-miles/slurp
+     */
+    public function testDoesNotFalsePositiveWhenCurrentCalledTwiceForSameKeyViaAppendIterator(): void
+    {
+        $rows = [
+            ['pk_1' => 123, 'pk_2' => 'abc', 'foo' => 'bar'],
+            ['pk_1' => 234, 'pk_2' => 'def', 'foo' => 'qux'],
+        ];
+        $sut = new EnforcePrimaryKeyIterator(
+            new \ArrayIterator($rows),
+            ['pk_1', 'pk_2']
+        );
+
+        $appendIterator = new \AppendIterator();
+        $appendIterator->append($sut);
+
+        $iterated = [];
+        foreach ($appendIterator as $key => $record) {
+            $iterated[] = $record;
+        }
+
+        self::assertCount(2, $iterated);
+        self::assertSame($rows[0], $iterated[0]);
+        self::assertSame($rows[1], $iterated[1]);
+    }
+
+    public function testStillDetectsRealDuplicateUnderAppendIterator(): void
+    {
+        $rows = [
+            ['pk_1' => 123, 'pk_2' => 'abc', 'foo' => 'bar'],
+            ['pk_1' => 123, 'pk_2' => 'abc', 'foo' => 'baz'],
+        ];
+        $sut = new EnforcePrimaryKeyIterator(
+            new \ArrayIterator($rows),
+            ['pk_1', 'pk_2']
+        );
+
+        $appendIterator = new \AppendIterator();
+        $appendIterator->append($sut);
+
+        $this->expectException(DuplicatePrimaryKeyValueException::class);
+
+        foreach ($appendIterator as $record) {
+            // Do nothing
+        }
+    }
 }
