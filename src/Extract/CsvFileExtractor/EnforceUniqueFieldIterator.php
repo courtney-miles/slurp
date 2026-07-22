@@ -26,6 +26,15 @@ class EnforceUniqueFieldIterator extends \IteratorIterator
         $this->uniqueFieldValues = array_fill_keys($uniqueFields, []);
     }
 
+    public function rewind(): void
+    {
+        parent::rewind();
+        $this->uniqueFieldValues = array_fill_keys(array_keys($this->uniqueFieldValues), []);
+        $this->hasCache = false;
+        $this->lastKey = null;
+        $this->lastRecord = null;
+    }
+
     #[\ReturnTypeWillChange]
     public function current()
     {

@@ -25,6 +25,15 @@ class EnforcePrimaryKeyIterator extends \IteratorIterator
         $this->primaryKeyFields = $primaryKeyFields;
     }
 
+    public function rewind(): void
+    {
+        parent::rewind();
+        $this->primaryKeyFieldsValues = [];
+        $this->hasCache = false;
+        $this->lastKey = null;
+        $this->lastRecord = null;
+    }
+
     /**
      * @throws DuplicatePrimaryKeyValueException
      */

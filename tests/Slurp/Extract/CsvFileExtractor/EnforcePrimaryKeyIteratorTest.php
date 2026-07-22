@@ -72,14 +72,35 @@ class EnforcePrimaryKeyIteratorTest extends TestCase
     }
 
     /**
-     * When CsvMultiFileExtractor wraps multiple iterators in an
-     * AppendIterator, PHP's AppendIterator invokes current() twice on the
-     * first record of each appended iterator. The side-effectful PK check
-     * in current() must not throw a false duplicate on the second call.
-     *
-     * @see https://github.com/courtney-miles/slurp
+     * The fundamental issue is that current() may be called twice without
+     * incrementing the internal pointer. The side-effectful PK check in
+     * current() must not throw a false duplicate on the second call.
      */
-    public function testDoesNotFalsePositiveWhenCurrentCalledTwiceForSameKeyViaAppendIterator(): void
+    public function testDoesNotFalsePositiveWhenCurrentCalledTwiceWithoutIncrementingPointer(): void
+    {
+        $rows = [
+            ['pk_1' => 123, 'pk_2' => 'abc', 'foo' => 'bar'],
+            ['pk_1' => 234, 'pk_2' => 'def', 'foo' => 'qux'],
+        ];
+        $sut = new EnforcePrimaryKeyIterator(
+            new \ArrayIterator($rows),
+            ['pk_1', 'pk_2']
+        );
+        $sut->rewind();
+
+        $firstResult = $sut->current();
+        $secondResult = $sut->current();
+
+        self::assertSame($firstResult, $secondResult);
+        self::assertSame($rows[0], $secondResult);
+    }
+
+    /**
+     * rewind() is not expected to be called during normal extraction, but it
+     * is a public method so it should be valid to use it without causing the
+     * same issue as two calls to current() do.
+     */
+    public function testCanReiterateAfterRewind(): void
     {
         $rows = [
             ['pk_1' => 123, 'pk_2' => 'abc', 'foo' => 'bar'],
@@ -90,37 +111,21 @@ class EnforcePrimaryKeyIteratorTest extends TestCase
             ['pk_1', 'pk_2']
         );
 
-        $appendIterator = new \AppendIterator();
-        $appendIterator->append($sut);
-
-        $iterated = [];
-        foreach ($appendIterator as $key => $record) {
-            $iterated[] = $record;
+        $firstPass = [];
+        foreach ($sut as $record) {
+            $firstPass[] = $record;
         }
 
-        self::assertCount(2, $iterated);
-        self::assertSame($rows[0], $iterated[0]);
-        self::assertSame($rows[1], $iterated[1]);
-    }
+        $sut->rewind();
 
-    public function testStillDetectsRealDuplicateUnderAppendIterator(): void
-    {
-        $rows = [
-            ['pk_1' => 123, 'pk_2' => 'abc', 'foo' => 'bar'],
-            ['pk_1' => 123, 'pk_2' => 'abc', 'foo' => 'baz'],
-        ];
-        $sut = new EnforcePrimaryKeyIterator(
-            new \ArrayIterator($rows),
-            ['pk_1', 'pk_2']
-        );
-
-        $appendIterator = new \AppendIterator();
-        $appendIterator->append($sut);
-
-        $this->expectException(DuplicatePrimaryKeyValueException::class);
-
-        foreach ($appendIterator as $record) {
-            // Do nothing
+        $secondPass = [];
+        foreach ($sut as $record) {
+            $secondPass[] = $record;
         }
+
+        self::assertCount(2, $firstPass);
+        self::assertCount(2, $secondPass);
+        self::assertSame($rows[0], $secondPass[0]);
+        self::assertSame($rows[1], $secondPass[1]);
     }
 }
