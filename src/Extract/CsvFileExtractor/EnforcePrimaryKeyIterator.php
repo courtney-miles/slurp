@@ -13,10 +13,25 @@ class EnforcePrimaryKeyIterator extends \IteratorIterator
 
     private $primaryKeyFields = [];
 
+    private $lastKey;
+
+    private $lastRecord;
+
+    private $hasCache = false;
+
     public function __construct(\Traversable $iterator, array $primaryKeyFields)
     {
         parent::__construct($iterator);
         $this->primaryKeyFields = $primaryKeyFields;
+    }
+
+    public function rewind(): void
+    {
+        parent::rewind();
+        $this->primaryKeyFieldsValues = [];
+        $this->hasCache = false;
+        $this->lastKey = null;
+        $this->lastRecord = null;
     }
 
     /**
@@ -25,6 +40,12 @@ class EnforcePrimaryKeyIterator extends \IteratorIterator
     #[\ReturnTypeWillChange]
     public function current()
     {
+        $key = $this->key();
+
+        if ($this->hasCache && $key === $this->lastKey) {
+            return $this->lastRecord;
+        }
+
         $currentRecord = parent::current();
         $pkValues = [];
 
@@ -45,7 +66,11 @@ class EnforcePrimaryKeyIterator extends \IteratorIterator
 
         $this->primaryKeyFieldsValues[$normPkValues] = true;
 
-        return parent::current();
+        $this->lastKey = $key;
+        $this->lastRecord = $currentRecord;
+        $this->hasCache = true;
+
+        return $currentRecord;
     }
 
     private static function normalisePrimaryKeysValue(array $primaryKeyValues): string
